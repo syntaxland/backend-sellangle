@@ -50,7 +50,7 @@ def send_email_otp(request):
                     <p>This OTP is valid for 30 minutes.</p>
                     <p>If you didn't request this verification email, please ignore it.</p>
                     <p>Best regards,</p>
-                    <p>Mcdofshop Inc.</p>
+                    <p>Sellangle Inc.</p>
                 </body>
                 </html>
             """ 
@@ -110,7 +110,7 @@ def resend_email_otp(request):
                     <h2>OTP: {email_otp.email_otp}</h2><br/>
                     <p>This OTP is valid for 30 minutes.</p>
                     <p>If you didn't request this verification email, please ignore it.</p>
-                    <p>Best regards,<br>McdofGlobal Team</p>
+                    <p>Best regards,<br>Sellangle Team</p>
                 </body>
                 </html>
             """ 
