@@ -421,7 +421,7 @@ class MarketplaceSellerPhoto(models.Model):
         return f'Photo {self.pk}'
 
 
-class PostFreeAd(models.Model):
+class PostFreeAd(models.Model): 
     seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="ad_seller") 
     # seller_photo = models.ForeignKey(MarketplaceSellerPhoto, on_delete=models.SET_NULL, null=True, blank=True, related_name="seller_free_ad_photo") 
     ad_name = models.CharField(max_length=80, null=True)
