@@ -82,7 +82,7 @@ class BuyCreditPoint(models.Model):
     cps_purchase_id = models.CharField(max_length=10, unique=True)
     is_success = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+     
 
 class SellCreditPoint(models.Model):
     buyer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='buyer_credit_point')
