@@ -81,7 +81,7 @@ class BuyCreditPoint(models.Model):
     cps_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, editable=False)
     cps_purchase_id = models.CharField(max_length=10, unique=True)
     is_success = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True) 
      
 
 class SellCreditPoint(models.Model):
