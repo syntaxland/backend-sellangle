@@ -489,6 +489,8 @@ def get_all_free_ad(request):
     selected_country = request.GET.get('country', '')
     selected_state = request.GET.get('state', '')
     selected_city = request.GET.get('city', '')
+    selected_category = request.GET.get('category', '') 
+    selected_type = request.GET.get('type', '')
     print('free location:', selected_country, selected_state, selected_city)
 
     try:
@@ -496,12 +498,14 @@ def get_all_free_ad(request):
 
         if selected_country:
             free_ads = free_ads.filter(country=selected_country)
-
         if selected_state:
             free_ads = free_ads.filter(state_province=selected_state)
-
         if selected_city:
             free_ads = free_ads.filter(city=selected_city)
+        if selected_category:
+            free_ads = free_ads.filter(ad_category=selected_category)
+        if selected_type:
+            free_ads = free_ads.filter(ad_type=selected_type)
 
         serializer = PostFreeAdSerializer(free_ads, many=True)
         return Response(serializer.data)
@@ -737,11 +741,12 @@ def get_all_paid_ad(request):
     selected_state = request.GET.get('state', '')
     selected_city = request.GET.get('city', '')
 
+    selected_category = request.GET.get('category', '')  
+    selected_type = request.GET.get('type', '')
     print('paid location:', selected_country, selected_state, selected_city)
 
     try:
         paid_ads = PostPaidAd.objects.filter(expiration_date__gt=current_datetime).order_by("?")
-        # paid_ads = None
 
         if selected_country:
             paid_ads = paid_ads.filter(country=selected_country)
@@ -749,9 +754,11 @@ def get_all_paid_ad(request):
             paid_ads = paid_ads.filter(state_province=selected_state)
         elif selected_city:
             paid_ads = paid_ads.filter(city=selected_city)
-        # else:
-            # paid_ads = PostPaidAd.objects.filter(expiration_date__gt=current_datetime).order_by("?")
-            # return Response({'detail': 'Promoted ads not found'}, status=status.HTTP_404_NOT_FOUND)
+        elif selected_category:
+            paid_ads = paid_ads.filter(ad_category=selected_category)
+        elif selected_type:
+            paid_ads = paid_ads.filter(ad_type=selected_type)
+        
 
         serializer = PostPaidAdSerializer(paid_ads, many=True)
         return Response(serializer.data)

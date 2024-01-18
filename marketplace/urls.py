@@ -23,7 +23,7 @@ urlpatterns = [
     path('deactivate-free-ad/', views.deactivate_free_ad, name='delete-free-ad'),
     path('reactivate-free-ad/', views.reactivate_free_ad, name='reactivate-free-ad'),
     path('delete-free-ad/', views.delete_free_ad, name='delete-free-ad'),
-    path('get-all-free-ad/', views.get_all_free_ad, name='get-all-free-ad'),
+    path('get-all-free-ad/', views.get_all_free_ad, name='get-all-free-ad'), 
 
     path('get-seller-paid-ad/', views.get_seller_paid_ad, name='get-seller-paid-ad'),
     path('get-seller-active-paid-ads/<str:seller_username>/', views.get_seller_active_paid_ads, name='get-seller-active-paid-ads'),
