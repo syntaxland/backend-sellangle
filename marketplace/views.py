@@ -489,8 +489,8 @@ def get_all_free_ad(request):
     selected_country = request.GET.get('country', '')
     selected_state = request.GET.get('state', '')
     selected_city = request.GET.get('city', '')
-    selected_category = request.GET.get('category', '') 
-    selected_type = request.GET.get('type', '')
+    # selected_category = request.GET.get('category', '') 
+    # selected_type = request.GET.get('type', '')
     print('free location:', selected_country, selected_state, selected_city)
 
     try:
@@ -502,10 +502,10 @@ def get_all_free_ad(request):
             free_ads = free_ads.filter(state_province=selected_state)
         if selected_city:
             free_ads = free_ads.filter(city=selected_city)
-        if selected_category:
-            free_ads = free_ads.filter(ad_category=selected_category)
-        if selected_type:
-            free_ads = free_ads.filter(ad_type=selected_type)
+        # if selected_category:
+        #     free_ads = free_ads.filter(ad_category=selected_category)
+        # if selected_type:
+        #     free_ads = free_ads.filter(ad_type=selected_type)
 
         serializer = PostFreeAdSerializer(free_ads, many=True)
         return Response(serializer.data)
@@ -741,8 +741,8 @@ def get_all_paid_ad(request):
     selected_state = request.GET.get('state', '')
     selected_city = request.GET.get('city', '')
 
-    selected_category = request.GET.get('category', '')  
-    selected_type = request.GET.get('type', '')
+    # selected_category = request.GET.get('category', '')  
+    # selected_type = request.GET.get('type', '')
     print('paid location:', selected_country, selected_state, selected_city)
 
     try:
@@ -754,10 +754,10 @@ def get_all_paid_ad(request):
             paid_ads = paid_ads.filter(state_province=selected_state)
         elif selected_city:
             paid_ads = paid_ads.filter(city=selected_city)
-        elif selected_category:
-            paid_ads = paid_ads.filter(ad_category=selected_category)
-        elif selected_type:
-            paid_ads = paid_ads.filter(ad_type=selected_type)
+        # elif selected_category:
+        #     paid_ads = paid_ads.filter(ad_category=selected_category)
+        # elif selected_type:
+        #     paid_ads = paid_ads.filter(ad_type=selected_type)
         
 
         serializer = PostPaidAdSerializer(paid_ads, many=True)
@@ -1065,9 +1065,9 @@ def search_ads(request):
         }, status=status.HTTP_200_OK)
 
     except PostFreeAd.DoesNotExist:
-        return Response({'detail': 'Ad not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'detail': 'Ad not found in this location.'}, status=status.HTTP_404_NOT_FOUND)
     except PostPaidAd.DoesNotExist:
-        return Response({'detail': 'Ad not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'detail': 'Ad not found in this location.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

@@ -122,6 +122,8 @@ AD_TYPE_CHOICES = [
     ("Microwave", "Microwave"),
     ("Coffee Machine", "Coffee Machine"),
     ("Air Conditioner", "Air Conditioner"),
+    ("Solar", "Solar"),
+    ("Kitchen Appliances", "Kitchen Appliances"),
 
     # Choices for Properties
     ("House", "House"),
@@ -439,7 +441,7 @@ class PostFreeAd(models.Model):
     is_price_negotiable = models.BooleanField(default=False)
     promo_price = models.DecimalField(max_digits=16, decimal_places=2, null=True, blank=True)    
     brand = models.CharField(max_length=255, blank=True, null=True) 
-    description = models.TextField(max_length=2000, blank=True, null=True)
+    description = models.TextField(max_length=4000, blank=True, null=True)
     youtube_link = models.URLField(max_length=255, blank=True, null=True)
     # promo_code = models.ForeignKey('promo.PromoCode', on_delete=models.SET_NULL, null=True, blank=True)
     ad_rating = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True, editable=False)
@@ -506,7 +508,7 @@ class PostPaidAd(models.Model):
     brand = models.CharField(max_length=255, blank=True, null=True) 
     promo_code = models.CharField(max_length=10, null=True, blank=True)
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=1, default=0) 
-    description = models.TextField(max_length=2000, blank=True, null=True)
+    description = models.TextField(max_length=4000, blank=True, null=True)
     youtube_link = models.URLField(max_length=255, blank=True, null=True)
     ad_charges = models.DecimalField(max_digits=16, decimal_places=2, default=0)
     is_price_negotiable = models.BooleanField(default=False)
