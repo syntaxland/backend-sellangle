@@ -15,12 +15,17 @@ from credit_point.models import CreditPoint
 from .models import (MarketPlaceSellerAccount, 
                      MarketplaceSellerPhoto, 
                      PostFreeAd, PostPaidAd, 
-                     PaysofterApiKey, Message
+                     PaysofterApiKey, Message,
+                    ReportFreeAd,
+                    ReportPaidAd,
                      )
 from .serializers import (MarketPlaceSellerAccountSerializer,
                            MarketplaceSellerPhotoSerializer,
                              PostFreeAdSerializer, PostPaidAdSerializer, 
                              PaysofterApiKeySerializer, MessageSerializer,
+                             ReportFreeAdSerializer,
+                            ReportPaidAdSerializer,
+
                             )
 from user_profile.serializers import UserSerializer
 
@@ -966,6 +971,69 @@ def get_seller_detail(request, seller_username):
     
     except MarketPlaceSellerAccount.DoesNotExist:
         return Response({'detail': 'Seller detail not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def report_free_ad(request):
+    user = request.user
+    data = request.data 
+
+    ad_id = data.get('ad_id')
+    ad_report = data.get('ad_report')  
+    print("report data:", data)
+
+    try:
+        ad = PostFreeAd.objects.get(id=ad_id)
+    except PostFreeAd.DoesNotExist:
+        return Response({'detail': 'Ad not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    report_ad, created = ReportFreeAd.objects.get_or_create(
+            user=user,
+            free_ad=ad,
+            ad_report=ad_report,
+        )
+    
+    ad.is_ad_reported = True
+    ad.ad_report = ad_report
+    ad.ad_report_count += 1
+    ad.save()
+    
+    # if created:
+    #     print("Report object was created:", report_ad)
+    # else:
+    #     print("Report object already existed:", report_ad)
+
+    return Response({'success': f'Ad reported successfully.'}, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def report_paid_ad(request):
+    user = request.user
+    data = request.data 
+
+    ad_id = data.get('ad_id')
+    ad_report = data.get('ad_report') 
+    print("report data:", data)
+
+    try:
+        ad = PostPaidAd.objects.get(id=ad_id)
+    except PostPaidAd.DoesNotExist:
+        return Response({'detail': 'Ad not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    report_ad, created = ReportPaidAd.objects.get_or_create(
+            user=user,
+            paid_ad=ad,
+            ad_report=ad_report,
+        )
+
+    ad.is_ad_reported = True
+    ad.ad_report = ad_report  
+    ad.ad_report_count += 1
+    ad.save()
+
+    return Response({'success': f'Ad reported successfully.'}, status=status.HTTP_201_CREATED)
 
 
 # @api_view(['GET'])

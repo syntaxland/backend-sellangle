@@ -1,9 +1,10 @@
+# user_profile/urls.py
 from django.urls import path
 from . import views
 
 urlpatterns = [
     path('users/register/', views.register_user_view, name='user-register'),
-    path('users/login/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('users/login/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'), 
     path('google-login/', views.GoogleLogin.as_view(), name='google_login'),
     path('users/logout/', views.LogoutView.as_view(), name='user-logout'),
     path('get-user-profile/', views.GetUserProfileView.as_view(), name='get_user_profile'),

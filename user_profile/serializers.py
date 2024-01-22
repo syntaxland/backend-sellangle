@@ -1,13 +1,15 @@
+# user_profile/serializers.py
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.db.models import Q
 
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
  
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer): 
 
     class Meta:
         model = User
@@ -34,6 +36,88 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         for k, v in serializer.items():
             data[k] = v
         return data
+
+# class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    
+#     def get_user(self, attrs):
+#         identifier = attrs.get('identifier')
+#         user = None
+#         if '@' in identifier:
+#             user = User.objects.filter(email__iexact=identifier).first()
+#         if not user:
+#             user = User.objects.filter(username__iexact=identifier).first()
+#         if not user:
+#             raise serializers.ValidationError('User not found')
+#         return user
+
+#     @classmethod
+#     def get_token(cls, user):
+#         token = super().get_token(user)
+#         token['username'] = user.username
+#         token['email'] = user.email
+#         return token
+
+#     def validate(self, attrs):
+#         data = super().validate(attrs)
+#         serializer = UserSerializer(self.user).data
+#         for k, v in serializer.items():
+#             data[k] = v
+#         return data
+
+
+# class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+#     def get_user(self, attrs):
+#         identifier = attrs.get('identifier')
+#         user = None
+#         if '@' in identifier:
+#             user = User.objects.filter(email__iexact=identifier).first()
+#         if not user:
+#             user = User.objects.filter(username__iexact=identifier).first()
+#         return user
+
+#     @classmethod
+#     def get_token(cls, user):
+#         token = super().get_token(user)
+#         token['username'] = user.username
+#         token['email'] = user.email
+#         return token
+
+#     def validate(self, attrs):
+#         identifier = attrs.get('identifier')
+#         password = attrs.get('password')
+
+#         if not identifier or not password:
+#             raise serializers.ValidationError('Both identifier and password are required')
+
+#         user = self.get_user(attrs)
+
+#         if user and user.check_password(password):
+#             data = super().validate(attrs)
+#             serializer = UserSerializer(user).data
+#             for k, v in serializer.items():
+#                 data[k] = v
+#             return data
+#         else:
+#             raise serializers.ValidationError('Invalid credentials')
+
+
+# class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+#     @classmethod
+#     def get_token(cls, user):
+#         token = super().get_token(user)
+#         token['username'] = user.username
+#         return token
+
+#     def validate(self, attrs):
+#         data = super().validate(attrs)
+#         serializer = UserSerializer(self.user).data
+#         for k, v in serializer.items():
+#             data[k] = v
+#         return data
+
+#     def get_user(self, attrs):
+#         identifier = attrs.get('identifier')
+#         return User.objects.get(Q(email__iexact=identifier) | Q(username__iexact=identifier))
 
 
 class GoogleLoginSerializer(TokenObtainPairSerializer):

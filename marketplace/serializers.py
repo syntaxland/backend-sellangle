@@ -1,7 +1,9 @@
 # marketplace/serializers.py
 from rest_framework import serializers
 from .models import (MarketPlaceSellerAccount, MarketplaceSellerPhoto, 
-                     PostFreeAd, PostPaidAd, PaysofterApiKey, Message)
+                     PostFreeAd, PostPaidAd, PaysofterApiKey, Message,
+                     ReportFreeAd, ReportPaidAd
+                     )
 
 
 class MarketPlaceSellerAccountSerializer(serializers.ModelSerializer):
@@ -65,4 +67,17 @@ class MessageSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='user.first_name', read_only=True)
     class Meta:
         model = Message
+        fields = '__all__'
+
+
+class ReportFreeAdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReportFreeAd
+        fields = '__all__'
+
+
+class ReportPaidAdSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(source='user.first_name', read_only=True)
+    class Meta:
+        model = ReportPaidAd
         fields = '__all__'

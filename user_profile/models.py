@@ -37,7 +37,7 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=100, unique=True)
-    username = models.CharField(max_length=100, unique=True)
+    username = models.CharField(max_length=100, unique=True) 
     first_name = models.CharField(max_length=30, null=True, blank=True)
     last_name = models.CharField(max_length=30, null=True, blank=True)
     phone_number = models.CharField(max_length=18, unique=True)
@@ -56,7 +56,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(default=timezone.now, blank=True, editable=False) 
   
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'phone_number']
+    REQUIRED_FIELDS = ['first_name', 
+                       'phone_number', 
+                    #    'username'
+                       ]
 
     # def save(self, *args, **kwargs):
     #     # Set the username to be the same as the email

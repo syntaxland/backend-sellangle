@@ -49,6 +49,9 @@ class AuthorAdmin(admin.ModelAdmin):
         'is_active',
         'image1',
         'duration',
+        'is_ad_reported',
+        'ad_report_count',
+        'ad_report',
         'duration_hours',
         'expiration_date',
     )  
@@ -70,6 +73,9 @@ class AuthorAdmin(admin.ModelAdmin):
         'brand',
         'description',
         'is_active',
+        'is_ad_reported',
+        'ad_report_count',
+        'ad_report',
         'image1',
         'duration',
         'duration_hours',
@@ -94,4 +100,23 @@ class AuthorAdmin(admin.ModelAdmin):
         'free_ad',
         'paid_ad',
         'message',
+    )  
+
+@admin.register(models.ReportFreeAd)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = (
+        'timestamp',
+        'user',
+        'free_ad',
+        'ad_report',
+    )  
+
+
+@admin.register(models.ReportPaidAd)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = (
+        'timestamp',
+        'user',
+        'paid_ad',
+        'ad_report',
     )  

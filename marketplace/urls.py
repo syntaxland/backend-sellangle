@@ -24,6 +24,7 @@ urlpatterns = [
     path('reactivate-free-ad/', views.reactivate_free_ad, name='reactivate-free-ad'),
     path('delete-free-ad/', views.delete_free_ad, name='delete-free-ad'),
     path('get-all-free-ad/', views.get_all_free_ad, name='get-all-free-ad'), 
+    path('report-free-ad/', views.report_free_ad, name='report-free-ad'), 
 
     path('get-seller-paid-ad/', views.get_seller_paid_ad, name='get-seller-paid-ad'),
     path('get-seller-active-paid-ads/<str:seller_username>/', views.get_seller_active_paid_ads, name='get-seller-active-paid-ads'),
@@ -33,6 +34,7 @@ urlpatterns = [
     path('reactivate-paid-ad/', views.reactivate_paid_ad, name='reactivate-paid-ad'),
     path('delete-paid-ad/', views.delete_paid_ad, name='delete-paid-ad'),
     path('get-all-paid-ad/', views.get_all_paid_ad, name='get-all-paid-ad'),
+    path('report-paid-ad/', views.report_paid_ad, name='report-paid-ad'),
 
     path('get-seller-api-key/', views.get_seller_paysofter_api_key, name='get-seller-api-key'),
     path('save-seller-api-key/', views.save_seller_paysofter_api_key, name='save-seller-api-key'),

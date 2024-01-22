@@ -381,6 +381,22 @@ MAIN_CURRENCY_CHOICES = (
     ('USD', 'USD'),
 )
 
+AD_REPORT_CHOICES = (
+    ('Misleading Content', 'False or deceptive information in the ad, claims that are not substantiated.'),
+    ('Inappropriate Content', 'Offensive language, images, or themes; content violating community standards or guidelines.'),
+    ('Irrelevant or Unwanted Ads', 'Ads that are not relevant to the user; too frequent display of the same ad.'),
+    ('Malware or Phishing', 'Ads containing malicious software or links to phishing websites.'),
+    ('Privacy Concerns', 'Collection of personal information without consent; violation of privacy policies.'),
+    ('Low-Quality or Unprofessional Design', 'Poorly designed or unprofessional-looking ads.'),
+    ('Counterfeit or Fraudulent Products', 'Ads promoting counterfeit goods or fraudulent services.'),
+    ('Political or Social Issues', 'Ads perceived as promoting hate speech, discrimination, or controversial political content.'),
+    ('Technical Issues', 'Broken links or malfunctioning interactive elements in the ad.'),
+    ('Unsolicited or Spammy Ads', 'Ads that appear as spam or unsolicited marketing messages.'),
+    ('Disallowed Content', 'Ads promoting content that violates platform policies or legal regulations.'),
+    ('Unverified Claims', 'Ads making claims that cannot be verified or proven.'),
+    ('Unrealistic Promises', 'Ads promising unrealistic results or benefits.'),
+)
+
 
 class MarketPlaceSellerAccount(models.Model):
     seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="seller_account_user")
@@ -425,6 +441,7 @@ class MarketplaceSellerPhoto(models.Model):
 
 class PostFreeAd(models.Model): 
     seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="ad_seller") 
+    # user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="fre_ad_reporter") 
     # seller_photo = models.ForeignKey(MarketplaceSellerPhoto, on_delete=models.SET_NULL, null=True, blank=True, related_name="seller_free_ad_photo") 
     ad_name = models.CharField(max_length=80, null=True)
     ad_category = models.CharField(max_length=100, choices=AD_CATEGORY_CHOICES, null=True) 
@@ -454,6 +471,8 @@ class PostFreeAd(models.Model):
     ad_count = models.PositiveIntegerField(default=0, editable=False)
     is_active = models.BooleanField(default=False)
     is_ad_reported = models.BooleanField(default=False)
+    ad_report_count = models.PositiveIntegerField(default=0, editable=False)
+    ad_report = models.CharField(max_length=100, choices=AD_REPORT_CHOICES, null=True, blank=True)
     image1 = models.ImageField(upload_to='./media/marketplace', null=True, blank=True)
     image2 = models.ImageField(upload_to='./media/marketplace', null=True, blank=True)
     image3 = models.ImageField(upload_to='./media/marketplace', null=True, blank=True)
@@ -491,6 +510,7 @@ class PostFreeAd(models.Model):
 
 class PostPaidAd(models.Model):
     seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_seller") 
+    # user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_reporter") 
     # seller_photo = models.ForeignKey(MarketplaceSellerPhoto, on_delete=models.SET_NULL, null=True, blank=True, related_name="seller_paid_ad_photo") 
     ad_name = models.CharField(max_length=80, null=True)
     ad_category = models.CharField(max_length=100, choices=AD_CATEGORY_CHOICES, null=True, blank=True)
@@ -523,6 +543,8 @@ class PostPaidAd(models.Model):
     is_auto_renewal = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_ad_reported = models.BooleanField(default=False)
+    ad_report_count = models.PositiveIntegerField(default=0, editable=False)
+    ad_report = models.CharField(max_length=100, choices=AD_REPORT_CHOICES, null=True, blank=True)
     image1 = models.ImageField(upload_to='./media/marketplace', null=True, default='./media/default_ad_photo.jpg')
     image2 = models.ImageField(upload_to='./media/marketplace', null=True, blank=True)
     image3 = models.ImageField(upload_to='./media/marketplace', null=True, blank=True)
@@ -574,3 +596,18 @@ class Message(models.Model):
     
     def __str__(self):
         return f"{self.user} | {self.message}"
+
+
+class ReportFreeAd(models.Model): 
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="fre_ad_reporter") 
+    free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE, related_name='free_ad_report', blank=True, null=True)
+    ad_report = models.CharField(max_length=100, choices=AD_REPORT_CHOICES, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+
+ 
+class ReportPaidAd(models.Model): 
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_reporter") 
+    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='paid_ad_report', blank=True, null=True)
+    ad_report = models.CharField(max_length=100, choices=AD_REPORT_CHOICES, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+ 

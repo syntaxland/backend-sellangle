@@ -147,8 +147,9 @@ def register_user_view(request):
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
+    serializer_class = MyTokenObtainPairSerializer 
 
+    
 class GoogleLogin(SocialLoginView):
     # permission_classes = [AllowAny]  
     adapter_class = GoogleOAuth2Adapter
