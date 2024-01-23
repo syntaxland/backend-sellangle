@@ -828,6 +828,31 @@ def create_free_ad_message(request):
     return Response({'message': 'Message created'}, status=status.HTTP_201_CREATED)
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def seller_reply_free_ad_message(request):
+    user=request.user
+    data=request.data
+    print('data:', data, 'user:', user)
+
+    pk = data.get('pk')
+    message = data.get('message')
+    print('pk:', pk)
+    print('message:', message)
+    
+    try:
+        free_ad = PostFreeAd.objects.get(pk=pk)
+    except PostFreeAd.DoesNotExist:
+        return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    Message.objects.create(
+            user=user,
+            message=message,
+            free_ad=free_ad,
+        )
+    return Response({'message': 'Message created'}, status=status.HTTP_201_CREATED)
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def list_free_ad_messages(request, pk):
@@ -878,6 +903,31 @@ def create_paid_ad_message(request):
         )
     return Response({'message': 'Message created'}, status=status.HTTP_201_CREATED)
  
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def seller_reply_paid_ad_message(request):
+    user=request.user
+    data=request.data
+    print('data:', data, 'user:', user)
+
+    pk = data.get('pk')
+    message = data.get('message')
+    print('pk:', pk)
+    print('message:', message)
+    
+    try:
+        paid_ad = PostPaidAd.objects.get(pk=pk)
+    except PostPaidAd.DoesNotExist:
+        return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    Message.objects.create(
+            user=user,
+            message=message,
+            paid_ad=paid_ad,
+        )
+    return Response({'message': 'Message created'}, status=status.HTTP_201_CREATED)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
