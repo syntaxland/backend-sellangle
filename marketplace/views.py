@@ -877,7 +877,7 @@ def create_paid_ad_message(request):
             paid_ad=paid_ad,
         )
     return Response({'message': 'Message created'}, status=status.HTTP_201_CREATED)
-
+ 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
