@@ -65,9 +65,25 @@ class PaysofterApiKeySerializer(serializers.ModelSerializer):
 
 class MessageSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='user.first_name', read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)
+    free_ad_buyer = serializers.CharField(source='user.username', read_only=True)
+    free_ad_id = serializers.CharField(source='free_ad.id', read_only=True)
+    free_ad_name = serializers.CharField(source='free_ad.ad_name', read_only=True)
+    free_ad_price = serializers.CharField(source='free_ad.price', read_only=True)
+    free_ad_currency = serializers.CharField(source='free_ad.currency', read_only=True)
+    free_ad_expiration_date = serializers.CharField(source='free_ad.expiration_date', read_only=True)
+    free_ad_rating = serializers.CharField(source='free_ad.ad_rating', read_only=True)
+    free_ad_image1 = serializers.CharField(source='free_ad.image1.photo.url', read_only=True)
+    free_seller_username = serializers.CharField(source='free_ad.seller.username', read_only=True)
+    
+    sellerAvatarUrl = serializers.CharField(source='free_ad.seller.photo.url', read_only=True)
+
+    paid_ad_id = serializers.CharField(source='paid_ad.id', read_only=True)
+    paid_ad_name = serializers.CharField(source='paid_ad.ad_name', read_only=True)
     class Meta:
         model = Message
         fields = '__all__'
+        extra_kwargs = {'image1': {'required': True}, 'image2': {'required': True}, 'image3': {'required': True}}
 
 
 class ReportFreeAdSerializer(serializers.ModelSerializer):

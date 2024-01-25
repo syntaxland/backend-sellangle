@@ -18,7 +18,6 @@ urlpatterns = [
     path('get-seller-free-ad/', views.get_seller_free_ad, name='get-seller-free-ad'),
     path('get-seller-active-free-ads/<str:seller_username>/', views.get_seller_active_free_ads, name='get-seller-active-free-ads'),
     path('get-free-ad-detail/<int:pk>/', views.get_free_ad_detail, name='get-free-ad-detail'),
-
     path('edit-free-ad/', views.update_seller_free_ad, name='edit-free-ad'),
     path('deactivate-free-ad/', views.deactivate_free_ad, name='delete-free-ad'),
     path('reactivate-free-ad/', views.reactivate_free_ad, name='reactivate-free-ad'),
@@ -39,11 +38,17 @@ urlpatterns = [
     path('get-seller-api-key/', views.get_seller_paysofter_api_key, name='get-seller-api-key'),
     path('save-seller-api-key/', views.save_seller_paysofter_api_key, name='save-seller-api-key'),
 
-    path('create-paid-ad-message/', views.create_paid_ad_message, name='create-paid-ad-message'),
-    path('list-paid-ad-messages/<int:pk>/', views.list_paid_ad_messages, name='list-paid-ad-messages'),
-
     path('create-free-ad-message/', views.create_free_ad_message, name='create-free-ad-message'),
     path('list-free-ad-messages/<int:pk>/', views.list_free_ad_messages, name='list-free-ad-messages'),
+    path('seller-reply-free-ad-message/', views.seller_reply_free_ad_message, name='seller_reply_free_ad_message'),
+    path('list-seller-free-ad-messages/<int:pk>/', views.list_seller_free_ad_messages, name='list_seller_free_ad_messages'),
+    path('get-buyer-free-ad-messages/', views.get_buyer_free_ad_messages, name='get_buyer_free_ad_messages'),
+
+    path('create-paid-ad-message/', views.create_paid_ad_message, name='create-paid-ad-message'),
+    path('list-paid-ad-messages/<int:pk>/', views.list_paid_ad_messages, name='list-paid-ad-messages'),
+    path('seller-reply-paid-ad-message/', views.seller_reply_paid_ad_message, name='seller_reply_paid_ad_message'),
+    path('list-seller-paid-ad-messages/<int:pk>/', views.list_seller_paid_ad_messages, name='list_seller_paid_ad_messages'),
+    path('get-buyer-paid-ad-messages/', views.get_buyer_paid_ad_messages, name='get_buyer_paid_ad_messages'),
 
     path('get-seller-shopfront-link/', views.get_seller_shopfront_link, name='get-seller-shopfront-link'),
 

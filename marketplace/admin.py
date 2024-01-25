@@ -10,6 +10,7 @@ class AuthorAdmin(admin.ModelAdmin):
         'business_name',
         'business_reg_num',
         'business_address',
+        'business_phone',
         'business_status',
         'staff_size',
         'business_industry',

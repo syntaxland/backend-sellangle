@@ -55,7 +55,7 @@ def create_support_ticket(request):
     SupportTicket.objects.create(
             user=user, 
             category=category,
-            subject=subject,
+            subject=subject, 
             message=message,
             ticket_id=ticket_id,
         )
