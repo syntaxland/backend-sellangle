@@ -80,6 +80,15 @@ class MessageSerializer(serializers.ModelSerializer):
 
     paid_ad_id = serializers.CharField(source='paid_ad.id', read_only=True)
     paid_ad_name = serializers.CharField(source='paid_ad.ad_name', read_only=True)
+    paid_ad_id = serializers.CharField(source='paid_ad.id', read_only=True)
+    paid_ad_name = serializers.CharField(source='paid_ad.ad_name', read_only=True)
+    paid_ad_price = serializers.CharField(source='paid_ad.price', read_only=True)
+    paid_ad_currency = serializers.CharField(source='paid_ad.currency', read_only=True)
+    paid_ad_expiration_date = serializers.CharField(source='paid_ad.expiration_date', read_only=True)
+    paid_ad_rating = serializers.CharField(source='paid_ad.ad_rating', read_only=True)
+    paid_ad_image1 = serializers.CharField(source='paid_ad.image1.photo.url', read_only=True)
+    paid_seller_username = serializers.CharField(source='paid_ad.seller.username', read_only=True)
+
     class Meta:
         model = Message
         fields = '__all__'

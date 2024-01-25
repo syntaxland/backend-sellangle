@@ -950,7 +950,7 @@ def list_paid_ad_messages(request, pk):
     
     try:
         ad_message = Message.objects.filter(
-            user=user,
+            # user=user,
             paid_ad=paid_ad,
             ).order_by('timestamp')
         serializer = MessageSerializer(ad_message, many=True) 
@@ -974,28 +974,41 @@ def get_buyer_free_ad_messages(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_buyer_paid_ad_messages(request, pk):
-    seller = request.user
-    # data  = request.data
-    # print('data:', data)
-    print('seller:', seller)
+def get_buyer_paid_ad_messages(request):
+    user = request.user
+    print('user:', user)
 
-    try:
-        paid_ad = PostPaidAd.objects.filter(seller=seller)
-    except PostPaidAd.DoesNotExist:
-        return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+    current_datetime = datetime.now()
+    seller_paid_ads = PostPaidAd.objects.filter(seller=user, expiration_date__gt=current_datetime)
+    messages = Message.objects.filter(paid_ad__in=seller_paid_ads).order_by('-timestamp')
+    serializer = MessageSerializer(messages, many=True)
+    return Response(serializer.data)
+
+
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def get_buyer_paid_ad_messages(request, pk):
+#     seller = request.user
+#     # data  = request.data
+#     # print('data:', data)
+#     print('seller:', seller)
+
+#     try:
+#         paid_ad = PostPaidAd.objects.filter(seller=seller)
+#     except PostPaidAd.DoesNotExist:
+#         return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
     
-    print('paid_ad:', paid_ad)
+#     print('paid_ad:', paid_ad)
     
-    try:
-        ad_message = Message.objects.filter(
-            # seller=seller,
-            paid_ad=paid_ad,
-            ).order_by('timestamp')
-        serializer = MessageSerializer(ad_message, many=True) 
-        return Response(serializer.data)
-    except Message.DoesNotExist:
-        return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+#     try:
+#         ad_message = Message.objects.filter(
+#             # seller=seller,
+#             paid_ad=paid_ad,
+#             ).order_by('timestamp')
+#         serializer = MessageSerializer(ad_message, many=True) 
+#         return Response(serializer.data)
+#     except Message.DoesNotExist:
+#         return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
