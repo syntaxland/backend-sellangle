@@ -965,7 +965,7 @@ def get_buyer_free_ad_messages(request):
     user = request.user
     print('user:', user)
 
-    current_datetime = timezone.now()
+    current_datetime = datetime.now()
     seller_free_ads = PostFreeAd.objects.filter(seller=user, expiration_date__gt=current_datetime)
     messages = Message.objects.filter(free_ad__in=seller_free_ads).order_by('-timestamp')
     serializer = MessageSerializer(messages, many=True)
