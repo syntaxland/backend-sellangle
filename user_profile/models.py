@@ -45,6 +45,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     avatar = models.ImageField(upload_to='images/avatars/', null=True, blank=True) 
     favorite_products = models.ManyToManyField('app.Product', related_name='favorited_by', editable=False) 
     viewed_products = models.ManyToManyField('app.Product', related_name='viewed_products', editable=False)  
+
+    saved_free_ads = models.ManyToManyField('marketplace.PostFreeAd', related_name='saved_free_ads', editable=False) 
+    saved_paid_ads = models.ManyToManyField('marketplace.PostPaidAd', related_name='saved_paid_ads', editable=False) 
+    viewed_free_ads = models.ManyToManyField('marketplace.PostFreeAd', related_name='viewed_free_ads', editable=False)
+    viewed_paid_ads = models.ManyToManyField('marketplace.PostPaidAd', related_name='viewed_paid_ads', editable=False)  
+
+
     referral_code = models.CharField(max_length=10, unique=True, null=True) 
     referral_link = models.CharField(max_length=225, unique=True, null=True)
     # referred_users = models.ManyToManyField('promo.Referral', related_name='referred_users')   

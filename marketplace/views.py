@@ -2,6 +2,8 @@
 from decimal import Decimal
 from datetime import datetime, timedelta, timezone
 
+from django.shortcuts import get_object_or_404
+
 import nltk
 from nltk.corpus import wordnet
  
@@ -1193,6 +1195,161 @@ def report_paid_ad(request):
     return Response({'success': f'Ad reported successfully.'}, status=status.HTTP_201_CREATED)
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_free_ad_save(request):
+    user = request.user
+
+    if request.method == 'POST':
+        ad_id = request.data.get('ad_id')
+        ad = PostFreeAd.objects.get(pk=ad_id)
+
+        if ad in user.saved_free_ads.all():
+            user.saved_free_ads.remove(ad)
+            ad.ad_is_saved = False
+            ad.ad_save_count -= 1
+        else:
+            user.saved_free_ads.add(ad)
+            ad.ad_is_saved = True
+            ad.ad_save_count += 1
+
+        user.save()
+        ad.save()
+
+        serializer = PostFreeAdSerializer(ad)
+        return Response(serializer.data)
+    else:
+        return Response({'error': 'Invalid request method'}, status=status.HTTP_400_BAD_REQUEST) 
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_paid_ad_save(request):
+    user = request.user
+
+    if request.method == 'POST':
+        ad_id = request.data.get('ad_id')
+        ad = PostPaidAd.objects.get(pk=ad_id)
+
+        if ad in user.saved_paid_ads.all():
+            user.saved_paid_ads.remove(ad)
+            ad.ad_is_saved = False
+            ad.ad_save_count -= 1
+        else:
+            user.saved_paid_ads.add(ad)
+            ad.ad_is_saved = True
+            ad.ad_save_count += 1
+
+        user.save()
+        ad.save()
+
+        serializer = PostPaidAdSerializer(ad)
+        return Response(serializer.data)
+    else:
+        return Response({'error': 'Invalid request method'}, status=status.HTTP_400_BAD_REQUEST) 
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
+def track_free_ad_view(request, user_id, pk):
+    user = request.user
+
+    try:
+        ad = get_object_or_404(PostFreeAd, pk=pk)
+        user = User.objects.get(id=user_id)
+
+        print("User ID:", user_id)
+        print("Ad ID:", pk)
+        print("Viewed Ad:", user.viewed_free_ads.all())
+
+        if ad in user.viewed_free_ads.all():
+            return Response({'message': 'Ad already viewed.'}, status=status.HTTP_200_OK)
+
+        ad.ad_view_count += 1
+        ad.save()
+
+        user.viewed_free_ads.add(ad)
+
+        return Response({'message': 'Ad viewed added successfully.'}, status=status.HTTP_200_OK)
+    except Exception as e: 
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
+def track_paid_ad_view(request, user_id, pk):
+    user = request.user
+
+    try:
+        ad = get_object_or_404(PostPaidAd, pk=pk)
+        user = User.objects.get(id=user_id)
+
+        print("User ID:", user_id)
+        print("Ad ID:", pk)
+        print("Viewed Ad:", user.viewed_free_ads.all())
+
+        if ad in user.viewed_free_ads.all():
+            return Response({'message': 'Ad already viewed.'}, status=status.HTTP_200_OK)
+
+        ad.ad_view_count += 1
+        ad.save()
+
+        user.viewed_free_ads.add(ad)
+
+        return Response({'message': 'Ad viewed added successfully.'}, status=status.HTTP_200_OK)
+    except Exception as e: 
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_viewed_free_ads(request):
+    user = request.user
+    try:
+        viewed_ads = user.viewed_free_ads.all()
+        serializer = PostFreeAd(viewed_ads, many=True)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_viewed_paid_ads(request):
+    user = request.user
+    try:
+        viewed_ads = user.viewed_paid_ads.all()
+        serializer = PostPaidAd(viewed_ads, many=True)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_saved_free_ads(request):
+    user = request.user
+    try:
+        saved_ads = user.saved_free_ads.all()
+        serializer = PostFreeAdSerializer(saved_ads, many=True)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_saved_paid_ads(request):
+    user = request.user
+    try:
+        saved_ads = user.saved_paid_ads.all()
+        serializer = PostPaidAdSerializer(saved_ads, many=True)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        
 # @api_view(['GET'])
 # @permission_classes([AllowAny])
 # def search_ads(request, search_term):
