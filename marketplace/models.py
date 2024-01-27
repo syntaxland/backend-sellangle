@@ -1008,4 +1008,24 @@ class ReportPaidAd(models.Model):
     paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='paid_ad_report', blank=True, null=True)
     ad_report = models.CharField(max_length=100, choices=AD_REPORT_CHOICES, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
- 
+
+
+class ReviewFreeAdSeller(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="review_free_ad_user") 
+    free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE, related_name='free_ad_reivew', blank=True, null=True)
+    rating = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return str(self.rating)
+
+class ReviewPaidAdSeller(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="review_paid_ad_user") 
+    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='paid_ad_reivew', blank=True, null=True)
+    rating = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return str(self.rating)

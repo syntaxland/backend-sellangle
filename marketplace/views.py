@@ -1,5 +1,5 @@
 # marketplace/views.py 
-from decimal import Decimal
+from decimal import ROUND_DOWN, Decimal
 from datetime import datetime, timedelta, timezone
 
 from django.shortcuts import get_object_or_404
@@ -18,20 +18,21 @@ from .models import (MarketPlaceSellerAccount,
                      MarketplaceSellerPhoto, 
                      PostFreeAd, PostPaidAd, 
                      PaysofterApiKey, Message,
-                    ReportFreeAd,
-                    ReportPaidAd,
+                    ReportFreeAd, ReportPaidAd, 
+                    ReviewFreeAdSeller, ReviewPaidAdSeller
+
                      )
 from .serializers import (MarketPlaceSellerAccountSerializer,
                            MarketplaceSellerPhotoSerializer,
                              PostFreeAdSerializer, PostPaidAdSerializer, 
                              PaysofterApiKeySerializer, MessageSerializer,
-                             ReportFreeAdSerializer,
-                            ReportPaidAdSerializer,
-
+                             ReportFreeAdSerializer, ReportPaidAdSerializer,
+                            ReviewFreeAdSellerSerializer, ReviewPaidAdSellerSerializer
                             )
 from user_profile.serializers import UserSerializer
 
 from django.conf import settings
+from django.db.models import Avg
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 
@@ -1251,20 +1252,17 @@ def toggle_paid_ad_save(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated]) 
-def track_free_ad_view(request, user_id, pk):
+def track_free_ad_view(request):
     user = request.user
 
+    ad_id = request.data.get('ad_id')
+    print("ad_id:", ad_id)
+
     try:
-        ad = get_object_or_404(PostFreeAd, pk=pk)
-        user = User.objects.get(id=user_id)
-
-        print("User ID:", user_id)
-        print("Ad ID:", pk)
-        print("Viewed Ad:", user.viewed_free_ads.all())
-
+        ad = get_object_or_404(PostFreeAd, id=ad_id)
         if ad in user.viewed_free_ads.all():
             return Response({'message': 'Ad already viewed.'}, status=status.HTTP_200_OK)
-
+        
         ad.ad_view_count += 1
         ad.save()
 
@@ -1277,28 +1275,50 @@ def track_free_ad_view(request, user_id, pk):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated]) 
-def track_paid_ad_view(request, user_id, pk):
+def track_paid_ad_view(request):
     user = request.user
 
+    ad_id = request.data.get('ad_id')
+    print("ad_id:", ad_id)
+
     try:
-        ad = get_object_or_404(PostPaidAd, pk=pk)
-        user = User.objects.get(id=user_id)
-
-        print("User ID:", user_id)
-        print("Ad ID:", pk)
-        print("Viewed Ad:", user.viewed_free_ads.all())
-
-        if ad in user.viewed_free_ads.all():
+        ad = get_object_or_404(PostPaidAd, id=ad_id)
+        if ad in user.viewed_paid_ads.all():
             return Response({'message': 'Ad already viewed.'}, status=status.HTTP_200_OK)
-
+        
         ad.ad_view_count += 1
         ad.save()
 
-        user.viewed_free_ads.add(ad)
+        user.viewed_paid_ads.add(ad)
 
         return Response({'message': 'Ad viewed added successfully.'}, status=status.HTTP_200_OK)
     except Exception as e: 
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated]) 
+# def track_paid_ad_view(request, user_id, pk):
+#     user = request.user
+
+#     try:
+#         ad = get_object_or_404(PostPaidAd, pk=pk)
+#         user = User.objects.get(id=user_id)
+
+#         print("User ID:", user_id)
+#         print("Ad ID:", pk)
+#         print("Viewed Ad:", user.viewed_free_ads.all())
+
+#         if ad in user.viewed_free_ads.all():
+#             return Response({'message': 'Ad already viewed.'}, status=status.HTTP_200_OK)
+
+#         ad.ad_view_count += 1
+#         ad.save()
+
+#         user.viewed_free_ads.add(ad)
+
+#         return Response({'message': 'Ad viewed added successfully.'}, status=status.HTTP_200_OK)
+#     except Exception as e: 
+#         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
@@ -1336,7 +1356,7 @@ def get_user_saved_free_ads(request):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_saved_paid_ads(request):
@@ -1349,7 +1369,130 @@ def get_user_saved_paid_ads(request):
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-        
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])  
+def review_free_ad_seller(request):
+    user = request.user
+    if request.method == 'POST':
+        order_item_id = request.data.get('order_item_id')
+        rating = request.data.get('rating')
+        comment = request.data.get('comment')
+        print(order_item_id, rating, comment)
+
+        order_item = get_object_or_404(PostFreeAd, _id=order_item_id)
+
+        if user == order_item.order.user: 
+            review = ReviewFreeAdSeller.objects.create(
+                order_item=order_item,
+                rating=rating,
+                comment=comment,
+                user=user,
+                product=order_item.product,
+                name=order_item.name, 
+            )
+
+            
+            product = order_item.product
+            reviews = ReviewFreeAdSeller.objects.filter(product=product)
+            product.numReviews = reviews.count()
+            product.rating = reviews.aggregate(Avg('rating'))['rating__avg']
+            product.save()
+            
+            serializer = ReviewFreeAdSellerSerializer(review, many=False)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'detail': 'You are not authorized to add a review for this order item.'}, 
+                            status=status.HTTP_403_FORBIDDEN)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def edit_free_ad_review(request, review_id):
+    user = request.user
+    try:
+        review = ReviewFreeAdSeller.objects.get(_id=review_id, user=user)
+    except ReviewFreeAdSeller.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PUT':
+        rating = request.data.get('rating')
+        comment = request.data.get('comment')
+
+        # Check if the logged-in user is the same user who created the review
+        if user == review.user:
+            old_rating = review.rating  # Store the old rating for later adjustment
+            review.rating = rating
+            review.comment = comment
+            review.save()
+
+            # Update the rating and numReviews fields of the related product
+            product = review.product
+            reviews = ReviewFreeAdSeller.objects.filter(product=product)
+            product.numReviews = reviews.count()
+            product.rating = reviews.aggregate(Avg('rating'))['rating__avg']
+            product.save()
+
+            serializer = ReviewFreeAdSellerSerializer(review, many=False)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': 'You are not authorized to edit this review.'},
+                            status=status.HTTP_403_FORBIDDEN)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+def review_free_ad_list(request, product_id):
+    print('product_id:',product_id)
+    try:
+        review_list = ReviewFreeAdSeller.objects.filter(product_id=product_id).order_by('-createdAt')
+        serializer = ReviewFreeAdSellerSerializer(review_list, many=True)
+        return Response(serializer.data)
+    except ReviewFreeAdSeller.DoesNotExist:
+        return Response({'detail': 'Reviews not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_seller_free_ad_reviews(request):
+    user = request.user
+    try:
+        order_reviews = ReviewFreeAdSeller.objects.filter(user=user).order_by('-createdAt')
+        serializer = ReviewFreeAdSellerSerializer(order_reviews, many=True)
+        return Response(serializer.data)
+    except ReviewFreeAdSeller.DoesNotExist:
+        return Response({'detail': 'Reviews not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST', 'GET'])
+@permission_classes([IsAuthenticated]) 
+def apply_paid_ad_promo_code(request):
+    data = request.data
+    promo_code = data.get('promoCode')
+    ad_id = data.get('ad_id')
+    print('promo_code, ad_id:', promo_code, ad_id)
+
+    try:
+        ad_promo = PostPaidAd.objects.get(id=ad_id, promo_code=promo_code)
+    except PostPaidAd.DoesNotExist:
+        return Response({'detail': 'Invalid promo code or ad not found.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    promo_discount = 0
+    discount_percentage = ad_promo.discount_percentage
+
+    if discount_percentage:
+        ad_price = ad_promo.price
+        discount_amount = (discount_percentage / 100) * ad_price
+        promo_discount = discount_amount.quantize(Decimal('0.00'), rounding=ROUND_DOWN)
+
+    print('apply_promo_code promo_discount:', promo_discount, 'discount_percentage:', discount_percentage)
+
+    return Response({'promoDiscount': promo_discount, 'discountPercentage': discount_percentage}, status=status.HTTP_200_OK)
+    
+
 # @api_view(['GET'])
 # @permission_classes([AllowAny])
 # def search_ads(request, search_term):

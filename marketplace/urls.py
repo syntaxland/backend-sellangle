@@ -52,6 +52,16 @@ urlpatterns = [
 
     path('get-seller-shopfront-link/', views.get_seller_shopfront_link, name='get-seller-shopfront-link'),
 
+    path('toggle-free-ad-save/', views.toggle_free_ad_save, name='toggle_free_ad_save'),
+    path('toggle-paid-ad-save/', views.toggle_paid_ad_save, name='toggle_paid_ad_save'),
+    path('track-free-ad-view/', views.track_free_ad_view, name='track_free_ad_view'),
+    path('track-paid-ad-view/', views.track_paid_ad_view, name='track_paid_ad_view'),
+    path('get-user-viewed-free-ads/', views.get_user_viewed_free_ads, name='get_user_viewed_free_ads'),
+    path('get-user-viewed-paid-ads/', views.get_user_viewed_paid_ads, name='get_user_viewed_paid_ads'),
+    path('get-user-saved-free-ads/', views.get_user_saved_free_ads, name='get_user_saved_free_ads'),
+    path('get-user-saved-paid-ads/', views.get_user_saved_paid_ads, name='get_user_saved_paid_ads'),
+
+
     path('search-seller-username/<str:seller_username>/', views.search_seller_username, name='search-seller-username'),
     path('get-seller-detail/<str:seller_username>/', views.get_seller_detail, name='get-seller-detail'),
 
