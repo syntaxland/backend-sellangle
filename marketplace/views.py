@@ -1294,31 +1294,6 @@ def track_paid_ad_view(request):
         return Response({'message': 'Ad viewed added successfully.'}, status=status.HTTP_200_OK)
     except Exception as e: 
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated]) 
-# def track_paid_ad_view(request, user_id, pk):
-#     user = request.user
-
-#     try:
-#         ad = get_object_or_404(PostPaidAd, pk=pk)
-#         user = User.objects.get(id=user_id)
-
-#         print("User ID:", user_id)
-#         print("Ad ID:", pk)
-#         print("Viewed Ad:", user.viewed_free_ads.all())
-
-#         if ad in user.viewed_free_ads.all():
-#             return Response({'message': 'Ad already viewed.'}, status=status.HTTP_200_OK)
-
-#         ad.ad_view_count += 1
-#         ad.save()
-
-#         user.viewed_free_ads.add(ad)
-
-#         return Response({'message': 'Ad viewed added successfully.'}, status=status.HTTP_200_OK)
-#     except Exception as e: 
-#         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
