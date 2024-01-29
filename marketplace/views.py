@@ -327,11 +327,21 @@ def get_free_ad_detail(request, pk):
             seller_avatar_url = None
             # return Response({'detail': 'MarketplaceSellerPhoto not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = PostPaidAdSerializer(ad, context={'seller_avatar_url': seller_avatar_url})
+        try:
+            seller_info = MarketPlaceSellerAccount.objects.get(seller=seller)
+            is_seller_verified = seller_info.is_seller_verified
+        except MarketPlaceSellerAccount.DoesNotExist:
+            is_seller_verified = None
+
+        # serializer = PostPaidAdSerializer(ad, context={'seller_avatar_url': seller_avatar_url})
 
         serializer = PostFreeAdSerializer(ad)
-        return Response({'data': serializer.data, 'sellerApiKey': seller_api_key,
-                          'seller_avatar_url': seller_avatar_url}, status=status.HTTP_200_OK)
+        return Response({'data': serializer.data, 
+                         'sellerApiKey': seller_api_key,
+                          'seller_avatar_url': seller_avatar_url,
+                          'is_seller_verified': is_seller_verified,
+                          }, 
+                          status=status.HTTP_200_OK)
     except PostFreeAd.DoesNotExist:
         return Response({'detail': 'Ad not found'}, status=status.HTTP_404_NOT_FOUND)
     except PaysofterApiKey.DoesNotExist:
@@ -579,10 +589,20 @@ def get_paid_ad_detail(request, pk):
             seller_avatar_url = None
             # return Response({'detail': 'MarketplaceSellerPhoto not found'}, status=status.HTTP_404_NOT_FOUND)
 
+        try:
+            seller_info = MarketPlaceSellerAccount.objects.get(seller=seller)
+            is_seller_verified = seller_info.is_seller_verified
+        except MarketPlaceSellerAccount.DoesNotExist:
+            is_seller_verified = None
+            
+
         serializer = PostPaidAdSerializer(ad, context={'seller_avatar_url': seller_avatar_url})
 
-        return Response({'data': serializer.data, 'sellerApiKey': seller_api_key, 
-                         'seller_avatar_url': seller_avatar_url}, 
+        return Response({'data': serializer.data, 
+                         'sellerApiKey': seller_api_key, 
+                         'seller_avatar_url': seller_avatar_url,
+                        'is_seller_verified': is_seller_verified,
+                         }, 
                         status=status.HTTP_200_OK)
     except PostPaidAd.DoesNotExist:
         return Response({'detail': 'Ad not found'}, status=status.HTTP_404_NOT_FOUND)
