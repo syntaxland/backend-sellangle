@@ -580,21 +580,18 @@ def get_paid_ad_detail(request, pk):
             seller_api_key = api_key.live_api_key
         except PaysofterApiKey.DoesNotExist:
             seller_api_key = None
-            # return Response({'detail': 'PaysofterApiKey not found'}, status=status.HTTP_404_NOT_FOUND)
 
         try:
             seller_avatar = MarketplaceSellerPhoto.objects.get(seller=seller)
             seller_avatar_url = seller_avatar.photo.url
         except MarketplaceSellerPhoto.DoesNotExist:
             seller_avatar_url = None
-            # return Response({'detail': 'MarketplaceSellerPhoto not found'}, status=status.HTTP_404_NOT_FOUND)
 
         try:
             seller_info = MarketPlaceSellerAccount.objects.get(seller=seller)
             is_seller_verified = seller_info.is_seller_verified
         except MarketPlaceSellerAccount.DoesNotExist:
             is_seller_verified = None
-            
 
         serializer = PostPaidAdSerializer(ad, context={'seller_avatar_url': seller_avatar_url})
 
@@ -1220,9 +1217,12 @@ def report_paid_ad(request):
 @permission_classes([IsAuthenticated])
 def toggle_free_ad_save(request):
     user = request.user
+    data = request.data 
+    print("toggle_free_ad_save data:", data)
 
+    ad_id = data.get('ad_id') 
+    
     if request.method == 'POST':
-        ad_id = request.data.get('ad_id')
         ad = PostFreeAd.objects.get(pk=ad_id)
 
         if ad in user.saved_free_ads.all():
@@ -1247,9 +1247,12 @@ def toggle_free_ad_save(request):
 @permission_classes([IsAuthenticated])
 def toggle_paid_ad_save(request):
     user = request.user
+    data = request.data 
+    print("toggle_paid_ad_save data:", data)
+
+    ad_id = data.get('ad_id') 
 
     if request.method == 'POST':
-        ad_id = request.data.get('ad_id')
         ad = PostPaidAd.objects.get(pk=ad_id)
 
         if ad in user.saved_paid_ads.all():

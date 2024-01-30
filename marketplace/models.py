@@ -855,7 +855,7 @@ class PostFreeAd(models.Model):
     description = models.TextField(max_length=4000, blank=True, null=True)
     youtube_link = models.URLField(max_length=255, blank=True, null=True)
     # promo_code = models.ForeignKey('promo.PromoCode', on_delete=models.SET_NULL, null=True, blank=True)
-    ad_rating = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True, editable=False)
+    ad_rating = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True, editable=False) 
     num_reviews = models.IntegerField(null=True, blank=True, default=0, editable=False)
     ad_is_saved = models.BooleanField(default=False)
     ad_save_count = models.PositiveIntegerField(default=0, editable=False)
