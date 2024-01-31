@@ -7,6 +7,7 @@ class AuthorAdmin(admin.ModelAdmin):
     list_display = (
         'created_at',
         'seller',
+        'rating',
         'business_name',
         'business_reg_num',
         'business_address',
@@ -122,4 +123,36 @@ class AuthorAdmin(admin.ModelAdmin):
         'user',
         'paid_ad',
         'ad_report',
+    )  
+
+
+@admin.register(models.ReviewFreeAdSeller)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = (
+        'timestamp',
+        'seller',
+        # 'seller_account',
+        'user',
+        'free_ad',
+        'rating',
+        'review_count',
+        'is_review_liked',
+        'review_like_count',
+        'comment',
+    )  
+
+
+@admin.register(models.ReviewPaidAdSeller)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = (
+        'timestamp',
+        'seller',
+        # 'seller_account',
+        'user',
+        'paid_ad',
+        'rating',
+        'review_count',
+        'is_review_liked',
+        'review_like_count',
+        'comment',
     )  

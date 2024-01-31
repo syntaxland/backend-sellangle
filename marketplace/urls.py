@@ -61,6 +61,15 @@ urlpatterns = [
     path('get-user-saved-free-ads/', views.get_user_saved_free_ads, name='get_user_saved_free_ads'),
     path('get-user-saved-paid-ads/', views.get_user_saved_paid_ads, name='get_user_saved_paid_ads'),
 
+    path('review-free-ad-seller/', views.review_free_ad_seller, name='review_free_ad_seller'),
+    path('review-paid-ad-seller/', views.review_paid_ad_seller, name='review_paid_ad_seller'),
+
+    path('get-seller-free-ad-reviews/', views.get_seller_free_ad_reviews, name='get_seller_free_ad_reviews'),
+    path('get-seller-paid-ad-reviews/', views.get_seller_paid_ad_reviews, name='get_seller_paid_ad_reviews'),
+    
+    # path('get-user-saved-paid-ads/', views.get_user_saved_paid_ads, name='get_user_saved_paid_ads'),
+    # path('get-user-saved-paid-ads/', views.get_user_saved_paid_ads, name='get_user_saved_paid_ads'),
+    # path('get-user-saved-paid-ads/', views.get_user_saved_paid_ads, name='get_user_saved_paid_ads'),
 
     path('search-seller-username/<str:seller_username>/', views.search_seller_username, name='search-seller-username'),
     path('get-seller-detail/<str:seller_username>/', views.get_seller_detail, name='get-seller-detail'),

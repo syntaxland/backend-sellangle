@@ -322,6 +322,7 @@ def get_free_ad_detail(request, pk):
 
         try:
             seller_avatar = MarketplaceSellerPhoto.objects.get(seller=seller)
+            
             seller_avatar_url = seller_avatar.photo.url
         except MarketplaceSellerPhoto.DoesNotExist:
             seller_avatar_url = None
@@ -330,6 +331,8 @@ def get_free_ad_detail(request, pk):
         try:
             seller_info = MarketPlaceSellerAccount.objects.get(seller=seller)
             is_seller_verified = seller_info.is_seller_verified
+            seller_rating = seller_info.rating
+            seller_review_count = seller_info.review_count
         except MarketPlaceSellerAccount.DoesNotExist:
             is_seller_verified = None
 
@@ -340,6 +343,8 @@ def get_free_ad_detail(request, pk):
                          'sellerApiKey': seller_api_key,
                           'seller_avatar_url': seller_avatar_url,
                           'is_seller_verified': is_seller_verified,
+                          'seller_rating': seller_rating,
+                          'seller_review_count': seller_review_count,
                           }, 
                           status=status.HTTP_200_OK)
     except PostFreeAd.DoesNotExist:
@@ -578,6 +583,7 @@ def get_paid_ad_detail(request, pk):
         try:
             api_key = PaysofterApiKey.objects.get(seller=seller)
             seller_api_key = api_key.live_api_key
+            
         except PaysofterApiKey.DoesNotExist:
             seller_api_key = None
 
@@ -590,6 +596,8 @@ def get_paid_ad_detail(request, pk):
         try:
             seller_info = MarketPlaceSellerAccount.objects.get(seller=seller)
             is_seller_verified = seller_info.is_seller_verified
+            seller_rating = seller_info.rating
+            seller_review_count = seller_info.review_count
         except MarketPlaceSellerAccount.DoesNotExist:
             is_seller_verified = None
 
@@ -599,6 +607,8 @@ def get_paid_ad_detail(request, pk):
                          'sellerApiKey': seller_api_key, 
                          'seller_avatar_url': seller_avatar_url,
                         'is_seller_verified': is_seller_verified,
+                        'seller_rating': seller_rating,
+                        'seller_review_count': seller_review_count, 
                          }, 
                         status=status.HTTP_200_OK)
     except PostPaidAd.DoesNotExist:
@@ -1371,36 +1381,100 @@ def get_user_saved_paid_ads(request):
 @permission_classes([IsAuthenticated])  
 def review_free_ad_seller(request):
     user = request.user
+    data = request.data 
+    print("data:", data)
+
+    ad_id = data.get('ad_id') 
+    rating = data.get('rating') 
+    comment = data.get('comment') 
+
     if request.method == 'POST':
-        order_item_id = request.data.get('order_item_id')
-        rating = request.data.get('rating')
-        comment = request.data.get('comment')
-        print(order_item_id, rating, comment)
+        ad = get_object_or_404(PostFreeAd, id=ad_id)
+        seller = ad.seller
 
-        order_item = get_object_or_404(PostFreeAd, _id=order_item_id)
+        # review = ReviewFreeAdSeller.objects.create(
+        #     user=user,
+        #     seller=seller,
+        #     free_ad=ad,
+        #     rating=rating,
+        #     comment=comment,
+        # )
 
-        if user == order_item.order.user: 
-            review = ReviewFreeAdSeller.objects.create(
-                order_item=order_item,
-                rating=rating,
-                comment=comment,
-                user=user,
-                product=order_item.product,
-                name=order_item.name, 
-            )
+        review, created = ReviewFreeAdSeller.objects.get_or_create(
+            user=user,
+            seller=seller,
+            free_ad=ad,
+            rating=rating,
+            comment=comment,
+        )
 
-            
-            product = order_item.product
-            reviews = ReviewFreeAdSeller.objects.filter(product=product)
-            product.numReviews = reviews.count()
-            product.rating = reviews.aggregate(Avg('rating'))['rating__avg']
-            product.save()
-            
-            serializer = ReviewFreeAdSellerSerializer(review, many=False)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response({'detail': 'You are not authorized to add a review for this order item.'}, 
-                            status=status.HTTP_403_FORBIDDEN)
+        reviews = ReviewFreeAdSeller.objects.filter(free_ad=ad)
+        review.review_count = reviews.count()
+        review.save()
+
+        try:
+            seller_account = MarketPlaceSellerAccount.objects.get(seller=seller)
+            seller_account.rating = reviews.aggregate(Avg('rating'))['rating__avg']
+            seller_account.review_count = reviews.count()
+            seller_account.save()
+        except MarketPlaceSellerAccount.DoesNotExist:
+            return Response({'detail': 'Seller account not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        print("seller_account.rating:", seller_account.rating)
+        
+        serializer = ReviewFreeAdSellerSerializer(review, many=False)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])  
+def review_paid_ad_seller(request):
+    user = request.user
+    data = request.data 
+    print("data:", data)
+
+    ad_id = data.get('ad_id') 
+    rating = data.get('rating') 
+    comment = data.get('comment') 
+
+    if request.method == 'POST':
+        ad = get_object_or_404(PostPaidAd, id=ad_id)
+        seller = ad.seller
+
+        # review = ReviewPaidAdSeller.objects.create(
+        #     user=user,
+        #     seller=seller,
+        #     paid_ad=ad,
+        #     rating=rating,
+        #     comment=comment,
+        # )
+
+        review, created = ReviewPaidAdSeller.objects.get_or_create(
+            user=user,
+            seller=seller,
+            paid_ad=ad,
+            rating=rating,
+            comment=comment,
+        )
+
+        reviews = ReviewPaidAdSeller.objects.filter(paid_ad=ad)
+        review.review_count = reviews.count()
+        review.save()
+
+        try:
+            seller_account = MarketPlaceSellerAccount.objects.get(seller=seller)
+            seller_account.rating = reviews.aggregate(Avg('rating'))['rating__avg']
+            seller_account.review_count = reviews.count()
+            seller_account.save()
+        except MarketPlaceSellerAccount.DoesNotExist:
+            return Response({'detail': 'Seller account not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        print("seller_account.rating:", seller_account.rating)
+        
+        serializer = ReviewPaidAdSellerSerializer(review, many=False)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -1442,31 +1516,63 @@ def edit_free_ad_review(request, review_id):
     
 
 @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-def review_free_ad_list(request, product_id):
-    print('product_id:',product_id)
+@permission_classes([IsAuthenticated]) 
+# @permission_classes([AllowAny]) 
+def get_seller_free_ad_reviews(request):
+
+    ad_id = request.GET.get('ad_id', '')
+    print("ad_id:", ad_id)
+
+    ad = get_object_or_404(PostFreeAd, id=ad_id)
+    seller = ad.seller
+    
     try:
-        review_list = ReviewFreeAdSeller.objects.filter(product_id=product_id).order_by('-createdAt')
+        seller_avatar = MarketplaceSellerPhoto.objects.get(seller=seller)
+        seller_avatar_url = seller_avatar.photo.url
+    except MarketplaceSellerPhoto.DoesNotExist:
+        seller_avatar_url = None
+
+    try:
+        review_list = ReviewFreeAdSeller.objects.filter(free_ad=ad).order_by('-timestamp')
         serializer = ReviewFreeAdSellerSerializer(review_list, many=True)
-        return Response(serializer.data)
+        return Response({'data': serializer.data, 
+                          'seller_avatar_url': seller_avatar_url,
+                          }, 
+                          status=status.HTTP_200_OK)
     except ReviewFreeAdSeller.DoesNotExist:
         return Response({'detail': 'Reviews not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_seller_free_ad_reviews(request):
-    user = request.user
-    try:
-        order_reviews = ReviewFreeAdSeller.objects.filter(user=user).order_by('-createdAt')
-        serializer = ReviewFreeAdSellerSerializer(order_reviews, many=True)
-        return Response(serializer.data)
-    except ReviewFreeAdSeller.DoesNotExist:
-        return Response({'detail': 'Reviews not found'}, status=status.HTTP_404_NOT_FOUND)
+@permission_classes([IsAuthenticated]) 
+# @permission_classes([AllowAny]) 
+def get_seller_paid_ad_reviews(request):
 
+    ad_id = request.GET.get('ad_id', '')
+    print("ad_id:", ad_id)
+
+    ad = get_object_or_404(PostPaidAd, id=ad_id)
+    seller = ad.seller
+    
+    try:
+        seller_avatar = MarketplaceSellerPhoto.objects.get(seller=seller)
+        seller_avatar_url = seller_avatar.photo.url
+    except MarketplaceSellerPhoto.DoesNotExist:
+        seller_avatar_url = None
+
+    try:
+        review_list = ReviewPaidAdSeller.objects.filter(paid_ad=ad).order_by('-timestamp')
+        serializer = ReviewPaidAdSellerSerializer(review_list, many=True)
+        return Response({'data': serializer.data, 
+                          'seller_avatar_url': seller_avatar_url,
+                          }, 
+                          status=status.HTTP_200_OK)
+    except ReviewPaidAdSeller.DoesNotExist:
+        return Response({'detail': 'Reviews not found'}, status=status.HTTP_404_NOT_FOUND)
+    
 
 @api_view(['POST', 'GET'])
-@permission_classes([IsAuthenticated]) 
+@permission_classes([AllowAny]) 
 def apply_paid_ad_promo_code(request):
     data = request.data
     promo_code = data.get('promoCode')

@@ -791,6 +791,18 @@ AD_REPORT_CHOICES = (
     ('Unrealistic Promises', 'Ads promising unrealistic results or benefits.'),
 )
 
+# SELLER_REVIEW_CHOICES = (
+#     ('NGN', 'NGN'),
+#     ('USD', 'USD'),
+#     ('USD', 'USD'),
+#     ('USD', 'USD'),
+#     ('USD', 'USD'),
+#     ('USD', 'USD'),
+#     ('USD', 'USD'),
+#     ('USD', 'USD'),
+#     ('USD', 'USD'),
+# )
+
 
 class MarketPlaceSellerAccount(models.Model):
     seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="seller_account_user")
@@ -815,6 +827,7 @@ class MarketPlaceSellerAccount(models.Model):
     is_seller_banned = models.BooleanField(default=False)
     rating = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True, editable=False)
     review = models.TextField(null=True, blank=True)
+    review_count = models.IntegerField(null=True, blank=True, default=0, editable=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
@@ -1011,19 +1024,30 @@ class ReportPaidAd(models.Model):
 
 
 class ReviewFreeAdSeller(models.Model):
+    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="free_ad_seller_review")
+    seller_account = models.ForeignKey(MarketPlaceSellerAccount, on_delete=models.CASCADE, related_name='free_ad_seller_account_reivew', blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="review_free_ad_user") 
     free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE, related_name='free_ad_reivew', blank=True, null=True)
     rating = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+    review_count = models.IntegerField(null=True, blank=True, default=0, editable=False)
+    is_review_liked = models.BooleanField(default=False)
+    review_like_count = models.IntegerField(null=True, blank=True, default=0, editable=False)
     comment = models.TextField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
 
-    def __str__(self):
+    def __str__(self): 
         return str(self.rating)
 
+
 class ReviewPaidAdSeller(models.Model):
+    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_seller_review")
+    seller_account = models.ForeignKey(MarketPlaceSellerAccount, on_delete=models.CASCADE, related_name='paid_ad_seller_account_review', blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="review_paid_ad_user") 
     paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='paid_ad_reivew', blank=True, null=True)
     rating = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+    review_count = models.IntegerField(null=True, blank=True, default=0, editable=False)
+    is_review_liked = models.BooleanField(default=False)
+    review_like_count = models.IntegerField(null=True, blank=True, default=0, editable=False)
     comment = models.TextField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
 

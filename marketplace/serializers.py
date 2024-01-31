@@ -96,6 +96,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class ReportFreeAdSerializer(serializers.ModelSerializer):
+    seller_username = serializers.CharField(source='seller.username', read_only=True)
     class Meta:
         model = ReportFreeAd
         fields = '__all__'
@@ -109,13 +110,16 @@ class ReportPaidAdSerializer(serializers.ModelSerializer):
 
 
 class ReviewFreeAdSellerSerializer(serializers.ModelSerializer):
+    seller_username = serializers.CharField(source='seller.username', read_only=True)
+    buyer_username = serializers.CharField(source='user.username', read_only=True)
     class Meta:
         model = ReviewFreeAdSeller
         fields = '__all__'
 
 
 class ReviewPaidAdSellerSerializer(serializers.ModelSerializer):
-    first_name = serializers.CharField(source='user.first_name', read_only=True)
+    seller_username = serializers.CharField(source='seller.username', read_only=True)
+    buyer_username = serializers.CharField(source='user.username', read_only=True)
     class Meta:
         model = ReviewPaidAdSeller
         fields = '__all__'
