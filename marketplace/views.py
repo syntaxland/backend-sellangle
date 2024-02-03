@@ -599,7 +599,7 @@ def get_paid_ad_detail(request, pk):
             seller_rating = seller_info.rating
             seller_review_count = seller_info.review_count
         except MarketPlaceSellerAccount.DoesNotExist:
-            is_seller_verified = None
+            is_seller_verified = None 
 
         serializer = PostPaidAdSerializer(ad, context={'seller_avatar_url': seller_avatar_url})
 
@@ -1572,17 +1572,30 @@ def get_seller_paid_ad_reviews(request):
     
 
 @api_view(['POST', 'GET'])
-@permission_classes([AllowAny]) 
-def apply_paid_ad_promo_code(request):
+@permission_classes([IsAuthenticated]) 
+def apply_promo_code(request):
     data = request.data
-    promo_code = data.get('promoCode')
+    
+    promo_code = data.get('promo_code')
     ad_id = data.get('ad_id')
     print('promo_code, ad_id:', promo_code, ad_id)
+
+    ad_promo = None
 
     try:
         ad_promo = PostPaidAd.objects.get(id=ad_id, promo_code=promo_code)
     except PostPaidAd.DoesNotExist:
+        pass
+
+    if not ad_promo:
         return Response({'detail': 'Invalid promo code or ad not found.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # try:
+    #     ad_promo = PostPaidAd.objects.get(id=ad_id, promo_code=promo_code)
+    #     if not ad_promo:
+    #         return Response({'detail': 'Invalid promo code.'}, status=status.HTTP_400_BAD_REQUEST)
+    # except PostPaidAd.DoesNotExist:
+    #     return Response({'detail': 'Invalid promo code or ad not found.'}, status=status.HTTP_400_BAD_REQUEST)
 
     promo_discount = 0
     discount_percentage = ad_promo.discount_percentage
@@ -1592,9 +1605,10 @@ def apply_paid_ad_promo_code(request):
         discount_amount = (discount_percentage / 100) * ad_price
         promo_discount = discount_amount.quantize(Decimal('0.00'), rounding=ROUND_DOWN)
 
-    print('apply_promo_code promo_discount:', promo_discount, 'discount_percentage:', discount_percentage)
+    print('promo_discount:', promo_discount, 
+          'discount_percentage:', discount_percentage)
 
-    return Response({'promoDiscount': promo_discount, 'discountPercentage': discount_percentage}, status=status.HTTP_200_OK)
+    return Response({'promo_discount': promo_discount, 'discount_percentage': discount_percentage}, status=status.HTTP_200_OK)
     
 
 # @api_view(['GET'])

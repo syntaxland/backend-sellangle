@@ -73,6 +73,8 @@ class AuthorAdmin(admin.ModelAdmin):
         'condition',
         'currency',
         'price',
+        'promo_code',
+        'discount_percentage',
         'ad_save_count',
         'ad_view_count',
         'description',

@@ -69,7 +69,8 @@ urlpatterns = [
     
     # path('get-user-saved-paid-ads/', views.get_user_saved_paid_ads, name='get_user_saved_paid_ads'),
     # path('get-user-saved-paid-ads/', views.get_user_saved_paid_ads, name='get_user_saved_paid_ads'),
-    # path('get-user-saved-paid-ads/', views.get_user_saved_paid_ads, name='get_user_saved_paid_ads'),
+
+    path('apply-promo-code/', views.apply_promo_code, name='apply_promo_code'),
 
     path('search-seller-username/<str:seller_username>/', views.search_seller_username, name='search-seller-username'),
     path('get-seller-detail/<str:seller_username>/', views.get_seller_detail, name='get-seller-detail'),

@@ -12,7 +12,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend_drf.settings')
 app = Celery('backend_drf')
 app.conf.enable_utc = False
 
-app.conf.update(timezone = 'Asia/Kolkata') 
+app.conf.update(timezone = 'Asia/Kolkata')  
 
 app.config_from_object(settings, namespace='CELERY')
 
@@ -34,10 +34,22 @@ def debug_task(self):
 
 
 # Schedule the check_support_is_expired task to run every day at a specific time (adjust as needed).
+# app.conf.beat_schedule = {
+#     'check-support-is-expired': {
+#         'task': 'support.tasks.check_support_is_expired',
+#         # 'schedule': timedelta(seconds=10),
+#         'schedule': crontab(hour=0, minute=0),  # Run at midnight every day
+#     },
+# }
+
+
 app.conf.beat_schedule = {
     'check-support-is-expired': {
         'task': 'support.tasks.check_support_is_expired',
-        # 'schedule': timedelta(seconds=10),
         'schedule': crontab(hour=0, minute=0),  # Run at midnight every day
+    },
+    'charge-ad-charges': {
+        'task': 'marketplace.tasks.charge_ad_charges',
+        'schedule': crontab(minute=0),  # Run every hour
     },
 }
