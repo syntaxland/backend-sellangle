@@ -5,7 +5,7 @@ from payment.models import Payment
 # from promo.models import Referral
 from django.contrib.auth import get_user_model
 
-User = get_user_model()
+User = get_user_model() 
 
 BUY_CPS_CHOICES = (
     ('500', '500 cps for NGN 500'),
@@ -80,6 +80,8 @@ class BuyCreditPoint(models.Model):
     amount = models.CharField(max_length=100, choices=BUY_CPS_CHOICES, null=True, blank=True, editable=False)
     cps_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, editable=False)
     cps_purchase_id = models.CharField(max_length=10, unique=True)
+    old_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    new_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_success = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True) 
      
@@ -89,8 +91,12 @@ class SellCreditPoint(models.Model):
     seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='seller_credit_point')
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, editable=False)
     cps_sell_id = models.CharField(max_length=10, unique=True, blank=True)
+    buyer_old_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    buyer_new_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    seller_old_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    seller_new_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_success = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True) 
 
 
 class BuyUsdCreditPoint(models.Model):
@@ -98,6 +104,8 @@ class BuyUsdCreditPoint(models.Model):
     amount = models.CharField(max_length=100, choices=USD_CPS_CHOICES, null=True, blank=True, editable=False)
     cps_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, editable=False)
     usd_cps_purchase_id = models.CharField(max_length=10, unique=True, blank=True)
+    old_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    new_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_success = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

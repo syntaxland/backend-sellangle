@@ -7,14 +7,14 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status, generics
-from rest_framework.views import APIView 
+from rest_framework.views import APIView  
 
-from .serializer import (CreditPointSerializer, CreditPointRequestSerializer, 
+from .serializer import (BuyUsdCreditPointSerializer, CreditPointSerializer, CreditPointRequestSerializer, 
                          CreditPointPaymentSerializer, CreditPointEarningSerializer,
                            BuyCreditPointSerializer, SellCreditPointSerializer)
 from .models import (CreditPoint,  CreditPointRequest,
                       CreditPointPayment, CreditPointEarning, 
-                      BuyCreditPoint, SellCreditPoint)
+                      BuyCreditPoint, BuyUsdCreditPoint, SellCreditPoint)
 from django.db import transaction
 from django.contrib.auth import get_user_model
 
@@ -173,14 +173,14 @@ def buy_credit_point(request):
     }
 
     cps_amount = AMOUNT_TO_CPS_MAPPING.get(str(amount), 0)
-    print('cps_amount:', cps_amount)
+    print('amount:', amount, 'cps_amount:', cps_amount)
 
     try:
         credit_point, created = CreditPoint.objects.get_or_create(user=user)
-        balance = credit_point.balance
-        print('cps balance(before):', balance)
+        old_bal = credit_point.balance
+        print('cps old_bal):', old_bal)
 
-        credit_point.balance += amount
+        credit_point.balance += cps_amount
         credit_point.save()
 
         buy_credit_point = BuyCreditPoint.objects.create( 
@@ -188,9 +188,71 @@ def buy_credit_point(request):
             amount=amount,
             cps_purchase_id=cps_purchase_id,
             cps_amount=cps_amount,
+            old_bal=old_bal,
+            # new_bal=new_bal,
         )
 
         buy_credit_point.is_success = True
+        buy_credit_point.new_bal = credit_point.balance
+        buy_credit_point.save()
+        print('cps balance(after):', credit_point.balance)
+
+        return Response({'detail': f'Credit point request successful.'}, 
+                        status=status.HTTP_201_CREATED)
+    except CreditPoint.DoesNotExist:
+            return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])  
+@transaction.atomic
+def buy_usd_credit_point(request):
+    user = request.user
+    data = request.data
+    print('data:', data)
+
+    usd_cps_purchase_id = generate_cps_purchase_id()
+    print('cps_purchase_id:', usd_cps_purchase_id)
+    amount = Decimal(data.get('amount'))
+    print('amount:', amount)
+
+    AMOUNT_TO_CPS_MAPPING = {
+    '1': 1000,
+    '5': 5200,
+    '10': 10800,
+    '15': 16500,
+    '20': 24000,
+    '50': 60000,
+    '100': 125000,
+    '200': 255000,
+    '500': 700000,
+    '1000': 1500000,
+    }
+
+    cps_amount = AMOUNT_TO_CPS_MAPPING.get(str(amount), 0)
+    print('amount:', amount, 'cps_amount:', cps_amount)
+
+    try:
+        credit_point, created = CreditPoint.objects.get_or_create(user=user)
+        
+        old_bal = credit_point.balance
+        print('cps old_bal):', old_bal)
+
+        credit_point.balance += cps_amount
+        credit_point.save()
+
+        buy_credit_point = BuyUsdCreditPoint.objects.create( 
+            user=user,
+            amount=amount,
+            usd_cps_purchase_id=usd_cps_purchase_id,
+            cps_amount=cps_amount,
+            old_bal=old_bal,
+        )
+
+        buy_credit_point.is_success = True
+        buy_credit_point.new_bal = credit_point.balance
         buy_credit_point.save()
         print('cps balance(after):', credit_point.balance)
 
@@ -271,6 +333,18 @@ def get_user_buy_credit_point(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def get_usd_buy_credit_point(request):
+    user = request.user
+    try:
+        credit_point = BuyUsdCreditPoint.objects.filter(user=user).order_by('-created_at')
+        serializer = BuyUsdCreditPointSerializer(credit_point, many=True) 
+        return Response(serializer.data)
+    except BuyUsdCreditPoint.DoesNotExist:
+        return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_seller_credit_point(request):
     user = request.user
     try:
@@ -291,3 +365,6 @@ def get_buyer_credit_point(request):
         return Response(serializer.data)
     except SellCreditPoint.DoesNotExist:
         return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+

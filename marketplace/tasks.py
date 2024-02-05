@@ -44,8 +44,8 @@ def charge_ad_charges():
 
 
 """
-celery -A core.celery worker --pool=solo -l info 
+celery -A backend_drf.celery worker --pool=solo -l info 
 (Windows)
-celery -A core.celery worker --loglevel=info (Unix) 
-celery -A core.celery beat --loglevel=info
+celery -A backend_drf.celery worker --loglevel=info (Unix) 
+celery -A backend_drf.celery beat --loglevel=info 
 """

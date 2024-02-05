@@ -42,7 +42,22 @@ class AuthorAdmin(admin.ModelAdmin):
                      'cps_amount', 
                      'cps_purchase_id', 
                      'is_success', 
+                     'old_bal', 
+                    'new_bal',
                      )
+
+
+@admin.register(models.BuyUsdCreditPoint)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ('created_at', 
+                    'user', 
+                    'amount',
+                     'cps_amount', 
+                     'usd_cps_purchase_id', 
+                     'is_success', 
+                     'old_bal', 
+                    'new_bal',
+                     )                    
 
 
 @admin.register(models.SellCreditPoint)
@@ -53,4 +68,6 @@ class AuthorAdmin(admin.ModelAdmin):
                     'amount',                  
                     'cps_sell_id', 
                     'is_success', 
+                    # 'old_bal', 
+                    # 'new_bal',
                       )

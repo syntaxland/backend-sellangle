@@ -14,9 +14,12 @@ urlpatterns = [
 
     path('sell-credit-point/', views.sell_credit_point, name='sell-credit-point'),
     path('get-user-buy-credit-point/', views.get_user_buy_credit_point, name='get-user-buy-credit-point'),
+    path('get-user-sell-credit-point/', views.get_seller_credit_point, name='get-user-sell-credit-point'),
 
     path('buy-credit-point/', views.buy_credit_point, name='buy-credit-point'), 
-    path('get-user-sell-credit-point/', views.get_seller_credit_point, name='get-user-sell-credit-point'),
     path('get-buyer-credit-point/', views.get_buyer_credit_point, name='get-buyer-credit-point'),
+
+    path('buy-usd-credit-point/', views.buy_usd_credit_point, name='buy-usd-credit-point'), 
+    path('get-usd-buy-credit-point/', views.get_usd_buy_credit_point, name='get-buy-usd-credit-point'), 
 
 ]
