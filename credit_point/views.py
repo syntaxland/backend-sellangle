@@ -288,27 +288,33 @@ def sell_credit_point(request):
     print('buyer:', buyer)
 
     try:
+        seller_credit_point, created = CreditPoint.objects.get_or_create(user=seller)
+        seller_old_bal = seller_credit_point.balance
+
+        buyer_credit_point, created = CreditPoint.objects.get_or_create(user=buyer)
+        buyer_old_bal = buyer_credit_point.balance
+
         sell_credit_point = SellCreditPoint.objects.create(
             buyer=buyer,
             seller=seller,
             amount=amount,
+            buyer_old_bal=buyer_old_bal,
+            seller_old_bal=seller_old_bal,
             cps_sell_id=cps_sell_id, 
         )
-
-        seller_credit_point, created = CreditPoint.objects.get_or_create(user=seller)
-        balance = seller_credit_point.balance
-        if balance < amount: 
+        
+        if seller_old_bal < amount: 
             return Response({'detail': 'Insufficient credit point balance. Fund your cps wallet and try again.'}, 
                             status=status.HTTP_400_BAD_REQUEST)
         seller_credit_point.balance -= amount
         seller_credit_point.save()
-
-        buyer_credit_point, created = CreditPoint.objects.get_or_create(user=buyer)
-        balance = buyer_credit_point.balance
+        
         buyer_credit_point.balance += amount
         buyer_credit_point.save()
 
         sell_credit_point.is_success = True
+        sell_credit_point.buyer_new_bal = buyer_credit_point.balance
+        sell_credit_point.seller_new_bal = seller_credit_point.balance
         sell_credit_point.save()
 
         return Response({'detail': f'Credit point request successful.'}, 

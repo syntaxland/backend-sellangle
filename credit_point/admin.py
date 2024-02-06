@@ -68,6 +68,8 @@ class AuthorAdmin(admin.ModelAdmin):
                     'amount',                  
                     'cps_sell_id', 
                     'is_success', 
-                    # 'old_bal', 
-                    # 'new_bal',
+                    'buyer_old_bal', 
+                    'buyer_new_bal', 
+                    'seller_old_bal', 
+                    'seller_new_bal',
                       )
