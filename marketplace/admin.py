@@ -97,6 +97,26 @@ class AuthorAdmin(admin.ModelAdmin):
         'live_api_key',
     )  
 
+@admin.register(models.FreeAdMessageId)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'free_ad_message_id',
+        'message',
+        'free_ad',
+        'timestamp',
+    )  
+
+@admin.register(models.PaidAdMessageId)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'paid_ad_message_id',
+        'message',
+        'paid_ad',
+        'timestamp',
+    )  
+
 
 @admin.register(models.Message)
 class AuthorAdmin(admin.ModelAdmin):
@@ -106,6 +126,13 @@ class AuthorAdmin(admin.ModelAdmin):
         'free_ad',
         'paid_ad',
         'message',
+        'free_ad_message_id',
+        'paid_ad_message_id',
+        'buyer_free_ad_msg_count',
+        'buyer_paid_ad_msg_count',
+        'seller_free_ad_msg_count',
+        'seller_paid_ad_msg_count',
+
     )  
 
 @admin.register(models.ReportFreeAd)

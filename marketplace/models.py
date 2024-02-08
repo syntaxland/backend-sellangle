@@ -992,17 +992,45 @@ class PostPaidAd(models.Model):
 class PaysofterApiKey(models.Model):
     seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paysofter_seller") 
     live_api_key = models.CharField(max_length=100, null=True, blank=True)
-    is_api_key_live = models.BooleanField(default=False)
+    is_api_key_live = models.BooleanField(default=False) 
     created_at = models.DateTimeField(auto_now_add=True, null=True)
+
+
+class FreeAdMessageId(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="free_ad_message_user")
+    free_ad_message_id = models.CharField(max_length=20, null=True)
+    free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE, related_name='free_ad_message_id', blank=True, null=True)
+    message = models.TextField(max_length=500, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return f"{self.free_ad_message_id}" 
+ 
+
+class PaidAdMessageId(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_message_user") 
+    paid_ad_message_id = models.CharField(max_length=20, unique=True, null=True)
+    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='paid_ad_message_id', blank=True, null=True)
+    message = models.TextField(max_length=500, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return f"{self.paid_ad_message_id}"
 
 
 class Message(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="message_user")
     # buyer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="message_buyer")
     seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="message_seller")
+    free_ad_message_id = models.ForeignKey(FreeAdMessageId, on_delete=models.CASCADE, related_name='freead_message_id', blank=True, null=True)
+    paid_ad_message_id = models.ForeignKey(PaidAdMessageId, on_delete=models.CASCADE, related_name='paidad_message_id', blank=True, null=True)
     free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE, related_name='free_ad_message', blank=True, null=True)
     paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='paid_ad_message', blank=True, null=True)
     message = models.TextField(max_length=500, null=True, blank=True)
+    buyer_free_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
+    buyer_paid_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
+    seller_free_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
+    seller_paid_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
     
     def __str__(self):

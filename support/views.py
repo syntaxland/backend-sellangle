@@ -46,7 +46,7 @@ def create_support_ticket(request):
     user=request.user
     data=request.data
 
-    category=data['category']
+    category=data['category'] 
     subject=data['subject']
     message=data['message']
     ticket_id = generate_ticket_id()
