@@ -109,3 +109,13 @@ class BuyUsdCreditPoint(models.Model):
     is_success = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
+class AdChargeCreditPoint(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='ad_charge_credit_point_user')
+    cps_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, editable=False)
+    ad_charge_cps_id = models.CharField(max_length=20, unique=True) 
+    old_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    new_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    is_success = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True) 
+ 

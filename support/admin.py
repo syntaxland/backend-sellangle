@@ -9,7 +9,7 @@ class AuthorAdmin(admin.ModelAdmin):
                     'ticket_id',
                     'category',
                     'is_closed',
-                    'is_resolved',
+                    'is_resolved', 
                      'created_at',
                      )  
 

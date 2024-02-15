@@ -16,15 +16,15 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import api_view, permission_classes
 # from paystack.resource import TransactionResource
-from app.models import Product, Order
-from payment.models import Payment
+# from app.models import Product, Order
+# from payment.models import Payment
 from .serializers import PaymentSerializer, UserPaymentSerializer
 from credit_point.models import CreditPoint, CreditPointPayment, CreditPointEarning
 from promo.models import Referral, ReferralBonus
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-
+ 
 def generate_payment_reference():
     return ''.join(random.choices(string.digits, k=10))
 

@@ -9,12 +9,21 @@ from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.views import APIView  
 
-from .serializer import (BuyUsdCreditPointSerializer, CreditPointSerializer, CreditPointRequestSerializer, 
-                         CreditPointPaymentSerializer, CreditPointEarningSerializer,
-                           BuyCreditPointSerializer, SellCreditPointSerializer)
+
 from .models import (CreditPoint,  CreditPointRequest,
                       CreditPointPayment, CreditPointEarning, 
-                      BuyCreditPoint, BuyUsdCreditPoint, SellCreditPoint)
+                      BuyCreditPoint, BuyUsdCreditPoint, 
+                      SellCreditPoint,
+                      AdChargeCreditPoint,
+                      )
+
+from .serializer import (BuyUsdCreditPointSerializer, CreditPointSerializer, 
+                         CreditPointRequestSerializer, 
+                         CreditPointPaymentSerializer, CreditPointEarningSerializer,
+                           BuyCreditPointSerializer, SellCreditPointSerializer,
+                           AdChargeCreditPointSerializer,
+                           )
+
 from django.db import transaction
 from django.contrib.auth import get_user_model
 
@@ -313,7 +322,7 @@ def sell_credit_point(request):
         buyer_credit_point.save()
 
         sell_credit_point.is_success = True
-        sell_credit_point.buyer_new_bal = buyer_credit_point.balance
+        sell_credit_point.buyer_new_bal = buyer_credit_point.balance 
         sell_credit_point.seller_new_bal = seller_credit_point.balance
         sell_credit_point.save()
 
@@ -373,4 +382,13 @@ def get_buyer_credit_point(request):
         return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_ad_charges_cps(request):
+    user = request.user
+    try:
+        credit_point = AdChargeCreditPoint.objects.filter(user=user).order_by('-created_at')
+        serializer = AdChargeCreditPointSerializer(credit_point, many=True)
+        return Response(serializer.data)
+    except AdChargeCreditPoint.DoesNotExist:
+        return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)

@@ -2,12 +2,12 @@ from django.db.models import Count, F, Q
 from django.db.models.functions import Coalesce
 from django.db.models import Value
 from django.db.models import CharField
-from app.models import Product
+# from app.models import Product
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from app.serializer import ProductSerializer
+# from app.serializer import ProductSerializer
 from django.contrib.auth import get_user_model
 
 User = get_user_model() 

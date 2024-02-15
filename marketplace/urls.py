@@ -39,13 +39,13 @@ urlpatterns = [
     path('save-seller-api-key/', views.save_seller_paysofter_api_key, name='save-seller-api-key'),
 
     path('create-free-ad-message/', views.create_free_ad_message, name='create-free-ad-message'),
-    path('list-free-ad-messages/<int:pk>/', views.list_free_ad_messages, name='list-free-ad-messages'),
+    path('list-free-ad-messages/', views.list_free_ad_messages, name='list-free-ad-messages'),
     path('seller-reply-free-ad-message/', views.seller_reply_free_ad_message, name='seller_reply_free_ad_message'),
     path('list-seller-free-ad-messages/<int:pk>/', views.list_seller_free_ad_messages, name='list_seller_free_ad_messages'),
     path('get-buyer-free-ad-messages/', views.get_buyer_free_ad_messages, name='get_buyer_free_ad_messages'),
 
     path('create-paid-ad-message/', views.create_paid_ad_message, name='create-paid-ad-message'),
-    path('list-paid-ad-messages/<int:pk>/', views.list_paid_ad_messages, name='list-paid-ad-messages'),
+    path('list-paid-ad-messages/', views.list_paid_ad_messages, name='list-paid-ad-messages'),
     path('seller-reply-paid-ad-message/', views.seller_reply_paid_ad_message, name='seller_reply_paid_ad_message'),
     path('list-seller-paid-ad-messages/<int:pk>/', views.list_seller_paid_ad_messages, name='list_seller_paid_ad_messages'),
     path('get-buyer-paid-ad-messages/', views.get_buyer_paid_ad_messages, name='get_buyer_paid_ad_messages'),
@@ -71,6 +71,8 @@ urlpatterns = [
     # path('get-user-saved-paid-ads/', views.get_user_saved_paid_ads, name='get_user_saved_paid_ads'),
 
     path('apply-promo-code/', views.apply_promo_code, name='apply_promo_code'),
+
+    path('get-seller-paid-ads-charges/', views.get_seller_paid_ads_charges, name='get_seller_paid_ads_charges'),
 
     path('search-seller-username/<str:seller_username>/', views.search_seller_username, name='search-seller-username'),
     path('get-seller-detail/<str:seller_username>/', views.get_seller_detail, name='get-seller-detail'),

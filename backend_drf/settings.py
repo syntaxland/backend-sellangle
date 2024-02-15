@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/ 
 """
-
+  
 import os
 from pathlib import Path
 from datetime import timedelta
@@ -71,7 +71,7 @@ INSTALLED_APPS = [
     'credit_point',  
     'send_email_message',
     'send_message_inbox', 
-    'recommender',
+    # 'recommender',
     'live_chat',
     'promo',
     'sellers',

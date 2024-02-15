@@ -7,7 +7,7 @@ from . import models
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ('user', 
                     'subject',
-                    'message',
+                    'message', 
                      'created_at',
                      )  
     search_fields = ('subject',)

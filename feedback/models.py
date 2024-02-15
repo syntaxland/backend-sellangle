@@ -6,7 +6,7 @@ from django.utils import timezone
 User = get_user_model()
 
 ROOM_TOPIC = (
-        ('support', 'Support'),
+        ('support', 'Support'), 
         ('billing', 'Billing'),
         ('abuse', 'Abuse'),
         ('otp', 'OTP'),

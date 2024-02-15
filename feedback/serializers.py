@@ -7,4 +7,4 @@ class FeedbackSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source='user.email', read_only=True)
     class Meta:
         model = Feedback
-        fields = '__all__'
+        fields = '__all__' 

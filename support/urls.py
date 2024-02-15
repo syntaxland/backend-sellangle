@@ -14,3 +14,4 @@ urlpatterns = [
     path('list-all-support-ticket/', views.list_all_support_ticket, name='list-all-support-ticket'),
     path('list-all-support-response/', views.list_all_support_response, name='list-all-support-response'), 
 ]
+ 

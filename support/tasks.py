@@ -14,14 +14,14 @@ from django.db.models import Max, F, OuterRef, Subquery
 from django.db.models.functions import Coalesce
 from django.contrib.auth import get_user_model
 
-User = get_user_model()
-
-
+User = get_user_model() 
+ 
+ 
 @shared_task
-def check_support_is_expired():
+def check_support_is_expired(): 
     try:
         # Calculate the threshold date (7 days ago)
-        # threshold_date = timezone.now() - timedelta(days=7) 
+        # threshold_date = timezone.now() - timedelta(days=7)  
         threshold_date = timezone.now() - timedelta(seconds=30) 
 
         # Subquery to get the last SupportResponse creation date for each SupportTicket

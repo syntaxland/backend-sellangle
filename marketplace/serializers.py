@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .models import (MarketPlaceSellerAccount, MarketplaceSellerPhoto, 
                      PostFreeAd, PostPaidAd, PaysofterApiKey, Message,
                      ReportFreeAd, ReportPaidAd, ReviewFreeAdSeller, ReviewPaidAdSeller,
-                     FreeAdMessageId, PaidAdMessageId
+                     FreeAdMessageId, PaidAdMessageId, AdChargeTotal
                      )
 
 
@@ -76,6 +76,7 @@ class MessageSerializer(serializers.ModelSerializer):
     free_ad_rating = serializers.CharField(source='free_ad.ad_rating', read_only=True)
     free_ad_image1 = serializers.CharField(source='free_ad.image1.photo.url', read_only=True)
     free_seller_username = serializers.CharField(source='free_ad.seller.username', read_only=True)
+    free_ad_message_id = serializers.CharField(source='free_ad_message_id.free_ad_message_id', read_only=True)
     
     sellerAvatarUrl = serializers.CharField(source='free_ad.seller.photo.url', read_only=True)
 
@@ -89,6 +90,7 @@ class MessageSerializer(serializers.ModelSerializer):
     paid_ad_rating = serializers.CharField(source='paid_ad.ad_rating', read_only=True)
     paid_ad_image1 = serializers.CharField(source='paid_ad.image1.photo.url', read_only=True)
     paid_seller_username = serializers.CharField(source='paid_ad.seller.username', read_only=True)
+    free_ad_messagpaid_ad_message_ide_id = serializers.CharField(source='paid_ad_message_id.paid_ad_message_id', read_only=True)
 
     class Meta:
         model = Message
@@ -137,4 +139,11 @@ class PaidAdMessageIdSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     class Meta:
         model = PaidAdMessageId
+        fields = '__all__'
+
+
+class AdChargeTotalSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='seller.username', read_only=True)
+    class Meta:
+        model = AdChargeTotal
         fields = '__all__'

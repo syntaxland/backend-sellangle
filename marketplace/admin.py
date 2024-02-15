@@ -48,7 +48,7 @@ class AuthorAdmin(admin.ModelAdmin):
         'price',
         'ad_save_count',
         'ad_view_count',
-        'description',
+        # 'description',
         'is_active',
         'image1',
         'duration',
@@ -67,6 +67,8 @@ class AuthorAdmin(admin.ModelAdmin):
         'ad_name',
         'ad_category',
         'ad_type',
+        'ad_charges',
+        # 'ad_charge_hours',
         'country',
         'state_province',
         'city',
@@ -77,7 +79,7 @@ class AuthorAdmin(admin.ModelAdmin):
         'discount_percentage',
         'ad_save_count',
         'ad_view_count',
-        'description',
+        # 'description',
         'is_active',
         'is_ad_reported',
         'ad_report_count',
@@ -123,8 +125,6 @@ class AuthorAdmin(admin.ModelAdmin):
     list_display = (
         'timestamp',
         'user',
-        'free_ad',
-        'paid_ad',
         'message',
         'free_ad_message_id',
         'paid_ad_message_id',
@@ -132,6 +132,8 @@ class AuthorAdmin(admin.ModelAdmin):
         'buyer_paid_ad_msg_count',
         'seller_free_ad_msg_count',
         'seller_paid_ad_msg_count',
+        'free_ad',
+        'paid_ad',
 
     )  
 
@@ -184,4 +186,16 @@ class AuthorAdmin(admin.ModelAdmin):
         'is_review_liked',
         'review_like_count',
         'comment',
+    )  
+
+
+@admin.register(models.AdChargeTotal)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = (
+        'seller',
+        'paid_ad',
+       'total_ad_charges',
+        'total_ad_charge_hours',
+        'total_ad_charge_id',
+        'timestamp',
     )  

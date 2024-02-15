@@ -73,3 +73,14 @@ class AuthorAdmin(admin.ModelAdmin):
                     'seller_old_bal', 
                     'seller_new_bal',
                       )
+
+@admin.register(models.AdChargeCreditPoint)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ('user',
+                     'cps_amount', 
+                     'ad_charge_cps_id', 
+                    'old_bal',                  
+                    'new_bal', 
+                    'created_at', 
+                    
+                      )

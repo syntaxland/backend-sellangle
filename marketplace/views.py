@@ -22,7 +22,7 @@ from .models import (MarketPlaceSellerAccount,
                      PaysofterApiKey, Message,
                     ReportFreeAd, ReportPaidAd, 
                     ReviewFreeAdSeller, ReviewPaidAdSeller,
-                    FreeAdMessageId, PaidAdMessageId
+                    FreeAdMessageId, PaidAdMessageId, AdChargeTotal
                      )
 from .serializers import (MarketPlaceSellerAccountSerializer,
                            MarketplaceSellerPhotoSerializer,
@@ -30,7 +30,7 @@ from .serializers import (MarketPlaceSellerAccountSerializer,
                              PaysofterApiKeySerializer, MessageSerializer,
                              ReportFreeAdSerializer, ReportPaidAdSerializer,
                             ReviewFreeAdSellerSerializer, ReviewPaidAdSellerSerializer,
-                            FreeAdMessageIdSerializer, PaidAdMessageIdSerializer
+                            FreeAdMessageIdSerializer, PaidAdMessageIdSerializer, AdChargeTotalSerializer
                             )
 from user_profile.serializers import UserSerializer
 
@@ -38,7 +38,7 @@ from django.conf import settings
 from django.db.models import Avg
 from django.db.models import Q
 from django.contrib.auth import get_user_model
-
+ 
 User = get_user_model()
 
 
@@ -760,6 +760,65 @@ def get_all_paid_ad(request):
         return Response({'detail': 'Paid ad not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_seller_paid_ads_charges(request):
+    user = request.user
+    current_datetime = datetime.now()
+
+    try:
+        paid_ads = PostPaidAd.objects.filter(
+            seller=user,
+            ad_charges__gt=0
+        ).exclude(
+            expiration_date__lt=current_datetime,
+            ad_charges=0
+        )
+
+        serializer_paid_ads = PostPaidAdSerializer(paid_ads, many=True) 
+
+        total_ad_charges = AdChargeTotal.objects.filter(seller=user).first()
+        serializer_total_ad_charges = AdChargeTotalSerializer(total_ad_charges)
+
+        response_data = {
+            'ad_charges': serializer_paid_ads.data,
+            'total_ad_charges': serializer_total_ad_charges.data,
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
+    except PostPaidAd.DoesNotExist:
+        return Response({'detail': 'Paid ad not found'}, status=status.HTTP_404_NOT_FOUND)
+
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def get_seller_paid_ads_charges(request):
+#     user = request.user
+#     data = request.data
+#     print('user:', user)
+#     print('data:', data)
+
+#     current_datetime = datetime.now()
+#     try:
+#         paid_ad = PostPaidAd.objects.filter(
+#             seller=user, 
+#             expiration_date__gt=current_datetime, 
+#             ad_charges__gt=0
+#             )
+#         serializer = PostPaidAdSerializer(paid_ad, many=True)
+
+#         total_ad_charges = AdChargeTotal.objects.filter(seller=user)
+#         serializer = AdChargeTotalSerializer(paid_ad, many=True)
+
+#         # return Response(serializer.data)
+#         return Response({'data': serializer.data, 
+#                         #  'sellerApiKey': seller_api_key, 
+                         
+#                          }, 
+#                         status=status.HTTP_200_OK)
+#     except PostPaidAd.DoesNotExist:
+#         return Response({'detail': 'Paid ad not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser, FormParser])
@@ -799,14 +858,14 @@ def create_free_ad_message(request):
     data=request.data
     print('data:', data, 'user:', user)
 
-    pk = data.get('pk')
+    ad_id = data.get('ad_id')
     message = data.get('message')
     free_ad_message_id = generate_ad_message_id()
-    print('pk:', pk, 'free_ad_message_id:', free_ad_message_id)
+    print('free_ad_message_id:', free_ad_message_id)
     print('message:', message)
     
     try:
-        free_ad = PostFreeAd.objects.get(pk=pk)
+        free_ad = PostFreeAd.objects.get(pk=ad_id) 
     except PostFreeAd.DoesNotExist:
         return Response({'detail': 'Ad not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -830,6 +889,7 @@ def create_free_ad_message(request):
         )
     else:
         free_ad_id.free_ad_message_id = free_ad_message_id
+        free_ad_id.message = message
         free_ad_id.save()
     
     ad_message = Message.objects.create(
@@ -847,29 +907,37 @@ def create_free_ad_message(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def list_free_ad_messages(request, pk):
+def list_free_ad_messages(request):
     user = request.user
     print('user:', user)
 
+    ad_id = request.GET.get('ad_id', '')
+    # free_ad_message_id = request.GET.get('free_ad_message_id', '')
+    print('ad_id:', ad_id)
+    # print('free_ad_message_id:', free_ad_message_id)
+
     try:
-        free_ad = PostFreeAd.objects.get(pk=pk)
+        free_ad = PostFreeAd.objects.get(id=ad_id)
     except PostFreeAd.DoesNotExist:
-        return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'detail': 'Ad not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        if free_ad:
+            free_ad_message_id = request.GET.get('free_ad_message_id', '')
+        else:
+            free_ad_message_id = PostFreeAd.objects.get(free_ad=free_ad)
+    except PostFreeAd.DoesNotExist:
+        return Response({'detail': 'Ad not found'}, status=status.HTTP_404_NOT_FOUND)
     
     print('free_ad:', free_ad)
+    print('free_ad_message_id:', free_ad_message_id) 
     
     try:
         ad_message = Message.objects.filter(
-            # user=user,
-            free_ad=free_ad,
+            free_ad_message_id=free_ad_message_id,
+            # free_ad=free_ad,
             ).order_by('timestamp')
         serializer = MessageSerializer(ad_message, many=True)
-
-        # ad_message_id = FreeAdMessageId.objects.filter(
-        #     # user=user,
-        #     free_ad_message_id=free_ad_message_id,
-        #     ).order_by('timestamp')
-        # serializer = FreeAdMessageIdSerializer(ad_message_id, many=True)
 
         return Response(serializer.data)
     except Message.DoesNotExist:
@@ -883,15 +951,21 @@ def seller_reply_free_ad_message(request):
     data=request.data
     print('data:', data)
 
-    pk = data.get('pk')
+    ad_id = data.get('ad_id')
     message = data.get('message')
-    print('pk:', pk)
+    free_ad_message_id = data.get('free_ad_message_id')
+    print('free_ad_message_id:', free_ad_message_id)
     print('message:', message)
     
     try:
-        free_ad = PostFreeAd.objects.get(pk=pk)
+        free_ad = PostFreeAd.objects.get(pk=ad_id)
     except PostFreeAd.DoesNotExist:
         return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # try:
+    #     free_ad_message_id = FreeAdMessageId.objects.filter(free_ad=free_ad).first()
+    # except FreeAdMessageId.DoesNotExist:
+    #     return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
 
     # try:
     #     ad_message_id = FreeAdMessageId.objects.get(free_ad_message_id=free_ad_message_id, message=message)
@@ -902,6 +976,7 @@ def seller_reply_free_ad_message(request):
             seller=seller,
             message=message,
             free_ad=free_ad,
+            free_ad_message_id=free_ad_message_id,
         )
     
     return Response({'message': 'Message created'}, status=status.HTTP_201_CREATED)
@@ -919,13 +994,19 @@ def list_seller_free_ad_messages(request, pk):
         free_ad = PostFreeAd.objects.get(pk=pk)
     except PostFreeAd.DoesNotExist:
         return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        free_ad_message_id = FreeAdMessageId.objects.all(free_ad=free_ad)
+    except FreeAdMessageId.DoesNotExist:
+        return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
     
     print('free_ad:', free_ad)
     
     try:
         ad_message = Message.objects.filter(
-            seller=seller,
-            free_ad=free_ad,
+            # seller=seller,
+            free_ad_message_id=free_ad_message_id,
+            # free_ad=free_ad,
             ).order_by('timestamp')
         serializer = MessageSerializer(ad_message, many=True) 
         return Response(serializer.data)
@@ -940,41 +1021,57 @@ def create_paid_ad_message(request):
     data=request.data
     print('data:', data, 'user:', user)
 
-    pk = data.get('pk')
+    ad_id = data.get('ad_id')
     message = data.get('message')
     paid_ad_message_id = generate_ad_message_id()
-    print('pk:', pk)
+    # print('pk:', pk)
     print('message:', message)
+    print('paid_ad_message_id:', paid_ad_message_id)
     
     try:
-        paid_ad = PostPaidAd.objects.get(pk=pk)
+        paid_ad = PostPaidAd.objects.get(pk=ad_id)
     except PostPaidAd.DoesNotExist:
         return Response({'detail': 'Ad not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    paid_ad_id = PaidAdMessageId.objects.filter(user=user, paid_ad=paid_ad).first()
+    if not paid_ad_id:
+        paid_ad_id = PaidAdMessageId.objects.create(
+            user=user,
+            paid_ad=paid_ad,
+            message=message,
+            paid_ad_message_id=paid_ad_message_id,
+        )
+    else:
+        paid_ad_id.paid_ad_message_id = paid_ad_message_id
+        paid_ad_id.message = message
+        paid_ad_id.save()
     
     ad_message = Message.objects.create(
             user=user,
             message=message,
             paid_ad=paid_ad,
-        )
-    
-    PaidAdMessageId.objects.create(
-            user=user,
-            message=ad_message,
-            paid_ad_message_id=paid_ad_message_id,
-        )
+            paid_ad_message_id=paid_ad_id,
+        )    
+    ad_message.seller_paid_ad_msg_count += 1
+    ad_message.save()
+
     return Response({'message': 'Message created'}, status=status.HTTP_201_CREATED)
  
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def list_paid_ad_messages(request, pk):
+def list_paid_ad_messages(request):
     user = request.user
     # data  = request.data
     # print('data:', data)
     print('user:', user)
 
+    ad_id = request.GET.get('ad_id', '')
+    paid_ad_message_id = request.GET.get('paid_ad_message_id', '')
+    print('paid_ad_message_id:', paid_ad_message_id)
+
     try:
-        paid_ad = PostPaidAd.objects.get(pk=pk)
+        paid_ad = PostPaidAd.objects.get(pk=ad_id)
     except PostPaidAd.DoesNotExist:
         return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
     
@@ -982,8 +1079,8 @@ def list_paid_ad_messages(request, pk):
     
     try:
         ad_message = Message.objects.filter(
-            # user=user,
-            paid_ad=paid_ad,
+            paid_ad_message_id=paid_ad_message_id,
+            # paid_ad=paid_ad,
             ).order_by('timestamp')
         serializer = MessageSerializer(ad_message, many=True) 
         return Response(serializer.data)
@@ -1050,20 +1147,22 @@ def seller_reply_paid_ad_message(request):
     data=request.data
     print('data:', data, 'seller:', seller)
 
-    pk = data.get('pk')
+    ad_id = data.get('ad_id')
     message = data.get('message')
-    print('pk:', pk)
+    paid_ad_message_id = data.get('paid_ad_message_id')
+    print('paid_ad_message_id:', paid_ad_message_id)
     print('message:', message)
     
     try:
-        paid_ad = PostPaidAd.objects.get(pk=pk)
+        paid_ad = PostPaidAd.objects.get(pk=ad_id)
     except PostPaidAd.DoesNotExist:
-        return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'detail': 'Ad not found'}, status=status.HTTP_404_NOT_FOUND)
     
     Message.objects.create(
             seller=seller,
             message=message,
             paid_ad=paid_ad,
+            paid_ad_message_id=paid_ad_message_id,
         )
     return Response({'message': 'Message created'}, status=status.HTTP_201_CREATED)
 

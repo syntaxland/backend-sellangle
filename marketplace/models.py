@@ -848,7 +848,6 @@ class MarketplaceSellerPhoto(models.Model):
 
 class PostFreeAd(models.Model): 
     seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="ad_seller") 
-    # user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="fre_ad_reporter") 
     # seller_photo = models.ForeignKey(MarketplaceSellerPhoto, on_delete=models.SET_NULL, null=True, blank=True, related_name="seller_free_ad_photo") 
     ad_name = models.CharField(max_length=80, null=True)
     ad_category = models.CharField(max_length=100, choices=AD_CATEGORY_CHOICES, null=True) 
@@ -858,7 +857,6 @@ class PostFreeAd(models.Model):
     state_province = models.CharField(max_length=255, null=True)
     city = models.CharField(max_length=255, null=True, blank=True)
     condition = models.CharField(max_length=100, choices=AD_CONDITION_CHOICES, null=True, blank=True)
-    # ad_charges = models.DecimalField(max_digits=16, decimal_places=2, default=0)
     currency = models.CharField(max_length=50, choices=CURRENCY_CHOICES, default='NGN', null=True, blank=True)
     price = models.DecimalField(max_digits=16, decimal_places=2, null=True)
     usd_price = models.DecimalField(max_digits=16, decimal_places=2, null=True, blank=True)
@@ -867,7 +865,6 @@ class PostFreeAd(models.Model):
     brand = models.CharField(max_length=255, blank=True, null=True) 
     description = models.TextField(max_length=4000, blank=True, null=True)
     youtube_link = models.URLField(max_length=255, blank=True, null=True)
-    # promo_code = models.ForeignKey('promo.PromoCode', on_delete=models.SET_NULL, null=True, blank=True)
     ad_rating = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True, editable=False) 
     num_reviews = models.IntegerField(null=True, blank=True, default=0, editable=False)
     ad_is_saved = models.BooleanField(default=False)
@@ -918,7 +915,6 @@ class PostFreeAd(models.Model):
 
 class PostPaidAd(models.Model):
     seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_seller") 
-    # user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_reporter") 
     # seller_photo = models.ForeignKey(MarketplaceSellerPhoto, on_delete=models.SET_NULL, null=True, blank=True, related_name="seller_paid_ad_photo") 
     ad_name = models.CharField(max_length=80, null=True)
     ad_category = models.CharField(max_length=100, choices=AD_CATEGORY_CHOICES, null=True, blank=True)
@@ -931,14 +927,15 @@ class PostPaidAd(models.Model):
     currency = models.CharField(max_length=50, choices=MAIN_CURRENCY_CHOICES, default='NGN', null=True, blank=True)
     price = models.DecimalField(max_digits=16, decimal_places=2, null=True)
     usd_price = models.DecimalField(max_digits=16, decimal_places=2, null=True, blank=True)
-    usd_currency = models.CharField(max_length=50, choices=CURRENCY_CHOICES, default='USD', null=True)
+    usd_currency = models.CharField(max_length=50, choices=CURRENCY_CHOICES, default='USD', null=True, blank=True)
     promo_price = models.DecimalField(max_digits=16, decimal_places=2, null=True, blank=True)    
     brand = models.CharField(max_length=255, blank=True, null=True) 
     promo_code = models.CharField(max_length=10, null=True, blank=True)
-    discount_percentage = models.DecimalField(max_digits=5, decimal_places=1, default=0) 
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=1, default=0, blank=True) 
     description = models.TextField(max_length=4000, blank=True, null=True)
     youtube_link = models.URLField(max_length=255, blank=True, null=True)
-    ad_charges = models.DecimalField(max_digits=16, decimal_places=2, default=0)
+    ad_charges = models.DecimalField(max_digits=16, decimal_places=2, default=0, editable=False, blank=True)
+    ad_charge_hours  = models.PositiveIntegerField(null=True, default=0, editable=False) 
     is_price_negotiable = models.BooleanField(default=False)
     phone_view_count = models.PositiveIntegerField(default=0, editable=False)
     phone_view_user_count = models.PositiveIntegerField(default=0, editable=False)
@@ -954,7 +951,7 @@ class PostPaidAd(models.Model):
     is_ad_reported = models.BooleanField(default=False)
     ad_report_count = models.PositiveIntegerField(default=0, editable=False)
     ad_report = models.CharField(max_length=100, choices=AD_REPORT_CHOICES, null=True, blank=True)
-    image1 = models.ImageField(upload_to='./media/marketplace', null=True, default='./media/default_ad_photo.jpg')
+    image1 = models.ImageField(upload_to='./media/marketplace', null=True, default='./media/default_ad_photo.jpg', blank=True)
     image2 = models.ImageField(upload_to='./media/marketplace', null=True, blank=True)
     image3 = models.ImageField(upload_to='./media/marketplace', null=True, blank=True)
     duration = models.CharField(max_length=100, choices=DURATION_CHOICES, default='1 day', null=True, blank=True)
@@ -1083,8 +1080,10 @@ class ReviewPaidAdSeller(models.Model):
         return str(self.rating)
 
 
-class AdCharge(models.Model): 
-    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="ad_charge_seller") 
-    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='ad_charge', blank=True, null=True)
-    ad_charges = models.DecimalField(max_digits=16, decimal_places=2, default=0)
+class AdChargeTotal(models.Model): 
+    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="ad_total_charge_seller") 
+    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='total_ad_charge', blank=True, null=True)
+    total_ad_charges = models.DecimalField(max_digits=16, decimal_places=2, default=0, editable=False)
+    total_ad_charge_hours = models.PositiveIntegerField(null=True, default=0, editable=False)
+    total_ad_charge_id = models.CharField(max_length=20, unique=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)

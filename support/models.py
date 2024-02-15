@@ -31,7 +31,7 @@ class SupportTicket(models.Model):
     is_resolved = models.BooleanField(default=False)  
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
-    def __str__(self):
+    def __str__(self): 
         return f"{self.user} {self.ticket_id}" 
 
 
