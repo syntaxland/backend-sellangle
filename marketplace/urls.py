@@ -73,6 +73,7 @@ urlpatterns = [
     path('apply-promo-code/', views.apply_promo_code, name='apply_promo_code'),
 
     path('get-seller-paid-ads-charges/', views.get_seller_paid_ads_charges, name='get_seller_paid_ads_charges'),
+    path('pay-ad-charges/', views.pay_ad_charges, name='pay_ad_charges'),
 
     path('search-seller-username/<str:seller_username>/', views.search_seller_username, name='search-seller-username'),
     path('get-seller-detail/<str:seller_username>/', views.get_seller_detail, name='get-seller-detail'),

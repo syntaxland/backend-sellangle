@@ -5,6 +5,7 @@ from decimal import ROUND_DOWN, Decimal
 from datetime import datetime, timedelta, timezone
 
 from django.shortcuts import get_object_or_404
+from django.db.models import Sum, F
 
 # import nltk
 # from nltk.corpus import wordnet
@@ -15,7 +16,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from credit_point.models import CreditPoint
+from credit_point.models import CreditPoint, AdChargeCreditPoint
 from .models import (MarketPlaceSellerAccount, 
                      MarketplaceSellerPhoto, 
                      PostFreeAd, PostPaidAd, 
@@ -44,6 +45,11 @@ User = get_user_model()
 
 def generate_ad_message_id():
     return ''.join(random.choices(string.digits, k=16))
+
+
+def generate_ad_charge_id(): 
+    letters_and_digits = string.ascii_uppercase + string.digits
+    return 'CHG'+''.join(random.choices(letters_and_digits, k=16))
 
  
 @api_view(['POST'])
@@ -127,18 +133,22 @@ def create_free_ad(request):
 def create_paid_ad(request):
     seller = request.user
     data = request.data 
-    serializer = PostPaidAdSerializer(data=data)
+    serializer = PostPaidAdSerializer(data=data) 
 
     try:
         credit_point = CreditPoint.objects.get(user=seller)
         credit_point_balance = credit_point.balance
 
         print('credit_point_balance:', credit_point_balance)
-        if credit_point_balance < 24:
-            return Response({'detail': f'Your credit point credit point balance of {credit_point_balance} is too low. You need at least 24 cps to place a paid ad.'}, 
+        if credit_point_balance < 28.8:
+            return Response({'detail': f'Your credit point credit point balance of {credit_point_balance} is too low. You need at least 28.8 cps to place a paid ad.'}, 
                             status=status.HTTP_400_BAD_REQUEST)
     except CreditPoint.DoesNotExist:
-        pass
+        pass 
+    
+    if seller.ad_charge_is_owed == True:
+        return Response({'detail': 'You have unpaid ad charges. Please fund your CPS Wallet and try again.'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     if serializer.is_valid():        
         ad = serializer.save(seller=seller)
@@ -586,11 +596,15 @@ def update_seller_paid_ad(request):
         credit_point_balance = credit_point.balance
 
         print('credit_point_balance:', credit_point_balance)
-        if credit_point_balance < 24:
-            return Response({'detail': f'Your credit point credit point balance of {credit_point_balance} is too low. You need at least 24 cps to complete this action.'}, 
+        if credit_point_balance < 28.8:
+            return Response({'detail': f'Your credit point credit point balance of {credit_point_balance} is too low. You need at least 28.8 cps to complete this action.'}, 
                             status=status.HTTP_400_BAD_REQUEST)
     except CreditPoint.DoesNotExist:
         pass
+
+    if user.ad_charge_is_owed == True:
+        return Response({'detail': 'You have unpaid ad charges. Please fund your CPS Wallet and try again.'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     try:
         paid_ad = PostPaidAd.objects.get(seller=user, id=ad_id)
@@ -665,11 +679,15 @@ def reactivate_paid_ad(request):
         credit_point_balance = credit_point.balance
 
         print('credit_point_balance:', credit_point_balance)
-        if credit_point_balance < 24:
-            return Response({'detail': f'Your credit point credit point balance of {credit_point_balance} is too low. You need at least 24 cps to complete this action.'}, 
+        if credit_point_balance < 28.8:
+            return Response({'detail': f'Your credit point credit point balance of {credit_point_balance} is too low. You need at least 28.8 cps to complete this action.'}, 
                             status=status.HTTP_400_BAD_REQUEST)
     except CreditPoint.DoesNotExist:
         pass
+
+    if user.ad_charge_is_owed == True:
+        return Response({'detail': 'You have unpaid ad charges. Please fund your CPS Wallet and try again.'},
+                        status=status.HTTP_400_BAD_REQUEST)
     
     try:
         ad = PostPaidAd.objects.get(seller=user, id=ad_id)
@@ -789,34 +807,62 @@ def get_seller_paid_ads_charges(request):
     except PostPaidAd.DoesNotExist:
         return Response({'detail': 'Paid ad not found'}, status=status.HTTP_404_NOT_FOUND)
 
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def get_seller_paid_ads_charges(request):
-#     user = request.user
-#     data = request.data
-#     print('user:', user)
-#     print('data:', data)
 
-#     current_datetime = datetime.now()
-#     try:
-#         paid_ad = PostPaidAd.objects.filter(
-#             seller=user, 
-#             expiration_date__gt=current_datetime, 
-#             ad_charges__gt=0
-#             )
-#         serializer = PostPaidAdSerializer(paid_ad, many=True)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def pay_ad_charges(request):
+    user = request.user
+    data = request.data 
+    print('user:', user)
+    print('data:', data)
 
-#         total_ad_charges = AdChargeTotal.objects.filter(seller=user)
-#         serializer = AdChargeTotalSerializer(paid_ad, many=True)
+    ad_charges_amt = Decimal(data.get('ad_charges_amt'))
 
-#         # return Response(serializer.data)
-#         return Response({'data': serializer.data, 
-#                         #  'sellerApiKey': seller_api_key, 
-                         
-#                          }, 
-#                         status=status.HTTP_200_OK)
-#     except PostPaidAd.DoesNotExist:
-#         return Response({'detail': 'Paid ad not found'}, status=status.HTTP_404_NOT_FOUND)
+    try:
+        credit_point = CreditPoint.objects.get(user=user)
+        credit_point_balance = credit_point.balance
+
+        print('credit_point_balance:', credit_point_balance)
+        if credit_point_balance < ad_charges_amt:
+            return Response({'detail': f'Your credit point credit point balance of {credit_point_balance} is too low. Please fund your CPS wallet and try again.'}, 
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        CreditPoint.objects.get(user=user)
+        credit_point.balance -= ad_charges_amt
+        credit_point.save()
+        
+        credit_point = CreditPoint.objects.get(user=user)
+        cps_new_bal = credit_point.balance
+
+        AdChargeCreditPoint.objects.create(
+            user=user,
+            cps_amount=ad_charges_amt,
+            old_bal=credit_point_balance,
+            new_bal=cps_new_bal, 
+            ad_charge_cps_id=generate_ad_charge_id(),
+            is_success=True,
+        )
+
+        ad_charges = AdChargeTotal.objects.get(seller=user)
+        ad_charges.total_ad_charges = 0
+        ad_charges.total_ad_charge_hours = 0
+        ad_charges.save()
+       
+        PostPaidAd.objects.filter(
+            seller=user, 
+            ad_charges__gt=0
+            ).update(
+            ad_charges=0,
+            ad_charge_hours=0,
+        )
+        user.ad_charge_is_owed=False
+        user.save()
+    except CreditPoint.DoesNotExist:
+        pass
+
+    return Response({'success': f'Ad charged successfully.'}, status=status.HTTP_200_OK)
+    # except Exception as e:
+    #     return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['PUT'])
@@ -860,8 +906,8 @@ def create_free_ad_message(request):
 
     ad_id = data.get('ad_id')
     message = data.get('message')
-    free_ad_message_id = generate_ad_message_id()
-    print('free_ad_message_id:', free_ad_message_id)
+    # free_ad_message_id = generate_ad_message_id()
+    # print('free_ad_message_id:', free_ad_message_id)
     print('message:', message)
     
     try:
@@ -869,34 +915,28 @@ def create_free_ad_message(request):
     except PostFreeAd.DoesNotExist:
         return Response({'detail': 'Ad not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    # free_ad_id, created = FreeAdMessageId.objects.get_or_create(
-    #     user=user,
-    #     free_ad=free_ad,
-    #     # message=message,
-    #     defaults={'free_ad_message_id': free_ad_message_id},
-    # )
-    # if not created:
-    #     free_ad_id.free_ad_message_id = free_ad_message_id
-    #     free_ad_id.save()
-
-    free_ad_id = FreeAdMessageId.objects.filter(user=user, free_ad=free_ad).first()
-    if not free_ad_id:
-        free_ad_id = FreeAdMessageId.objects.create(
+    free_ad_msg_id = FreeAdMessageId.objects.filter(user=user, free_ad=free_ad).first()
+    if not free_ad_msg_id:
+        free_ad_msg_id = FreeAdMessageId.objects.create(
             user=user,
             free_ad=free_ad,
             message=message,
-            free_ad_message_id=free_ad_message_id,
-        )
+            free_ad_message_id=generate_ad_message_id(),
+        ) 
     else:
-        free_ad_id.free_ad_message_id = free_ad_message_id
-        free_ad_id.message = message
-        free_ad_id.save()
-    
+        free_ad_msg_id.message
+        free_ad_msg_id.save()
+
+    free_ad_msg_id = FreeAdMessageId.objects.get(user=user, free_ad=free_ad)
+
+    free_ad_id = free_ad_msg_id.free_ad_message_id
+    print('free_ad_id:', free_ad_id)
+
     ad_message = Message.objects.create(
             user=user,
             message=message,
             free_ad=free_ad,
-            free_ad_message_id=free_ad_id,
+            free_ad_message_id=free_ad_msg_id,
         )
     
     ad_message.seller_free_ad_msg_count += 1
@@ -923,18 +963,16 @@ def list_free_ad_messages(request):
 
     try:
         if free_ad:
-            free_ad_message_id = request.GET.get('free_ad_message_id', '')
-        else:
-            free_ad_message_id = PostFreeAd.objects.get(free_ad=free_ad)
-    except PostFreeAd.DoesNotExist:
-        return Response({'detail': 'Ad not found'}, status=status.HTTP_404_NOT_FOUND)
+            free_ad_msg_id = FreeAdMessageId.objects.get(free_ad=free_ad)
+    except FreeAdMessageId.DoesNotExist:
+        return Response({'detail': 'Ad ID not found'}, status=status.HTTP_404_NOT_FOUND)
     
     print('free_ad:', free_ad)
-    print('free_ad_message_id:', free_ad_message_id) 
+    print('free_ad_msg_id:', free_ad_msg_id) 
     
     try:
         ad_message = Message.objects.filter(
-            free_ad_message_id=free_ad_message_id,
+            free_ad_message_id=free_ad_msg_id,
             # free_ad=free_ad,
             ).order_by('timestamp')
         serializer = MessageSerializer(ad_message, many=True)
@@ -962,21 +1000,17 @@ def seller_reply_free_ad_message(request):
     except PostFreeAd.DoesNotExist:
         return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    # try:
-    #     free_ad_message_id = FreeAdMessageId.objects.filter(free_ad=free_ad).first()
-    # except FreeAdMessageId.DoesNotExist:
-    #     return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
-
-    # try:
-    #     ad_message_id = FreeAdMessageId.objects.get(free_ad_message_id=free_ad_message_id, message=message)
-    # except FreeAdMessageId.DoesNotExist:
-    #     return Response({'detail': 'Message ID not found'}, status=status.HTTP_404_NOT_FOUND)
+    try:
+        if free_ad:
+            free_ad_msg_id = FreeAdMessageId.objects.get(free_ad=free_ad, free_ad_message_id=free_ad_message_id)
+    except FreeAdMessageId.DoesNotExist:
+        return Response({'detail': 'Ad ID not found'}, status=status.HTTP_404_NOT_FOUND)
     
     Message.objects.create(
             seller=seller,
             message=message,
             free_ad=free_ad,
-            free_ad_message_id=free_ad_message_id,
+            free_ad_message_id=free_ad_msg_id,
         )
     
     return Response({'message': 'Message created'}, status=status.HTTP_201_CREATED)
@@ -996,7 +1030,7 @@ def list_seller_free_ad_messages(request, pk):
         return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
 
     try:
-        free_ad_message_id = FreeAdMessageId.objects.all(free_ad=free_ad)
+        free_ad_message_id = FreeAdMessageId.objects.get(free_ad=free_ad)
     except FreeAdMessageId.DoesNotExist:
         return Response({'detail': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
     
@@ -1096,7 +1130,8 @@ def get_buyer_free_ad_messages(request):
 
     current_datetime = datetime.now()
     seller_free_ads = PostFreeAd.objects.filter(seller=user, expiration_date__gt=current_datetime)
-    messages = Message.objects.filter(free_ad__in=seller_free_ads).order_by('-timestamp')
+    # messages = Message.objects.filter(free_ad__in=seller_free_ads).order_by('-timestamp')
+    messages = FreeAdMessageId.objects.filter(free_ad__in=seller_free_ads).order_by('-timestamp')
     serializer = MessageSerializer(messages, many=True)
     return Response(serializer.data)
 

@@ -83,6 +83,14 @@ def deduct_total_ad_charge_from_cps():
                 if credit_point_balance < total_ad_charge.total_ad_charges:
                     # send_seller_insufficient_cps_bal_email()
                     # send_seller_insufficient_cps_bal_msg()
+                    PostPaidAd.objects.filter(
+                    seller=total_ad_charge.seller, 
+                    ad_charges__gt=0
+                    ).update(
+                    )
+                    total_ad_charge.seller.ad_charge_is_owed=True
+                    total_ad_charge.seller.save()
+
                     print(f'Insufficient balance for seller {total_ad_charge.seller.username}')
                     continue
 
@@ -114,8 +122,10 @@ def deduct_total_ad_charge_from_cps():
                     ad_charges__gt=0
                     ).update(
                     ad_charges=0,
-                    ad_charge_hours=0
+                    ad_charge_hours=0,
                 )
+                total_ad_charge.seller.ad_charge_is_owed=False
+                total_ad_charge.seller.save()
 
             except CreditPoint.DoesNotExist:
                 print(f'CreditPoint not found for seller {total_ad_charge.seller.username}')
@@ -123,6 +133,65 @@ def deduct_total_ad_charge_from_cps():
     return 'Total ad charges deducted from seller credit points successfully.'
 
        
+
+@shared_task
+def charge_owed_ads():
+    owed_users = User.objects.filter(ad_charge_is_owed=True)
+
+    for user in owed_users:
+        total_ad_charge = AdChargeTotal.objects.filter(seller=user).first()
+
+        if total_ad_charge:
+            try:
+                credit_point = CreditPoint.objects.get(user=user)
+                credit_point_balance = credit_point.balance
+
+                if credit_point_balance < total_ad_charge.total_ad_charges:
+                    # send_seller_insufficient_cps_bal_email()
+                    # send_seller_insufficient_cps_bal_msg()
+                    print(f'Insufficient balance for seller {user.username}')
+                    continue
+
+                # Deduct total_ad_charges from credit point balance
+                CreditPoint.objects.filter(user=user).update(
+                    balance=F('balance') - total_ad_charge.total_ad_charges
+                )
+
+                credit_point = CreditPoint.objects.get(user=user)
+                cps_new_bal = credit_point.balance
+
+                AdChargeCreditPoint.objects.create(
+                    user=user,
+                    cps_amount=total_ad_charge.total_ad_charges,
+                    old_bal=credit_point_balance,
+                    new_bal=cps_new_bal,
+                    ad_charge_cps_id=generate_ad_charge_id(),
+                    is_success=True,
+                )
+
+                AdChargeTotal.objects.filter(
+                    seller=user,
+                ).update(
+                    total_ad_charges=0,
+                    total_ad_charge_hours=0
+                )
+
+                PostPaidAd.objects.filter(
+                    seller=user,
+                    ad_charges__gt=0
+                ).update(
+                    ad_charges=0,
+                    ad_charge_hours=0,
+                )
+
+                user.ad_charge_is_owed = False
+                user.save()
+
+            except CreditPoint.DoesNotExist:
+                print(f'CreditPoint not found for seller {user.username}')
+
+    return 'Owed ad charges deducted from users successfully. Owed Users:', len(owed_users) 
+
 
 @shared_task
 def delete_expired_ads():

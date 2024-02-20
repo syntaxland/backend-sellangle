@@ -22,13 +22,19 @@ app.conf.beat_schedule = {
     'get-total-ad-charge': {
         'task': 'marketplace.tasks.get_total_ad_charge',
         # 'schedule': crontab(hour=0, minute=0),  
-        'schedule': timedelta(seconds=120),
+        'schedule': timedelta(seconds=62),
     },
     'deduct-total-ad-charge-from-cps': {
         'task': 'marketplace.tasks.deduct_total_ad_charge_from_cps',
         # 'schedule': crontab(hour=0, minute=0),  
-        # 'schedule': timedelta(seconds=180),
-        'schedule': timedelta(hours=1),
+        'schedule': timedelta(seconds=100),
+        # 'schedule': timedelta(hours=1),
+    },
+    'charge-owed-ads': {
+        'task': 'marketplace.tasks.charge_owed_ads',
+        # 'schedule': crontab(hour=0, minute=0),  
+        'schedule': timedelta(seconds=15),
+        # 'schedule': timedelta(hours=1),
     },
     'delete-expired-ads': {
         'task': 'marketplace.tasks.delete_expired_ads',

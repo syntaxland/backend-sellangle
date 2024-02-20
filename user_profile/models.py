@@ -59,6 +59,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)  
     is_marketplace_seller = models.BooleanField(default=False)  
     is_ecommerce_seller = models.BooleanField(default=False)  
+    ad_charge_is_owed = models.BooleanField(default=False)
     is_terms_conditions_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now, blank=True, editable=False) 
   

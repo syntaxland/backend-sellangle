@@ -4,3 +4,4 @@ sudo cp /home/ubuntu/backend-sellangle/gunicorn/gunicorn.service  /etc/systemd/s
 
 sudo systemctl start gunicorn.service
 sudo systemctl enable gunicorn.service
+ 
