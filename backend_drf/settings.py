@@ -452,7 +452,7 @@ LOGOUT_REDIRECT_URL = '/login'
 AUTH_USER_MODEL = 'user_profile.User' 
 
 # Celery Configuration
-# CELERY_BROKER_URL = 'redis://localhost:6379/0'  
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  
 # result_backend = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  
 CELERY_RESULT_BACKEND = 'django-db'  
