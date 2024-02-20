@@ -461,7 +461,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 CELERY_BROKER_RETRY_ON_STARTUP = False
-
+broker_connection_retry_on_startup = True
 CELERY_BEAT_SHEDULER = 'django-celery-beat.shedulers.DatabaseSheduler'
 
 
