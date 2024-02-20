@@ -451,14 +451,28 @@ LOGOUT_REDIRECT_URL = '/login'
 
 AUTH_USER_MODEL = 'user_profile.User' 
 
-# Celery Configuration
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  
+# # Celery Configuration
+# # CELERY_BROKER_URL = 'redis://localhost:6379/0'  
+# result_backend = 'redis://localhost:6379/0'
 # CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  
-CELERY_RESULT_BACKEND = 'django-db'  
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
-CELERY_BROKER_RETRY_ON_STARTUP = False
+# # CELERY_RESULT_BACKEND = 'django-db'  
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TIMEZONE = 'UTC'
+# CELERY_BROKER_RETRY_ON_STARTUP = False
 
+# CELERY_BEAT_SHEDULER = 'django-celery-beat.shedulers.DatabaseSheduler'
+
+
+# Celery Configuration
+broker_url = 'redis://localhost:6379/0'
+result_backend = 'redis://localhost:6379/0'
+accept_content = ['json']
+timezone = 'UTC'
+result_serializer = 'json'
+task_serializer = 'json'
+broker_connection_retry_on_startup = True
 CELERY_BEAT_SHEDULER = 'django-celery-beat.shedulers.DatabaseSheduler'
+
+

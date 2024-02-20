@@ -195,8 +195,8 @@ def charge_owed_ads():
 
 @shared_task
 def delete_expired_ads():
-    threshold_date = datetime.now() - timedelta(seconds=100)
-    # threshold_date = datetime.now() - timedelta(days=7)
+    # threshold_date = datetime.now() - timedelta(seconds=100)
+    threshold_date = datetime.now() - timedelta(days=7)
 
     expired_paid_ads = PostPaidAd.objects.filter(
         expiration_date__lte=threshold_date,
