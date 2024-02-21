@@ -11,6 +11,7 @@ class AuthorAdmin(admin.ModelAdmin):
         'receiver',
         'message',
         'is_read',
+        'msg_count',
         'timestamp',) 
     
     search_fields = (

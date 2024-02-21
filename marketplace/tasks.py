@@ -146,10 +146,11 @@ def charge_owed_ads():
             try:
                 credit_point = CreditPoint.objects.get(user=user)
                 credit_point_balance = credit_point.balance
+                insufficient_cps_balance = total_ad_charge.total_ad_charges
 
                 if credit_point_balance < total_ad_charge.total_ad_charges:
                     # send_seller_insufficient_cps_bal_email(user)
-                    send_seller_insufficient_cps_bal_msg(user)
+                    send_seller_insufficient_cps_bal_msg(user, insufficient_cps_balance, credit_point_balance)
                     print(f'Insufficient balance for seller {user.username}')
                     continue
 
@@ -194,7 +195,7 @@ def charge_owed_ads():
     return 'Owed ad charges deducted from users successfully. Owed Users:', len(owed_users) 
 
 
-def send_seller_insufficient_cps_bal_msg(user):
+def send_seller_insufficient_cps_bal_msg(user, credit_point_balance, insufficient_cps_balance):
     
     # system_user, created = User.objects.get_or_create(username='system_user')
 
@@ -205,6 +206,11 @@ def send_seller_insufficient_cps_bal_msg(user):
     #     "Best regards,\nThe Support Team"
     # )
 
+    formatted_outstanding_cps_amount = '{:,.2f}'.format(float(credit_point_balance))
+    formatted_insufficient_cps_balance = '{:,.2f}'.format(float(insufficient_cps_balance))
+
+    # Customize the message content using an HTML template
+
     message_content = f"""
         <html>
         <head>
@@ -212,7 +218,7 @@ def send_seller_insufficient_cps_bal_msg(user):
         </head>
         <body>
             <p>Dear {user.username},</p>
-            <p>Your ad charges couldn't be deducted due to insufficient CPS balance.</p>
+            <p>Your ad charges of <b>{formatted_outstanding_cps_amount} CPS</b> owed couldn't be deducted due to insufficient credit point balance <b>({formatted_insufficient_cps_balance} CPS)</b> .</p>
             <p>Please fund your CPS wallet to continue using our services.</p>
             <p>Best regards,<br>The Support Team</p>
         </body>
