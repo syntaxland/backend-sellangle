@@ -56,4 +56,3 @@ def message_inbox_view(request):
         return Response({'detail': 'Messages not found'}, status=status.HTTP_404_NOT_FOUND)
     
 
-

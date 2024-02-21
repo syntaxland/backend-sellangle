@@ -11,6 +11,7 @@ from .models import (PostPaidAd,
                       AdChargeTotal
                       )
 from credit_point.models import CreditPoint, AdChargeCreditPoint
+from send_message_inbox.models import SendMessageInbox
 from django.db import transaction
 from django.db.models import Sum, F
 from django.contrib.auth import get_user_model
@@ -147,8 +148,8 @@ def charge_owed_ads():
                 credit_point_balance = credit_point.balance
 
                 if credit_point_balance < total_ad_charge.total_ad_charges:
-                    # send_seller_insufficient_cps_bal_email()
-                    # send_seller_insufficient_cps_bal_msg()
+                    # send_seller_insufficient_cps_bal_email(user)
+                    send_seller_insufficient_cps_bal_msg(user)
                     print(f'Insufficient balance for seller {user.username}')
                     continue
 
@@ -191,6 +192,45 @@ def charge_owed_ads():
                 print(f'CreditPoint not found for seller {user.username}')
 
     return 'Owed ad charges deducted from users successfully. Owed Users:', len(owed_users) 
+
+
+def send_seller_insufficient_cps_bal_msg(user):
+    
+    # system_user, created = User.objects.get_or_create(username='system_user')
+
+    # message_content = (
+    #     f"Dear {user.username},\n\n"
+    #     "Your ad charges couldn't be deducted due to insufficient CPS balance.\n"
+    #     "Please fund your CPS wallet to continue using our services.\n\n"
+    #     "Best regards,\nThe Support Team"
+    # )
+
+    message_content = f"""
+        <html>
+        <head>
+            <title>Insufficient CPS Balance</title>
+        </head>
+        <body>
+            <p>Dear {user.username},</p>
+            <p>Your ad charges couldn't be deducted due to insufficient CPS balance.</p>
+            <p>Please fund your CPS wallet to continue using our services.</p>
+            <p>Best regards,<br>The Support Team</p>
+        </body>
+        </html>
+    """
+
+    inbox_message = SendMessageInbox.objects.create(
+        # sender=system_user,  
+        receiver=user,
+        subject="Insufficient CPS Balance",
+        message=message_content,
+        is_read=False,
+    )
+
+    inbox_message.msg_count += 1
+    inbox_message.save()
+    
+    print(f"Notification sent to {user.username} about insufficient CPS balance.")
 
 
 @shared_task
