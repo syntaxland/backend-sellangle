@@ -824,7 +824,7 @@ def pay_ad_charges(request):
 
         print('credit_point_balance:', credit_point_balance)
         if credit_point_balance < ad_charges_amt:
-            return Response({'detail': f'Your credit point credit point balance of {credit_point_balance} is too low. Please fund your CPS wallet and try again.'}, 
+            return Response({'detail': f'Your credit point balance of {credit_point_balance} is too low. Please fund your CPS wallet and try again.'}, 
                             status=status.HTTP_400_BAD_REQUEST)
 
         CreditPoint.objects.get(user=user)

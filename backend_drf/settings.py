@@ -48,7 +48,7 @@ DEBUG = True
 #                  'ec2-18-212-11-87.compute-1.amazonaws.com', 
 #                  'mcdofglobal.s3-website-us-east-1.amazonaws.com'
 #                  ]
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*"] 
 
 # Application definition 
 INSTALLED_APPS = [
