@@ -26,7 +26,7 @@ app.conf.beat_schedule = {
     },
     'deduct-total-ad-charge-from-cps': {
         'task': 'marketplace.tasks.deduct_total_ad_charge_from_cps',
-        # 'schedule': crontab(hour=0, minute=0),  
+        # 'schedule': crontab(hour=0, minute=1),  
         'schedule': timedelta(seconds=100),
         # 'schedule': timedelta(hours=1),
     },

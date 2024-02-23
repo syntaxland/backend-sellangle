@@ -41,13 +41,14 @@ DEBUG = True
 # DEBUG = False
 
 # ALLOWED_HOSTS = ['localhost', 
-#                  'localhost:8000',  
+#                  'localhost:8002',  
 #                  '127.0.0.1', 
-#                  '127.0.0.1:8000', 
-#                  '54.34.229.79.247', 
-#                  'ec2-18-212-11-87.compute-1.amazonaws.com', 
-#                  'mcdofglobal.s3-website-us-east-1.amazonaws.com'
+#                  '127.0.0.1:8002', 
+#                  '34.202.53.39', 
+#                  'ec2-34.202.53.39.compute-1.amazonaws.com', 
+#                  'backend.sellangle.com' 
 #                  ]
+
 ALLOWED_HOSTS = ["*"] 
 
 # Application definition 
@@ -350,16 +351,16 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS_ALLOWED_ORIGINS = [
-#     "https://mcdofglobal.com",
-#     "https://store.mcdofglobal.com",
-#     "http://localhost:8000",
-#     "http://127.0.0.1:3000",
-#     "http://localhost:3000",
-#     "http://127.0.0.1:8000",
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "https://sellangle.com",
+    "https://backend.sellangle.com",
+    "http://localhost:8002",
+    "http://127.0.0.1:3002",
+    "http://localhost:3002",
+    "http://127.0.0.1:8002",
+]
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 
 # setting up s3 storages for media and static  
 # from storages.backends.s3boto3 import S3Boto3Storage
@@ -453,7 +454,6 @@ AUTH_USER_MODEL = 'user_profile.User'
 
 # Celery Configuration
 CELERY_BROKER_URL = 'redis://localhost:6379/0'  
-# result_backend = 'redis://localhost:6379/0'
 # CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  
 CELERY_RESULT_BACKEND = 'django-db'  
 CELERY_ACCEPT_CONTENT = ['json']
@@ -463,16 +463,3 @@ CELERY_TIMEZONE = 'UTC'
 CELERY_BROKER_RETRY_ON_STARTUP = False
 broker_connection_retry_on_startup = True
 CELERY_BEAT_SHEDULER = 'django-celery-beat.shedulers.DatabaseSheduler'
-
-
-# # Celery Configuration
-# broker_url = 'redis://localhost:6379/0'
-# result_backend = 'redis://localhost:6379/0'
-# accept_content = ['json']
-# timezone = 'UTC'
-# result_serializer = 'json'
-# task_serializer = 'json'
-# broker_connection_retry_on_startup = True
-# CELERY_BEAT_SHEDULER = 'django-celery-beat.shedulers.DatabaseSheduler'
-
-
