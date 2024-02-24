@@ -39,7 +39,7 @@ urlpatterns = [
     path('api/', include('marketplace.urls')),
     # path('api/', include('ecommerce.urls')),
     path('api/', include('promo.urls')),
-    path('api/', include('support.urls')),
+    path('api/', include('support.urls')), 
     path('api/', include('feedback.urls')),
 ] 
 

@@ -20,6 +20,9 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
+
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def send_email_to_all_users(request):
@@ -33,7 +36,8 @@ def send_email_to_all_users(request):
         
         sender_name = settings.EMAIL_SENDER_NAME
         sender_email = settings.EMAIL_HOST_USER
-        receivers = [user.email for user in User.objects.all()]
+        # receivers = [user.email for user in User.objects.all()]
+        receivers = [user.email for user in User.objects.filter(user_is_not_active=False)]
         print("Receivers:", receivers)
 
         # user_first_names = [user.first_name for user in User.objects.all()]

@@ -61,6 +61,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_ecommerce_seller = models.BooleanField(default=False)  
     ad_charge_is_owed = models.BooleanField(default=False)
     is_terms_conditions_read = models.BooleanField(default=False)
+    user_is_not_active = models.BooleanField(default=False)  
+    is_user_live_banned = models.BooleanField(default=False)  
+    is_user_1day_banned = models.BooleanField(default=False)  
+    is_user_2day_banned = models.BooleanField(default=False)  
+    is_user_3day_banned = models.BooleanField(default=False)  
+    is_user_1week_banned = models.BooleanField(default=False)  
+    is_user_3week_banned = models.BooleanField(default=False)  
+    is_user_1month_banned = models.BooleanField(default=False)  
+    is_user_2month_banned = models.BooleanField(default=False)  
+    is_user_3month_banned = models.BooleanField(default=False)  
+    is_user_6month_banned = models.BooleanField(default=False)  
+    is_user_1year_banned = models.BooleanField(default=False)  
+
     created_at = models.DateTimeField(default=timezone.now, blank=True, editable=False) 
   
     USERNAME_FIELD = 'email'

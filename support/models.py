@@ -6,26 +6,26 @@ from django.utils import timezone
 User = get_user_model()
 
 ROOM_TOPIC = (
-        ('support', 'Support'),
-        ('billing', 'Billing'),
-        ('abuse', 'Abuse'), 
-        ('otp', 'OTP'),
-        ('payments', 'Payments'),
-        ('transactions', 'Transactions'), 
-        ('payouts', 'Payouts'),
-        ('services', 'Services'),
-        ('credit_points', 'Credit Points'),
-        ('account_funds', 'Account Funds'),
-        ('referrals', 'Referrals'),
-        ('others', 'Others'),
+        ('Support', 'Support'),
+        ('Billing', 'Billing'),
+        ('Abuse', 'Abuse'), 
+        ('OTP', 'OTP'),
+        ('Payments', 'Payments'),
+        ('Transactions', 'Transactions'), 
+        ('Payouts', 'Payouts'),
+        ('Services', 'Services'),
+        ('Credit Points', 'Credit Points'),
+        ('Account Funds', 'Account Funds'),
+        ('Referrals', 'Referrals'),
+        ('Others', 'Others'),
     )
 
-
+ 
 class SupportTicket(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="support_ticket_user")
     subject = models.CharField(max_length=225, null=True, blank=True)
     category = models.CharField(max_length=225, null=True, blank=True, choices=ROOM_TOPIC)
-    ticket_id = models.CharField(max_length=12, unique=True, null=True)
+    ticket_id = models.CharField(max_length=20, unique=True, null=True)
     message = models.TextField(max_length=5000, null=True, blank=True,)
     is_closed = models.BooleanField(default=False)  
     is_resolved = models.BooleanField(default=False)  

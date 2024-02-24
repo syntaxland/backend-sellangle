@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'credit_point',  
     'send_email_message',
     'send_message_inbox', 
+    'send_email',
     # 'recommender',
     'live_chat',
     'promo',
@@ -413,7 +414,11 @@ CALLBACK_URL = os.getenv('CALLBACK_URL')
 PAYSOFTER_PUBLIC_KEY = os.getenv('PAYSOFTER_PUBLIC_KEY')
 PAYSOFTER_PAYMENT_URL = os.getenv('PAYSOFTER_PAYMENT_URL')
 
+SELLANGLE_URL = os.getenv('SELLANGLE_URL')
 MCDOFSHOP_URL = os.getenv('MCDOFSHOP_URL')
+
+COMPANY_NAME = os.getenv('COMPANY_NAME')
+PARENT_COMPANY_NAME = os.getenv('PARENT_COMPANY_NAME')
 
 # for google login option
 AUTHENTICATION_BACKENDS = [

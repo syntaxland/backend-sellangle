@@ -42,6 +42,10 @@ app.conf.beat_schedule = {
         'schedule': timedelta(hours=1),
         # 'schedule': timedelta(minutes=10),
     },
+    'close-resolved-tickets': {
+        'task': 'support.tasks.close_resolved_tickets',
+        'schedule': timedelta(seconds=5),
+    },
 }
 
 app.autodiscover_tasks()

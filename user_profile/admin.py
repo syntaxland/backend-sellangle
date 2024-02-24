@@ -7,7 +7,8 @@ class AuthorAdmin(admin.ModelAdmin):
     list_display = ('email', 'username', 'created_at', 'id', 'first_name',  
                     'phone_number',  'is_verified','referral_code', 'referral_link',
                       'is_marketplace_seller', 'is_ecommerce_seller', 
-                      'is_staff', 'is_superuser', 
+                      'is_staff', 'is_superuser', 'user_is_not_active', 
+                    'is_user_live_banned', 
                       )
 
     # # Add custom methods to display 'email', 'first_name', 'last_name'

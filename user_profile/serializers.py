@@ -6,7 +6,7 @@ from django.db.models import Q
 
 from django.contrib.auth import get_user_model
 
-User = get_user_model()
+User = get_user_model() 
 
  
 class UserSerializer(serializers.ModelSerializer): 
@@ -17,7 +17,21 @@ class UserSerializer(serializers.ModelSerializer):
                   'last_name', 'password', 'phone_number', 
                   'is_verified', 'is_superuser', 'is_staff', 
                   'is_ecommerce_seller', 'is_marketplace_seller', 
-                  'ad_charge_is_owed', 'created_at'
+                  'ad_charge_is_owed', 
+
+                'user_is_not_active',
+                'is_user_live_banned',
+                'is_user_1day_banned',
+                'is_user_2day_banned',
+                'is_user_3day_banned',
+                'is_user_1week_banned',
+                'is_user_3week_banned',
+                'is_user_1month_banned',
+                'is_user_2month_banned',
+                'is_user_3month_banned',
+                'is_user_6month_banned',
+                'is_user_1year_banned',
+                  'created_at'
                   ]
         extra_kwargs = {
             'password': {'write_only': True},
