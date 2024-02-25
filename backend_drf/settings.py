@@ -361,7 +361,25 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8002",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+# Additional CORS Configuration
+CORS_ALLOWED_HEADERS = [
+    'access-control-allow-headers',
+    'access-control-allow-origin',
+    'authorization',
+    'content-type',
+    'x-requested-with',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_ALL_ORIGINS = True 
 
 # setting up s3 storages for media and static  
 # from storages.backends.s3boto3 import S3Boto3Storage
