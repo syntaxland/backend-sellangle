@@ -151,10 +151,10 @@ SIMPLE_JWT = {
   
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",  # Adding third-part corsheaders middleware
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'whitenoise.middleware.WhiteNoiseMiddleware',  # whitenoise middleware added
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # whitenoise middleware added
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -368,6 +368,8 @@ CORS_ALLOWED_HEADERS = [
     'authorization',
     'content-type',
     'x-requested-with',
+    "accept",
+    # "x-csrftoken",
 ]
 
 CORS_ALLOW_METHODS = [
