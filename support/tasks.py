@@ -5,8 +5,6 @@ from send_email.send_email_sendinblue import send_email_sendinblue
 from datetime import datetime, timedelta
 from django.utils import timezone
 from django.conf import settings
-from django.db.models import Max, F, OuterRef, Subquery 
-from django.db.models.functions import Coalesce
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -14,8 +12,8 @@ User = get_user_model()
 
 @shared_task
 def close_resolved_tickets():
-    # threshold_date = timezone.now() - timedelta(days=7)
-    threshold_date = timezone.now() - timedelta(minutes=1)
+    threshold_date = timezone.now() - timedelta(days=7)
+    # threshold_date = timezone.now() - timedelta(minutes=1)
     
     resolved_tickets_users = User.objects.filter(
         support_response_user__created_at__lte=threshold_date

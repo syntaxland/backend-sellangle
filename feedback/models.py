@@ -6,21 +6,21 @@ from django.utils import timezone
 User = get_user_model()
 
 ROOM_TOPIC = (
-        ('support', 'Support'), 
-        ('billing', 'Billing'),
-        ('abuse', 'Abuse'),
-        ('otp', 'OTP'),
-        ('payments', 'Payments'),
-        ('transactions', 'Transactions'), 
-        ('payouts', 'Payouts'),
-        ('services', 'Services'),
-        ('credit_points', 'Credit Points'),
-        ('account_funds', 'Account Funds'),
-        ('referrals', 'Referrals'),
-        ('others', 'Others'),
+        ('Support', 'Support'),
+        ('Billing', 'Billing'),
+        ('Abuse', 'Abuse'), 
+        ('OTP', 'OTP'),
+        ('Payments', 'Payments'),
+        ('Transactions', 'Transactions'), 
+        ('Payouts', 'Payouts'),
+        ('Services', 'Services'),
+        ('Credit Points', 'Credit Points'),
+        ('Account Funds', 'Account Funds'),
+        ('Referrals', 'Referrals'),
+        ('Others', 'Others'),
     )
 
-
+ 
 class Feedback(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="feedback_user")
     category = models.CharField(max_length=225, null=True, blank=True, choices=ROOM_TOPIC)
