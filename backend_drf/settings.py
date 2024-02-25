@@ -40,14 +40,14 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 # DEBUG = False
 
-# ALLOWED_HOSTS = ['localhost', 
-#                  'localhost:8002',  
-#                  '127.0.0.1', 
-#                  '127.0.0.1:8002', 
-#                  '34.202.53.39', 
-#                  'ec2-34.202.53.39.compute-1.amazonaws.com', 
-#                  'backend.sellangle.com' 
-#                  ]
+ALLOWED_HOSTS = ['localhost', 
+                 'localhost:8002',  
+                 '127.0.0.1', 
+                 '127.0.0.1:8002', 
+                 '34.202.53.39', 
+                 'ec2-34.202.53.39.compute-1.amazonaws.com', 
+                 'backend.sellangle.com' 
+                 ]
 
 ALLOWED_HOSTS = ["*"] 
 
@@ -161,6 +161,37 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "https://sellangle.com",
+    "https://backend.sellangle.com",
+    "http://localhost:8002",
+    "http://127.0.0.1:3002",
+    "http://localhost:3002",
+    "http://127.0.0.1:8002",
+]
+
+# Additional CORS Configuration
+CORS_ALLOWED_HEADERS = [
+    'access-control-allow-headers',
+    'access-control-allow-origin',
+    'authorization',
+    'content-type',
+    'x-requested-with',
+    "accept",
+    # "x-csrftoken",
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_ALL_ORIGINS = True 
 
 ROOT_URLCONF = 'backend_drf.urls'
 
@@ -352,36 +383,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOWED_ORIGINS = [
-    "https://sellangle.com",
-    "https://backend.sellangle.com",
-    "http://localhost:8002",
-    "http://127.0.0.1:3002",
-    "http://localhost:3002",
-    "http://127.0.0.1:8002",
-]
 
-# Additional CORS Configuration
-CORS_ALLOWED_HEADERS = [
-    'access-control-allow-headers',
-    'access-control-allow-origin',
-    'authorization',
-    'content-type',
-    'x-requested-with',
-    "accept",
-    # "x-csrftoken",
-]
-
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
-
-CORS_ALLOW_ALL_ORIGINS = True 
 
 # setting up s3 storages for media and static  
 # from storages.backends.s3boto3 import S3Boto3Storage
