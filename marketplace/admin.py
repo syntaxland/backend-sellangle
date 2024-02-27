@@ -77,6 +77,7 @@ class AuthorAdmin(admin.ModelAdmin):
         'price',
         'promo_code',
         'discount_percentage',
+        'show_strike_through_promo_price',
         'ad_save_count',
         'ad_view_count',
         # 'description',
