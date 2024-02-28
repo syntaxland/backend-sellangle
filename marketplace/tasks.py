@@ -289,7 +289,8 @@ def send_auto_renewal_insufficient_cps_bal_msg(user, credit_point_balance):
         </head>
         <body>
             <p>Dear {user.username},</p>
-            <p>We regret to inform you that one or more of your promoted ads couldn't be automatically reactivated due to insufficient CPS balance, which is below <b>28.8 CPS</b>.
+            <p>We regret to inform you that one or more of your promoted ads couldn't be automatically reactivated due to insufficient CPS balance, 
+            which is below <b>28.8 CPS</b>.
               Your current credit point balance is <b>({formatted_insufficient_cps_balance} CPS)</b>.</p>
             <p>Please ensure your CPS wallet is funded to continue benefiting from our services.</p>
             <p>Best regards,<br>The Support Team</p>

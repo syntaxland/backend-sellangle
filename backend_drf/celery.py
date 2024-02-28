@@ -38,7 +38,7 @@ app.conf.beat_schedule = {
     },
     'auto-reactivate-paid-ad': {
         'task': 'marketplace.tasks.auto_reactivate_paid_ad',
-        'schedule': timedelta(seconds=5),
+        'schedule': timedelta(seconds=45),
     },
     'delete-expired-ads': {
         'task': 'marketplace.tasks.delete_expired_ads',
