@@ -260,9 +260,9 @@ def auto_reactivate_paid_ad():
         for ad in expired_ads:
             user_credit_point = CreditPoint.objects.get(user=ad.seller)
             credit_point_balance = user_credit_point.balance
-            insufficient_cps_balance = 28.8
+            # insufficient_cps_balance = 28.8
             if user_credit_point.balance < 28.8:
-                send_auto_renewal_insufficient_cps_bal_msg(ad.seller, credit_point_balance, insufficient_cps_balance)
+                send_auto_renewal_insufficient_cps_bal_msg(ad.seller, credit_point_balance)
                 continue 
 
             with transaction.atomic():
@@ -277,10 +277,10 @@ def auto_reactivate_paid_ad():
         return f"Error during auto-reactivation: {str(e)}"
 
 
-def send_auto_renewal_insufficient_cps_bal_msg(user, credit_point_balance, insufficient_cps_balance):
+def send_auto_renewal_insufficient_cps_bal_msg(user, credit_point_balance):
     # system_user, created = User.objects.get_or_create(username='system_user')
-    formatted_outstanding_cps_amount = '{:,.2f}'.format(float(credit_point_balance))
-    formatted_insufficient_cps_balance = '{:,.2f}'.format(float(insufficient_cps_balance))
+    formatted_insufficient_cps_balance  = '{:,.2f}'.format(float(credit_point_balance))
+    # formatted_outstanding_cps_amount = '{:,.2f}'.format(float(insufficient_cps_balance))
 
     message_content = f"""
         <html>
@@ -289,7 +289,7 @@ def send_auto_renewal_insufficient_cps_bal_msg(user, credit_point_balance, insuf
         </head>
         <body>
             <p>Dear {user.username},</p>
-            <p>We regret to inform you that one or more of your promoted ads couldn't be automatically reactivated due to insufficient CPS balance, which is below <b>{formatted_outstanding_cps_amount} CPS</b>.
+            <p>We regret to inform you that one or more of your promoted ads couldn't be automatically reactivated due to insufficient CPS balance, which is below <b>28.8 CPS</b>.
               Your current credit point balance is <b>({formatted_insufficient_cps_balance} CPS)</b>.</p>
             <p>Please ensure your CPS wallet is funded to continue benefiting from our services.</p>
             <p>Best regards,<br>The Support Team</p>
