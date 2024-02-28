@@ -199,17 +199,8 @@ def send_seller_insufficient_cps_bal_msg(user, credit_point_balance, insufficien
     
     # system_user, created = User.objects.get_or_create(username='system_user')
 
-    # message_content = (
-    #     f"Dear {user.username},\n\n"
-    #     "Your ad charges couldn't be deducted due to insufficient CPS balance.\n"
-    #     "Please fund your CPS wallet to continue using our services.\n\n"
-    #     "Best regards,\nThe Support Team"
-    # )
-
     formatted_outstanding_cps_amount = '{:,.2f}'.format(float(credit_point_balance))
     formatted_insufficient_cps_balance = '{:,.2f}'.format(float(insufficient_cps_balance))
-
-    # Customize the message content using an HTML template
 
     message_content = f"""
         <html>
@@ -228,7 +219,7 @@ def send_seller_insufficient_cps_bal_msg(user, credit_point_balance, insufficien
     inbox_message = SendMessageInbox.objects.create(
         # sender=system_user,  
         receiver=user,
-        subject="Insufficient CPS Balance",
+        subject="Insufficient CPS Balance (Ad Charges)",
         message=message_content,
         is_read=False,
     )
@@ -258,6 +249,66 @@ def delete_expired_ads():
 
     return 'Total deleted expired paid ads:', len(expired_paid_ads) 
 
+
+@shared_task
+def auto_reactivate_paid_ad():
+    try:
+        current_datetime = datetime.now()
+
+        expired_ads = PostPaidAd.objects.filter(is_auto_renewal=True, expiration_date__lt=current_datetime)
+
+        for ad in expired_ads:
+            user_credit_point = CreditPoint.objects.get(user=ad.seller)
+            credit_point_balance = user_credit_point.balance
+            insufficient_cps_balance = 28.8
+            if user_credit_point.balance < 28.8:
+                send_auto_renewal_insufficient_cps_bal_msg(ad.seller, credit_point_balance, insufficient_cps_balance)
+                continue 
+
+            with transaction.atomic():
+                # ad.duration = ad.duration 
+                ad.duration = '1 day' 
+                ad.is_active = True
+                ad.save()
+
+        return f"Auto-reactivation completed. Reactivated {len(expired_ads)} expired paid ads."
+
+    except Exception as e:
+        return f"Error during auto-reactivation: {str(e)}"
+
+
+def send_auto_renewal_insufficient_cps_bal_msg(user, credit_point_balance, insufficient_cps_balance):
+    # system_user, created = User.objects.get_or_create(username='system_user')
+    formatted_outstanding_cps_amount = '{:,.2f}'.format(float(credit_point_balance))
+    formatted_insufficient_cps_balance = '{:,.2f}'.format(float(insufficient_cps_balance))
+
+    message_content = f"""
+        <html>
+        <head>
+            <title>Insufficient CPS Balance</title>
+        </head>
+        <body>
+            <p>Dear {user.username},</p>
+            <p>We regret to inform you that one or more of your promoted ads couldn't be automatically reactivated due to insufficient CPS balance, which is below <b>{formatted_outstanding_cps_amount} CPS</b>.
+              Your current credit point balance is <b>({formatted_insufficient_cps_balance} CPS)</b>.</p>
+            <p>Please ensure your CPS wallet is funded to continue benefiting from our services.</p>
+            <p>Best regards,<br>The Support Team</p>
+        </body>
+        </html>
+    """
+
+    inbox_message = SendMessageInbox.objects.create(
+        # sender=system_user,  
+        receiver=user,
+        subject="Insufficient CPS Balance (Ad auto-renewal)",
+        message=message_content,
+        is_read=False,
+    )
+
+    inbox_message.msg_count += 1
+    inbox_message.save()
+    
+    print(f"Notification sent to {user.username} about insufficient CPS balance.")
 
 
 """

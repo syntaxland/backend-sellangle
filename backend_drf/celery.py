@@ -36,6 +36,10 @@ app.conf.beat_schedule = {
         'schedule': timedelta(seconds=15),
         # 'schedule': timedelta(hours=1),
     },
+    'auto-reactivate-paid-ad': {
+        'task': 'marketplace.tasks.auto_reactivate_paid_ad',
+        'schedule': timedelta(seconds=5),
+    },
     'delete-expired-ads': {
         'task': 'marketplace.tasks.delete_expired_ads',
         # 'schedule': crontab(hour=0, minute=0),  
@@ -44,7 +48,7 @@ app.conf.beat_schedule = {
     },
     'close-resolved-tickets': {
         'task': 'support.tasks.close_resolved_tickets',
-        'schedule': timedelta(seconds=5),
+        'schedule': timedelta(seconds=10),
     },
 }
 
