@@ -49,7 +49,7 @@ ALLOWED_HOSTS = ['localhost',
                  'backend.sellangle.com' 
                  ]
 
-# ALLOWED_HOSTS = ["*"] 
+ALLOWED_HOSTS = ["*"] 
 
 # Application definition 
 INSTALLED_APPS = [
@@ -194,9 +194,9 @@ CORS_ALLOW_METHODS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-USE_X_FORWARDED_HOST = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# CORS_ALLOW_ALL_ORIGINS = True 
+# USE_X_FORWARDED_HOST = True
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CORS_ALLOW_ALL_ORIGINS = True 
 
 
 
