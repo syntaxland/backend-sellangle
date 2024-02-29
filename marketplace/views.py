@@ -3,10 +3,17 @@ import random
 import string
 from decimal import ROUND_DOWN, Decimal
 from datetime import datetime, timedelta, timezone
+# from xhtml2pdf import pisa
 
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum, F
+from django.http import HttpResponse
+from django.template.loader import get_template
+from django.shortcuts import render
+from django.views.generic import View
+from django.template.loader import get_template
 
+from .utils import render_to_pdf
 # import nltk
 # from nltk.corpus import wordnet
  
@@ -863,6 +870,70 @@ def pay_ad_charges(request):
     return Response({'success': f'Ad charged successfully.'}, status=status.HTTP_200_OK)
     # except Exception as e:
     #     return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def ad_charges_receipt(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        current_datetime = datetime.now()
+
+        # Calculate the start and end dates of the current month
+        start_date = datetime(current_datetime.year, current_datetime.month, 1)
+        end_date = current_datetime.replace(day=1, month=current_datetime.month + 1) - timedelta(days=1)
+
+        ad_charges = AdChargeCreditPoint.objects.filter(
+            user=user,
+            created_at__range=(start_date, end_date),
+            is_success=True
+        ).values('created_at').annotate(total_ad_charges=Sum('cps_amount'))
+
+        total_amount = ad_charges.aggregate(Sum('total_ad_charges'))['total_ad_charges__sum']
+
+        context = {
+            'user': user,
+            'start_date': start_date.strftime('%B %d, %Y'),
+            'end_date': end_date.strftime('%B %d, %Y'),
+            'ad_charges': ad_charges,
+            'total_amount': total_amount,
+        }
+
+        template_path = 'marketplace/ad_charges_receipt.html'
+        template = get_template(template_path)
+        html = template.render(context)
+
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'filename="{user.username}_ad_charges_receipt.pdf"'
+
+        # Create PDF
+        pisa_status = pisa.CreatePDF(html, dest=response)
+
+        # Return PDF response
+        return HttpResponse(response, content_type='application/pdf')
+
+    except User.DoesNotExist:
+        return HttpResponse('User not found.', status=404)
+    
+# class GenerateAdChargesReceiptPdf(View):
+#     @api_view(['GET'])
+#     @permission_classes([IsAuthenticated])
+#     def get(self, request, *args, **kwargs):
+#         user = request.user
+#         month_year = request.query_params.get('month_year')
+#         ad_charges_receipt = AdChargeCreditPoint.objects.filter(
+#             user=user,
+#             created_at__month=month_year.month,
+#             created_at__year=month_year.year
+#         )
+
+#         total_cps_amount = ad_charges_receipt.aggregate(total_cps_amount=Sum('cps_amount'))['total_cps_amount'] or 0
+
+#         context = {
+#             'ad_charges_receipt': ad_charges_receipt,
+#             'total_cps_amount': total_cps_amount,
+#         }
+
+#         pdf = render_to_pdf('ad_charges_receipt_pdf_template.html', context)
+#         return HttpResponse(pdf, content_type='application/pdf')
 
 
 @api_view(['PUT'])

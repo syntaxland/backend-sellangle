@@ -1,0 +1,40 @@
+<!-- templates/marketplace/ad_charges_receipt.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.username }} Ad Charges Receipt</title>
+    <style>
+        /* Your CSS styles go here */
+    </style>
+</head>
+<body>
+    <h1>{{ user.username }} Ad Charges Receipt</h1>
+    <p>Receipt for ad charges from {{ start_date }} to {{ end_date }}</p>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Total Ad Charges (CPS)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ad_charge in ad_charges %}
+                <tr>
+                    <td>{{ ad_charge.created_at|date:"F d, Y" }}</td>
+                    <td>{{ ad_charge.total_ad_charges|floatformat:2 }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td><strong>Total:</strong></td>
+                <td><strong>{{ total_amount|floatformat:2 }}</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>

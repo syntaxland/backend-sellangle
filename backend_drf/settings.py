@@ -179,7 +179,7 @@ CORS_ALLOWED_HEADERS = [
     'content-type',
     'x-requested-with',
     "accept",
-    # "x-csrftoken",
+    "x-csrftoken",
 ]
 
 CORS_ALLOW_METHODS = [
@@ -191,7 +191,9 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True 
+# CORS_ALLOW_ALL_ORIGINS = True 
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'backend_drf.urls'
 
