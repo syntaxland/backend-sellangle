@@ -163,8 +163,8 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://sellangle.com",
     "https://backend.sellangle.com",
+    "https://sellangle.com",
     "http://localhost:8002",
     "http://127.0.0.1:3002",
     "http://localhost:3002",
