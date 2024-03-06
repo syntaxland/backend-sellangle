@@ -1,24 +1,88 @@
-<!-- templates/marketplace/ad_charges_receipt.html -->
+{% comment %} marketplace/ad_charges_receipt.html {% endcomment %}
+{% load humanize %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ user.username }} Ad Charges Receipt</title>
+    <title>{{ user.username | title }} Ad Billing Receipt</title>
     <style>
-        /* Your CSS styles go here */
+        body {
+            font-family: Arial, sans-serif;
+            {% comment %} text-align: center; {% endcomment %}
+        }
+
+        h1, h2, h3 {
+            color: #333;
+        } 
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        thead {
+            background-color: #f2f2f2;
+        }
+
+        tfoot {
+            background-color: #ddd;
+        }
+
+        strong {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <h1>{{ user.username }} Ad Charges Receipt</h1>
-    <p>Receipt for ad charges from {{ start_date }} to {{ end_date }}</p>
+    <h1>Sell Angle</h1>
+
+    <h1>{{ user.username | title }} Ad Billing Receipt</h1>
+
+    <h2>Summary</h2>
     
-    <table border="1">
+    <section>
+        <p>
+            <strong>Billing Period: </strong>
+            <span>{{ start_date }} - {{ end_date }}</span>
+        </p>
+    </section>
+
+    <section>
+     <p>
+        <strong>Total CPS Charged: </strong>
+        <span>{{ total_amount|floatformat:2|intcomma }}</span>
+    </p>
+    </section>
+
+    <section>
+        <p>
+          <strong>Date Printed: </strong>
+          <span>{{ date_printed }}</span>
+       </p>
+      </section>
+    
+    <table>
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Total Ad Charges (CPS)</th>
+                <th>Ad Charges (CPS)</th>
             </tr>
         </thead>
         <tbody>
@@ -32,7 +96,7 @@
         <tfoot>
             <tr>
                 <td><strong>Total:</strong></td>
-                <td><strong>{{ total_amount|floatformat:2 }}</strong></td>
+                <td><strong>{{ total_amount|floatformat:2|intcomma }}</strong></td>
             </tr>
         </tfoot>
     </table>

@@ -1,17 +1,24 @@
 # marketplace/tasks.py
 import random
 import string
-from datetime import datetime, timedelta, timezone
-from rest_framework import status
-from rest_framework.response import Response
+import base64 
+from datetime import datetime, timedelta
+from django.http import JsonResponse
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 
 from celery import shared_task
 from .models import (PostPaidAd, 
                     PostFreeAd,
                       AdChargeTotal
                       )
+
+from .views import generate_ad_charges_receipt_pdf                   
 from credit_point.models import CreditPoint, AdChargeCreditPoint
 from send_message_inbox.models import SendMessageInbox
+from send_email.send_email_sendinblue import send_email_sendinblue, send_email_with_attachment_sendinblue
+
+from django.conf import settings
 from django.db import transaction
 from django.db.models import Sum, F
 from django.contrib.auth import get_user_model
@@ -231,26 +238,6 @@ def send_seller_insufficient_cps_bal_msg(user, credit_point_balance, insufficien
 
 
 @shared_task
-def delete_expired_ads():
-    # threshold_date = datetime.now() - timedelta(seconds=100)
-    threshold_date = datetime.now() - timedelta(days=7)
-
-    expired_paid_ads = PostPaidAd.objects.filter(
-        expiration_date__lte=threshold_date,
-        ad_charges=0
-    )
-
-    expired_free_ads = PostFreeAd.objects.filter(
-        expiration_date__lte=threshold_date,
-    )
-
-    expired_paid_ads.delete()
-    expired_free_ads.delete()
-
-    return 'Total deleted expired paid ads:', len(expired_paid_ads) 
-
-
-@shared_task
 def auto_reactivate_paid_ad():
     try:
         current_datetime = datetime.now()
@@ -310,6 +297,121 @@ def send_auto_renewal_insufficient_cps_bal_msg(user, credit_point_balance):
     inbox_message.save()
     
     print(f"Notification sent to {user.username} about insufficient CPS balance.")
+
+
+@shared_task
+def delete_expired_ads():
+    # threshold_date = datetime.now() - timedelta(seconds=100)
+    threshold_date = datetime.now() - timedelta(days=7)
+
+    expired_paid_ads = PostPaidAd.objects.filter(
+        expiration_date__lte=threshold_date,
+        ad_charges=0
+    )
+
+    expired_free_ads = PostFreeAd.objects.filter(
+        expiration_date__lte=threshold_date,
+    )
+
+    expired_paid_ads.delete()
+    expired_free_ads.delete()
+
+    return 'Total deleted expired paid ads:', len(expired_paid_ads) 
+
+
+@shared_task
+def send_monthly_ad_billing_receipt_email():
+
+    sellers = User.objects.filter(is_marketplace_seller=True)
+
+    try:
+        for user in sellers:
+            print('user:', user)
+            current_datetime = datetime.now()
+
+            previous_month_start = datetime(current_datetime.year, current_datetime.month, 1) - relativedelta(months=1)
+            previous_month_end = datetime(current_datetime.year, current_datetime.month, 1) - timedelta(days=1)
+            ad_charges_receipt_month = previous_month_start.strftime('%m / %Y').strip()
+            
+            pdf_data = generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month)
+
+            ad_charges = AdChargeCreditPoint.objects.filter(
+            user=user,
+            created_at__range=(previous_month_start, previous_month_end),
+            is_success=True
+            ).values('created_at').annotate(total_ad_charges=Sum('cps_amount'))
+
+            total_amount = ad_charges.aggregate(Sum('total_ad_charges'))['total_ad_charges__sum']
+            formatted_total_amount = '{:,.2f}'.format(float(total_amount) if total_amount is not None else 0.0)
+            print('formatted_total_amount:', formatted_total_amount)
+
+            formatted_ad_charges_monthYear = previous_month_start.strftime('%B %Y').strip()
+            print('formatted_ad_charges_monthYear:', formatted_ad_charges_monthYear)
+
+            subject = f"Monthly Ad Billing for {formatted_ad_charges_monthYear}!"
+            first_name = user.first_name if user.first_name else 'User'
+            url = settings.SELLANGLE_URL
+            billing_url =  f"{url}/billing"
+            html_content = f"""
+                <!DOCTYPE html>
+                <html>
+                    <head>
+                        <title>Ad Billing for {ad_charges_receipt_month}</title>
+                        <style>
+                            body {{
+                                font-family: Arial, sans-serif;
+                                line-height: 1.6;
+                                color: #333;
+                            }}
+                            .container {{
+                                max-width: 600px;
+                                margin: 0 auto;
+                            }}
+                            .header {{
+                                background-color: #FF0000;;
+                                color: white;
+                                padding: 1em;
+                                text-align: center;
+                            }}
+                            .content {{
+                                padding: 1em;
+                            }}
+                            .footer {{
+                                background-color: #f1f1f1;
+                                padding: 1em;
+                                text-align: center;
+                            }}
+                            .button {{
+                                display: inline-block;
+                                background-color: #007BFF; /* Red background color */
+                                color: #fff;
+                                padding: 10px 20px;
+                                text-decoration: none;
+                                border-radius: 5px; /* Rounded corners */
+                            }}
+                            </style>
+                    </head>
+                    <body>
+                        <p>Dear {first_name},</p>
+                        <p>We hope this message finds you well. Your monthly ad billing for {formatted_ad_charges_monthYear} is now available, totaling <b>{formatted_total_amount} CPS</b>.</p>
+                        <p>Attached is a detailed billing receipt for your reference, demonstrating our commitment to transparency.</p>
+                        <p>Review your billing details by clicking the following link: <a href="{billing_url}" class="button">Go to Billing Page</a></p>
+                        <p>Your trust in our services is greatly appreciated. If you have any inquiries or need clarification, please don't hesitate to contact our support team.</p>
+                        <p>Thank you for choosing SellAngle!</p>
+                        <p>Best regards,<br>The SellAngle Team</p>
+                    </body>
+                </html>
+            """
+
+            to = [{"email": user.email, "name": user.first_name}]
+            attachment_name = f"{ad_charges_receipt_month}_ad_charges_receipt.pdf"
+            send_email_with_attachment_sendinblue(subject, html_content, to, attachment_data=pdf_data, attachment_name=attachment_name)
+
+        return f"{len(sellers)} sellers sent monthly billing successfully"
+
+    except Exception as e:
+        print(str(e))
+
 
 
 """

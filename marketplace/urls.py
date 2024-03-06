@@ -74,6 +74,10 @@ urlpatterns = [
 
     path('get-seller-paid-ads-charges/', views.get_seller_paid_ads_charges, name='get_seller_paid_ads_charges'),
     path('pay-ad-charges/', views.pay_ad_charges, name='pay_ad_charges'),
+    path('get-ad-charges-receipt/', views.get_ad_charges_receipt, name='get_ad_charges_receipt'),
+    
+    # path('generate-ad-charges-receipt-pdf/', views.generate_ad_charges_receipt_pdf, name='generate_ad_charges_receipt_pdf'),
+    # path('send-monthly-ad-billing-receipt-email/', views.send_monthly_ad_billing_receipt_email, name='send_monthly_ad_billing_receipt_email'),
 
     path('search-seller-username/<str:seller_username>/', views.search_seller_username, name='search-seller-username'),
     path('get-seller-detail/<str:seller_username>/', views.get_seller_detail, name='get-seller-detail'),

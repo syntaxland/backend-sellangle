@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'django.contrib.humanize',
     # 'django.contrib.gis',
 
     # Myapps 
@@ -197,8 +197,6 @@ CORS_ALLOW_CREDENTIALS = True
 # USE_X_FORWARDED_HOST = True
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CORS_ALLOW_ALL_ORIGINS = True 
-
-
 
 ROOT_URLCONF = 'backend_drf.urls'
 

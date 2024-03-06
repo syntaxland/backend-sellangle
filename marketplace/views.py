@@ -1,19 +1,24 @@
 # marketplace/views.py 
+from io import BytesIO
 import random
 import string
+import base64 
 from decimal import ROUND_DOWN, Decimal
-from datetime import datetime, timedelta, timezone
-# from xhtml2pdf import pisa
+from xhtml2pdf import pisa
+from dateutil.relativedelta import relativedelta
+from calendar import month_name
+from datetime import datetime, timedelta
 
+from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum, F
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.template.loader import get_template
 from django.shortcuts import render
 from django.views.generic import View
 from django.template.loader import get_template
 
-from .utils import render_to_pdf
+# from .utils import render_to_pdf
 # import nltk
 # from nltk.corpus import wordnet
  
@@ -23,7 +28,10 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 
+from send_email.send_email_sendinblue import send_email_with_attachment_sendinblue
 from credit_point.models import CreditPoint, AdChargeCreditPoint
+from credit_point.serializer import AdChargeCreditPointSerializer
+
 from .models import (MarketPlaceSellerAccount, 
                      MarketplaceSellerPhoto, 
                      PostFreeAd, PostPaidAd, 
@@ -868,72 +876,143 @@ def pay_ad_charges(request):
         pass
 
     return Response({'success': f'Ad charged successfully.'}, status=status.HTTP_200_OK)
+
+
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def get_ad_charges_receipt(request):
+#     user = request.user
+#     ad_charges_receipt_month = request.GET.get('ad_charges_receipt_month', '')
+#     print('ad_charges_receipt_month:', ad_charges_receipt_month)
+
+#     # try:
+#     #     pdf_data = generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month)
+#     #     print('pdf_data:', pdf_data)
+#     #     print('Success!')
+#     #     # return Response({'pdf_data': pdf_data}, status=status.HTTP_200_OK)
+#     #     return JsonResponse({'pdf_data': pdf_data}, status=200)
+#     #     # return HttpResponse(pdf_data, content_type='application/pdf')
+#     # except User.DoesNotExist:
+#     #     return JsonResponse({'error': 'User not found.'}, status=404)
+#     #     # return Response('User not found.', status=status.HTTP_404_NOT_FOUND)
+
+#     try:
+#         pdf_data = generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month)
+#         if pdf_data is None:
+#             return JsonResponse({'error': 'Error generating PDF'}, status=500)
+
+#         return JsonResponse({'pdf_data': pdf_data}, status=200)
+#         # return JsonResponse({'pdf_data': pdf_data.decode('utf-8')}, status=200)
+#         # return HttpResponse(pdf_data, content_type='application/pdf')
+#         # return Response({'pdf_data': pdf_data}, status=status.HTTP_200_OK)
+    
+#     except User.DoesNotExist:
+#         return JsonResponse({'error': 'User not found.'}, status=404)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_ad_charges_receipt(request):
+    user = request.user
+    ad_charges_receipt_month = request.GET.get('ad_charges_receipt_month', '')
+
+    # try:
+    #     pdf_data = generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month)
+        
+    #     if pdf_data:
+    #         response = HttpResponse(pdf_data, content_type='application/pdf')
+    #         response['Content-Disposition'] = f'attachment; filename="{ad_charges_receipt_month}_ad_charges_receipt.pdf"'
+    #         return response
+    #     else:
+    #         return HttpResponse("Error generating ad charges receipt PDF", status=500)
+
     # except Exception as e:
-    #     return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    #     return HttpResponse(f"Error: {str(e)}", status=500)
 
-
-def ad_charges_receipt(request, user_id):
     try:
-        user = User.objects.get(id=user_id)
-        current_datetime = datetime.now()
+        pdf_data = generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month)
+        
+        if pdf_data:
+            # Encode the PDF data as base64
+            pdf_data_base64 = base64.b64encode(pdf_data).decode('utf-8')
+            # print('pdf_data_base64:', pdf_data_base64)
 
-        # Calculate the start and end dates of the current month
-        start_date = datetime(current_datetime.year, current_datetime.month, 1)
-        end_date = current_datetime.replace(day=1, month=current_datetime.month + 1) - timedelta(days=1)
+            return HttpResponse(pdf_data_base64, content_type='text/plain')
+        else:
+            return HttpResponse("Error generating ad charges receipt PDF", status=500)
+
+    except Exception as e:
+        return HttpResponse(f"Error: {str(e)}", status=500)
+
+
+def generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month):
+# def generate_ad_charges_receipt_pdf(request):
+#     user = User.objects.get(username='jonbullion')
+#     print('user:', user)
+#     current_datetime = datetime.now()
+#     previous_month_start = datetime(current_datetime.year, current_datetime.month, 1) - relativedelta(months=1)
+#     # previous_month_end = datetime(current_datetime.year, current_datetime.month, 1) - timedelta(days=1)
+#     ad_charges_receipt_month = previous_month_start.strftime('%m / %Y').strip()
+
+    print('ad_charges_receipt_month:', ad_charges_receipt_month)
+
+    try:
+        month, year = ad_charges_receipt_month.split('/')
+        # month = month_name.index(month)  
+        month = int(month)
+        print('month:', month)
+        print('year:', year)
+
+        start_date = datetime(int(year), month, 1)
+        end_date = (start_date + relativedelta(months=1)) - timedelta(days=1)
+        print('start_date:', start_date)
+        print('end_date:', end_date)
 
         ad_charges = AdChargeCreditPoint.objects.filter(
             user=user,
             created_at__range=(start_date, end_date),
             is_success=True
-        ).values('created_at').annotate(total_ad_charges=Sum('cps_amount'))
+        ).values('created_at').annotate(total_ad_charges=Sum('cps_amount')).order_by('created_at')
 
         total_amount = ad_charges.aggregate(Sum('total_ad_charges'))['total_ad_charges__sum']
+        formatted_total_amount = '{:,.2f}'.format(float(total_amount) if total_amount is not None else 0.0)
 
+        print('formatted_total_amount:', formatted_total_amount)
+  
         context = {
             'user': user,
             'start_date': start_date.strftime('%B %d, %Y'),
             'end_date': end_date.strftime('%B %d, %Y'),
             'ad_charges': ad_charges,
+            'account_id': 'Your Account ID Here',  
+            'bill_status': 'Issued',
+            'date_printed': datetime.now().strftime('%b %d, %Y'),  
+            'formatted_total_amount': formatted_total_amount,
             'total_amount': total_amount,
+            
         }
+        # print('\ncontext:', context)
 
         template_path = 'marketplace/ad_charges_receipt.html'
         template = get_template(template_path)
         html = template.render(context)
 
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = f'filename="{user.username}_ad_charges_receipt.pdf"'
+        # # Create PDF data
+        pdf_content = BytesIO()
+        pisa.CreatePDF(html, dest=pdf_content)
+        pdf_content.seek(0)
+        pdf_data = pdf_content.getvalue()
+        pdf_content.close()
+        return pdf_data
 
-        # Create PDF
-        pisa_status = pisa.CreatePDF(html, dest=response)
+        # # Create an instance of HttpResponse and set its content to the PDF data
+        # response = HttpResponse(content_type='application/pdf')
+        # response['Content-Disposition'] = f'filename="{user.username}_{ad_charges_receipt_month}_ad_charges_receipt.pdf"'
+        # response.write(pdf_data)
+        # return response
 
-        # Return PDF response
-        return HttpResponse(response, content_type='application/pdf')
-
-    except User.DoesNotExist:
-        return HttpResponse('User not found.', status=404)
-    
-# class GenerateAdChargesReceiptPdf(View):
-#     @api_view(['GET'])
-#     @permission_classes([IsAuthenticated])
-#     def get(self, request, *args, **kwargs):
-#         user = request.user
-#         month_year = request.query_params.get('month_year')
-#         ad_charges_receipt = AdChargeCreditPoint.objects.filter(
-#             user=user,
-#             created_at__month=month_year.month,
-#             created_at__year=month_year.year
-#         )
-
-#         total_cps_amount = ad_charges_receipt.aggregate(total_cps_amount=Sum('cps_amount'))['total_cps_amount'] or 0
-
-#         context = {
-#             'ad_charges_receipt': ad_charges_receipt,
-#             'total_cps_amount': total_cps_amount,
-#         }
-
-#         pdf = render_to_pdf('ad_charges_receipt_pdf_template.html', context)
-#         return HttpResponse(pdf, content_type='application/pdf')
+    except AdChargeCreditPoint.DoesNotExist:
+        return None
 
 
 @api_view(['PUT'])

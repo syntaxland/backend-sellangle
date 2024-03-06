@@ -1,14 +1,13 @@
-from django.http import HttpResponse
 from django.template.loader import get_template
+from xhtml2pdf import pisa
+from io import BytesIO
 
-def render_to_pdf(template_path, context):
+def generate_ad_charges_receipt_pdf(ad_charges_data):
+    template_path = 'marketplace/ad_charges_receipt.html'
     template = get_template(template_path)
-    html = template.render(context)
-    pdf = render_to_pdf('ad_charges_receipt_pdf_template.html', context)
-    if pdf:
-        response = HttpResponse(pdf, content_type='application/pdf')
-        filename = "Ad_Charges_Receipt.pdf"
-        content = "attachment; filename=%s" % filename
-        response['Content-Disposition'] = content
-        return response
-    return HttpResponse("Not Found")
+    html = template.render(ad_charges_data)
+
+    pdf_data = BytesIO()
+    pisa.CreatePDF(html, dest=pdf_data)
+
+    return pdf_data.getvalue()
