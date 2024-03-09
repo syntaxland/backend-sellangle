@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-#
-sudo rm -rf /home/ubuntu/backend-sellangle/*
+
+sudo rm -rf /home/ubuntu/backend-sellangle/* 
