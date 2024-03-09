@@ -914,30 +914,22 @@ def pay_ad_charges(request):
 @permission_classes([IsAuthenticated])
 def get_ad_charges_receipt(request):
     user = request.user
-    ad_charges_receipt_month = request.GET.get('ad_charges_receipt_month', '')
+    ad_charges_receipt_month_str = request.GET.get('ad_charges_receipt_month', '')
+    print('ad_charges_receipt_month_str:', ad_charges_receipt_month_str)
 
-    # try:
-    #     pdf_data = generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month)
-        
-    #     if pdf_data:
-    #         response = HttpResponse(pdf_data, content_type='application/pdf')
-    #         response['Content-Disposition'] = f'attachment; filename="{ad_charges_receipt_month}_ad_charges_receipt.pdf"'
-    #         return response
-    #     else:
-    #         return HttpResponse("Error generating ad charges receipt PDF", status=500)
-
-    # except Exception as e:
-    #     return HttpResponse(f"Error: {str(e)}", status=500)
+    ad_charges_receipt_month = datetime.strptime(ad_charges_receipt_month_str, '%B %Y')
+    ad_charges_receipt_month_formatted = ad_charges_receipt_month.strftime('%m/%Y')
+    print('ad_charges_receipt_month_formatted:', ad_charges_receipt_month_formatted)
 
     try:
-        pdf_data = generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month)
+        pdf_data = generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month_formatted)
+        # print('pdf_data:', pdf_data)
         
         if pdf_data:
-            # Encode the PDF data as base64
             pdf_data_base64 = base64.b64encode(pdf_data).decode('utf-8')
-            # print('pdf_data_base64:', pdf_data_base64)
+            # return HttpResponse(pdf_data_base64, content_type='text/plain')
+            return HttpResponse(pdf_data_base64, content_type='application/pdf')
 
-            return HttpResponse(pdf_data_base64, content_type='text/plain')
         else:
             return HttpResponse("Error generating ad charges receipt PDF", status=500)
 
@@ -945,20 +937,11 @@ def get_ad_charges_receipt(request):
         return HttpResponse(f"Error: {str(e)}", status=500)
 
 
-def generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month):
-# def generate_ad_charges_receipt_pdf(request):
-#     user = User.objects.get(username='jonbullion')
-#     print('user:', user)
-#     current_datetime = datetime.now()
-#     previous_month_start = datetime(current_datetime.year, current_datetime.month, 1) - relativedelta(months=1)
-#     # previous_month_end = datetime(current_datetime.year, current_datetime.month, 1) - timedelta(days=1)
-#     ad_charges_receipt_month = previous_month_start.strftime('%m / %Y').strip()
-
-    print('ad_charges_receipt_month:', ad_charges_receipt_month)
+def generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month_formatted):
+    print('ad_charges_receipt_month_formatted:', ad_charges_receipt_month_formatted)
 
     try:
-        month, year = ad_charges_receipt_month.split('/')
-        # month = month_name.index(month)  
+        month, year = ad_charges_receipt_month_formatted.split('/')
         month = int(month)
         print('month:', month)
         print('year:', year)
@@ -997,7 +980,13 @@ def generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month):
         template = get_template(template_path)
         html = template.render(context)
 
-        # # Create PDF data
+        # # Create an instance of HttpResponse and set its content to the PDF data
+        # response = HttpResponse(content_type='application/pdf')
+        # response['Content-Disposition'] = f'filename="{ad_charges_receipt_month_formatted}_ad_charges_receipt.pdf"'
+        # response.write(pdf_data)
+        # return response
+
+        # Create PDF data
         pdf_content = BytesIO()
         pisa.CreatePDF(html, dest=pdf_content)
         pdf_content.seek(0)
@@ -1005,11 +994,7 @@ def generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month):
         pdf_content.close()
         return pdf_data
 
-        # # Create an instance of HttpResponse and set its content to the PDF data
-        # response = HttpResponse(content_type='application/pdf')
-        # response['Content-Disposition'] = f'filename="{user.username}_{ad_charges_receipt_month}_ad_charges_receipt.pdf"'
-        # response.write(pdf_data)
-        # return response
+        
 
     except AdChargeCreditPoint.DoesNotExist:
         return None
@@ -1619,9 +1604,10 @@ def track_paid_ad_view(request):
 @permission_classes([IsAuthenticated])
 def get_user_viewed_free_ads(request):
     user = request.user
+    print("user:", user)
     try:
         viewed_ads = user.viewed_free_ads.all()
-        serializer = PostFreeAd(viewed_ads, many=True)
+        serializer = PostFreeAdSerializer(viewed_ads, many=True)
         return Response(serializer.data)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -1633,7 +1619,7 @@ def get_user_viewed_paid_ads(request):
     user = request.user
     try:
         viewed_ads = user.viewed_paid_ads.all()
-        serializer = PostPaidAd(viewed_ads, many=True)
+        serializer = PostPaidAdSerializer(viewed_ads, many=True) 
         return Response(serializer.data)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

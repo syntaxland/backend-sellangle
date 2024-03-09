@@ -331,9 +331,9 @@ def send_monthly_ad_billing_receipt_email():
 
             previous_month_start = datetime(current_datetime.year, current_datetime.month, 1) - relativedelta(months=1)
             previous_month_end = datetime(current_datetime.year, current_datetime.month, 1) - timedelta(days=1)
-            ad_charges_receipt_month = previous_month_start.strftime('%m / %Y').strip()
+            ad_charges_receipt_month_formatted = previous_month_start.strftime('%m/%Y').strip()
             
-            pdf_data = generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month)
+            pdf_data = generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month_formatted)
 
             ad_charges = AdChargeCreditPoint.objects.filter(
             user=user,
@@ -356,7 +356,7 @@ def send_monthly_ad_billing_receipt_email():
                 <!DOCTYPE html>
                 <html>
                     <head>
-                        <title>Ad Billing for {ad_charges_receipt_month}</title>
+                        <title>Ad Billing for {ad_charges_receipt_month_formatted}</title>
                         <style>
                             body {{
                                 font-family: Arial, sans-serif;
@@ -404,7 +404,7 @@ def send_monthly_ad_billing_receipt_email():
             """
 
             to = [{"email": user.email, "name": user.first_name}]
-            attachment_name = f"{ad_charges_receipt_month}_ad_charges_receipt.pdf"
+            attachment_name = f"{ad_charges_receipt_month_formatted}_ad_charges_receipt.pdf"
             send_email_with_attachment_sendinblue(subject, html_content, to, attachment_data=pdf_data, attachment_name=attachment_name)
 
         return f"{len(sellers)} sellers sent monthly billing successfully"

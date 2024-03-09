@@ -54,7 +54,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     referral_code = models.CharField(max_length=10, unique=True, null=True) 
     referral_link = models.CharField(max_length=225, unique=True, null=True)
-    # referred_users = models.ManyToManyField('promo.Referral', related_name='referred_users')   
+    # referred_users = models.ManyToManyField('promo.Referral', related_name='referred_users')    
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)  
     is_marketplace_seller = models.BooleanField(default=False)  

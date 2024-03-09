@@ -66,9 +66,6 @@ urlpatterns = [
 
     path('get-seller-free-ad-reviews/', views.get_seller_free_ad_reviews, name='get_seller_free_ad_reviews'),
     path('get-seller-paid-ad-reviews/', views.get_seller_paid_ad_reviews, name='get_seller_paid_ad_reviews'),
-    
-    # path('get-user-saved-paid-ads/', views.get_user_saved_paid_ads, name='get_user_saved_paid_ads'),
-    # path('get-user-saved-paid-ads/', views.get_user_saved_paid_ads, name='get_user_saved_paid_ads'),
 
     path('apply-promo-code/', views.apply_promo_code, name='apply_promo_code'),
 

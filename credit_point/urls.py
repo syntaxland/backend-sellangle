@@ -24,3 +24,4 @@ urlpatterns = [
 
     path('get-ad-charges-cps/', views.get_ad_charges_cps, name='get_ad_charges_cps'), 
 ]
+ 

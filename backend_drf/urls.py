@@ -32,7 +32,7 @@ urlpatterns = [
     path('api/', include('credit_point.urls')),
     path('api/', include('send_email_message.urls')),
     path('api/', include('send_message_inbox.urls')),
-    # path('api/', include('recommender.urls')),
+    path('api/', include('recommender.urls')),
     # path('api/', include('live_chat.urls')),
     # path('', include('live_chat.urls')),
     path('api/', include('sellers.urls')),
