@@ -163,8 +163,8 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    # "https://backend.sellangle.com",
-    # "https://sellangle.com",
+    "https://backend.sellangle.com",
+    "https://sellangle.com",
     "http://127.0.0.1:3002",
     "http://localhost:3002",
     "http://localhost:8002",
@@ -192,7 +192,7 @@ CORS_ALLOW_METHODS = [
 ]
 
 
-# CORS_ALLOW_CREDENTIALS = True  
+CORS_ALLOW_CREDENTIALS = True  
 
 # USE_X_FORWARDED_HOST = True
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
