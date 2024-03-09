@@ -14,14 +14,14 @@ from .models import (CreditPoint,  CreditPointRequest,
                       CreditPointPayment, CreditPointEarning, 
                       BuyCreditPoint, BuyUsdCreditPoint, 
                       SellCreditPoint,
-                      AdChargeCreditPoint,
+                      AdChargeCreditPoint, CpsBonus,
                       )
 
 from .serializer import (BuyUsdCreditPointSerializer, CreditPointSerializer, 
                          CreditPointRequestSerializer, 
                          CreditPointPaymentSerializer, CreditPointEarningSerializer,
                            BuyCreditPointSerializer, SellCreditPointSerializer,
-                           AdChargeCreditPointSerializer,
+                           AdChargeCreditPointSerializer, CpsBonusSerializer,
                            )
 
 from django.db import transaction
@@ -391,4 +391,16 @@ def get_ad_charges_cps(request):
         serializer = AdChargeCreditPointSerializer(credit_point, many=True)
         return Response(serializer.data)
     except AdChargeCreditPoint.DoesNotExist:
+        return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_cps_bonuses(request):
+    user = request.user
+    try:
+        credit_point = CpsBonus.objects.filter(user=user).order_by('-created_at')
+        serializer = CpsBonusSerializer(credit_point, many=True) 
+        return Response(serializer.data)
+    except CpsBonus.DoesNotExist:
         return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)

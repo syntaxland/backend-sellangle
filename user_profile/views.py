@@ -33,7 +33,9 @@ from .serializers import (
 
 from send_email_otp.serializers import EmailOTPSerializer
 from promo.models import Referral
-from send_email_otp.models import EmailOtp
+from credit_point.models import CreditPoint, CpsBonus
+from send_message_inbox.models import SendMessageInbox
+
 from send_email_otp.models import EmailOtp
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.hashers import make_password
@@ -47,6 +49,11 @@ User = get_user_model()
 def generate_referral_code():
     letters_and_digits = string.ascii_letters + string.digits
     return ''.join(random.choices(letters_and_digits, k=9))
+
+
+def generate_cps_id(): 
+    letters_and_digits = string.ascii_uppercase + string.digits
+    return 'CPS'+''.join(random.choices(letters_and_digits, k=16))
 
 
 @api_view(['POST'])
@@ -100,7 +107,7 @@ def register_user_view(request):
         )
 
         try:
-            url = settings.MCDOFSHOP_URL
+            url = settings.SELLANGLE_URL
             print('url:', url)
             user.referral_code = generate_referral_code()
             user.save()
@@ -126,6 +133,34 @@ def register_user_view(request):
                 # Add the user to the referrer's referred_users ManyToMany field
                 referral.referred_users.add(user)
                 # referral.user_count += 1
+
+                # create referral bonus
+                credit_point, created = CreditPoint.objects.get_or_create(user=referrer)
+
+                credit_point_balance = credit_point.balance
+                print('credit_point_balance:', credit_point_balance)
+
+                cps_bonus_type = "Referral Bonus"
+                cps_bonus_amt = 1000
+                credit_point.balance += cps_bonus_amt
+                credit_point.save()
+ 
+                credit_point = CreditPoint.objects.get(user=referrer)
+                cps_new_bal = credit_point.balance
+                print('cps_new_bal:', cps_new_bal)
+
+                CpsBonus.objects.create(
+                    user=referrer,
+                    cps_bonus_type=cps_bonus_type,
+                    cps_amount=cps_bonus_amt,
+                    old_bal=credit_point_balance,
+                    new_bal=cps_new_bal, 
+                    cps_bonus_id=generate_cps_id(),
+                    is_success=True,
+                )
+
+                # send bonus msg
+                send_cps_bonus_msg(referrer, credit_point_balance, cps_bonus_amt)
                 
                 # Save the referrer instance
                 referrer.save()
@@ -144,6 +179,38 @@ def register_user_view(request):
     else:
         print('Error creating user.')
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+def send_cps_bonus_msg(referrer, credit_point_balance, cps_bonus_amt):
+    
+    formatted_outstanding_cps_amount = '{:,.2f}'.format(float(credit_point_balance))
+    formatted_cps_bonus_amt = '{:,.2f}'.format(float(cps_bonus_amt))
+
+    message_content = f"""
+        <html>
+        <head>
+            <title>Referral Bonus</title>
+        </head>
+        <body>
+            <p>Dear {referrer.username},</p>
+            <p>Your credit point wallet has been credited with <b>{formatted_cps_bonus_amt} CPS</b> referral bonus.</p>
+            <p>Congratulations on your successful referral!</p>
+            <p>Best regards,<br>The Support Team</p>
+        </body>
+        </html>
+    """
+
+    inbox_message = SendMessageInbox.objects.create(
+        receiver=referrer,
+        subject="Referral Bonus",
+        message=message_content,
+        is_read=False,
+    )
+
+    inbox_message.msg_count += 1
+    inbox_message.save()
+    
+    print(f"Notification sent to {referrer.username} about referral bonus.")
 
 
 class MyTokenObtainPairView(TokenObtainPairView):

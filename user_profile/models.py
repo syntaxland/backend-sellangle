@@ -61,6 +61,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_ecommerce_seller = models.BooleanField(default=False)  
     ad_charge_is_owed = models.BooleanField(default=False)
     is_terms_conditions_read = models.BooleanField(default=False)
+    
     user_is_not_active = models.BooleanField(default=False)  
     is_user_live_banned = models.BooleanField(default=False)  
     is_user_1day_banned = models.BooleanField(default=False)  

@@ -7,7 +7,9 @@ from .models import (CreditPoint,
                      BuyCreditPoint,
                      BuyUsdCreditPoint,
                        SellCreditPoint,
-                       AdChargeCreditPoint
+                       AdChargeCreditPoint,
+                       CpsBonus
+
                      )
 
 from user_profile.serializers import UserSerializer
@@ -88,3 +90,10 @@ class AdChargeCreditPointSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdChargeCreditPoint
         fields = "__all__" 
+
+
+class CpsBonusSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    class Meta:
+        model = CpsBonus
+        fields = '__all__'

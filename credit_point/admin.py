@@ -84,3 +84,16 @@ class AuthorAdmin(admin.ModelAdmin):
                     'created_at', 
                     
                       )
+
+
+@admin.register(models.CpsBonus)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ('created_at', 
+                    'user', 
+                    'cps_bonus_type',
+                     'cps_amount', 
+                     'cps_bonus_id', 
+                     'is_success', 
+                     'old_bal', 
+                    'new_bal',
+                     )

@@ -8,7 +8,7 @@ urlpatterns = [
     path('get-credit-point-balance/', views.get_credit_points_balance_view, name='get-credit-point-balance'),
     path('get-user-credit-point-earnings/', views.get_user_credit_point_earnings, name='get-user-credit-point-earnings'),
 
-    # path('get-user-credit-point-payments/', views.get_user_credit_point_payments, name='get-user-credit-point-payments'),
+    path('get-user-cps-bonuses/', views.get_user_cps_bonuses, name='get_user_cps_bonuses'),
     # path('get-all-credit-point-payments/', views.get_all_credit_point_payments, name='get-all-credit-point-payments'),
     # path('get-all-credit-point-payments/', views.get_all_credit_point_payments, name='get-all-credit-point-payments'),
 
