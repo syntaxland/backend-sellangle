@@ -50,7 +50,7 @@ app.conf.beat_schedule = {
         'task': 'marketplace.tasks.send_monthly_ad_billing_receipt_email',
         # 'schedule': crontab(minute=0, hour=2, day_of_month=1),
         # 'schedule': timedelta(seconds=420),
-        'schedule': timedelta(minutes=180),
+        'schedule': timedelta(minutes=10),
     },
     'close-resolved-tickets': {
         'task': 'support.tasks.close_resolved_tickets',

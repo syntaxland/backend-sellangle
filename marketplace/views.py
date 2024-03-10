@@ -9,6 +9,7 @@ from dateutil.relativedelta import relativedelta
 from calendar import month_name
 from datetime import datetime, timedelta
 
+from django.http import FileResponse
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum, F
@@ -926,10 +927,15 @@ def get_ad_charges_receipt(request):
         # print('pdf_data:', pdf_data)
         
         if pdf_data:
-            pdf_data_base64 = base64.b64encode(pdf_data).decode('utf-8')
-            # return HttpResponse(pdf_data_base64, content_type='text/plain')
-            return HttpResponse(pdf_data_base64, content_type='application/pdf')
+            # pdf_data_base64 = base64.b64encode(pdf_data).decode('utf-8')
+            # # return HttpResponse(pdf_data_base64, content_type='text/plain')
+            # return HttpResponse(pdf_data_base64, content_type='application/pdf')
 
+            response = FileResponse(pdf_data, content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="{ad_charges_receipt_month_str}_ad_charges_receipt.pdf"'
+            print('response:', response)
+            return response
+        
         else:
             return HttpResponse("Error generating ad charges receipt PDF", status=500)
 
@@ -980,21 +986,24 @@ def generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month_formatted):
         template = get_template(template_path)
         html = template.render(context)
 
+        # # Create PDF data
+        # pdf_content = BytesIO()
+        # pisa.CreatePDF(html, dest=pdf_content)
+        # pdf_content.seek(0)
+        # pdf_data = pdf_content.getvalue()
+        # pdf_content.close()
+        # return pdf_data
+
         # # Create an instance of HttpResponse and set its content to the PDF data
         # response = HttpResponse(content_type='application/pdf')
         # response['Content-Disposition'] = f'filename="{ad_charges_receipt_month_formatted}_ad_charges_receipt.pdf"'
         # response.write(pdf_data)
         # return response
 
-        # Create PDF data
-        pdf_content = BytesIO()
-        pisa.CreatePDF(html, dest=pdf_content)
-        pdf_content.seek(0)
-        pdf_data = pdf_content.getvalue()
-        pdf_content.close()
-        return pdf_data
-
-        
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{ad_charges_receipt_month_formatted}_ad_charges_receipt.pdf"'
+        pisa.CreatePDF(html, dest=response)
+        return response
 
     except AdChargeCreditPoint.DoesNotExist:
         return None
