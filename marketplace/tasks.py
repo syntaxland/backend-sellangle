@@ -3,9 +3,9 @@ import random
 import string
 import base64 
 from datetime import datetime, timedelta
-from django.http import JsonResponse
-from django.utils import timezone
 from dateutil.relativedelta import relativedelta
+from io import BytesIO
+from xhtml2pdf import pisa
 
 from celery import shared_task
 from .models import (PostPaidAd, 
@@ -13,11 +13,14 @@ from .models import (PostPaidAd,
                       AdChargeTotal
                       )
 
-from .views import generate_ad_charges_receipt_pdf                   
+# from .views import generate_ad_charges_receipt_pdf                   
 from credit_point.models import CreditPoint, AdChargeCreditPoint
 from send_message_inbox.models import SendMessageInbox
 from send_email.send_email_sendinblue import send_email_sendinblue, send_email_with_attachment_sendinblue
 
+from django.http import JsonResponse
+from django.utils import timezone
+from django.template.loader import get_template
 from django.conf import settings
 from django.db import transaction
 from django.db.models import Sum, F
@@ -411,6 +414,66 @@ def send_monthly_ad_billing_receipt_email():
 
     except Exception as e:
         print(str(e))
+
+
+def generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month_formatted):
+    print('ad_charges_receipt_month_formatted:', ad_charges_receipt_month_formatted)
+
+    try:
+        month, year = ad_charges_receipt_month_formatted.split('/')
+        month = int(month)
+        print('month:', month)
+        print('year:', year)
+
+        start_date = datetime(int(year), month, 1)
+        end_date = (start_date + relativedelta(months=1)) - timedelta(days=1)
+        print('start_date:', start_date)
+        print('end_date:', end_date)
+
+        ad_charges = AdChargeCreditPoint.objects.filter(
+            user=user,
+            created_at__range=(start_date, end_date),
+            is_success=True
+        ).values('created_at').annotate(total_ad_charges=Sum('cps_amount')).order_by('created_at')
+
+        total_amount = ad_charges.aggregate(Sum('total_ad_charges'))['total_ad_charges__sum']
+        formatted_total_amount = '{:,.2f}'.format(float(total_amount) if total_amount is not None else 0.0)
+
+        print('formatted_total_amount:', formatted_total_amount)
+  
+        context = {
+            'user': user,
+            'start_date': start_date.strftime('%B %d, %Y'),
+            'end_date': end_date.strftime('%B %d, %Y'),
+            'ad_charges': ad_charges,
+            'account_id': 'Your Account ID Here',  
+            'bill_status': 'Issued',
+            'date_printed': datetime.now().strftime('%b %d, %Y'),  
+            'formatted_total_amount': formatted_total_amount,
+            'total_amount': total_amount,
+            
+        }
+        # print('\ncontext:', context)
+
+        template_path = 'marketplace/ad_charges_receipt.html'
+        template = get_template(template_path)
+        html = template.render(context)
+
+        # Create PDF data
+        pdf_content = BytesIO()
+        pisa.CreatePDF(html, dest=pdf_content)
+        pdf_content.seek(0)
+        pdf_data = pdf_content.getvalue()
+        pdf_content.close()
+        return pdf_data
+
+        # response = HttpResponse(content_type='application/pdf')
+        # response['Content-Disposition'] = f'attachment; filename="{ad_charges_receipt_month_formatted}_ad_charges_receipt.pdf"'
+        # pisa.CreatePDF(html, dest=response)
+        # return response
+
+    except AdChargeCreditPoint.DoesNotExist:
+        return None
 
 
 

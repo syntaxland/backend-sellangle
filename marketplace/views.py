@@ -17,7 +17,6 @@ from django.http import HttpResponse, JsonResponse
 from django.template.loader import get_template
 from django.shortcuts import render
 from django.views.generic import View
-from django.template.loader import get_template
 
 # from .utils import render_to_pdf
 # import nltk
@@ -879,38 +878,6 @@ def pay_ad_charges(request):
     return Response({'success': f'Ad charged successfully.'}, status=status.HTTP_200_OK)
 
 
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def get_ad_charges_receipt(request):
-#     user = request.user
-#     ad_charges_receipt_month = request.GET.get('ad_charges_receipt_month', '')
-#     print('ad_charges_receipt_month:', ad_charges_receipt_month)
-
-#     # try:
-#     #     pdf_data = generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month)
-#     #     print('pdf_data:', pdf_data)
-#     #     print('Success!')
-#     #     # return Response({'pdf_data': pdf_data}, status=status.HTTP_200_OK)
-#     #     return JsonResponse({'pdf_data': pdf_data}, status=200)
-#     #     # return HttpResponse(pdf_data, content_type='application/pdf')
-#     # except User.DoesNotExist:
-#     #     return JsonResponse({'error': 'User not found.'}, status=404)
-#     #     # return Response('User not found.', status=status.HTTP_404_NOT_FOUND)
-
-#     try:
-#         pdf_data = generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month)
-#         if pdf_data is None:
-#             return JsonResponse({'error': 'Error generating PDF'}, status=500)
-
-#         return JsonResponse({'pdf_data': pdf_data}, status=200)
-#         # return JsonResponse({'pdf_data': pdf_data.decode('utf-8')}, status=200)
-#         # return HttpResponse(pdf_data, content_type='application/pdf')
-#         # return Response({'pdf_data': pdf_data}, status=status.HTTP_200_OK)
-    
-#     except User.DoesNotExist:
-#         return JsonResponse({'error': 'User not found.'}, status=404)
-
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_ad_charges_receipt(request):
@@ -924,7 +891,6 @@ def get_ad_charges_receipt(request):
 
     try:
         pdf_data = generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month_formatted)
-        # print('pdf_data:', pdf_data)
         
         if pdf_data:
             # pdf_data_base64 = base64.b64encode(pdf_data).decode('utf-8')
@@ -993,12 +959,6 @@ def generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month_formatted):
         # pdf_data = pdf_content.getvalue()
         # pdf_content.close()
         # return pdf_data
-
-        # # Create an instance of HttpResponse and set its content to the PDF data
-        # response = HttpResponse(content_type='application/pdf')
-        # response['Content-Disposition'] = f'filename="{ad_charges_receipt_month_formatted}_ad_charges_receipt.pdf"'
-        # response.write(pdf_data)
-        # return response
 
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="{ad_charges_receipt_month_formatted}_ad_charges_receipt.pdf"'
