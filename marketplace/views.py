@@ -59,7 +59,7 @@ User = get_user_model()
 
 
 def generate_ad_message_id():
-    return ''.join(random.choices(string.digits, k=16))
+    return ''.join(random.choices(string.digits, k=20))
 
 
 def generate_ad_charge_id(): 
@@ -1010,8 +1010,6 @@ def create_free_ad_message(request):
 
     ad_id = data.get('ad_id')
     message = data.get('message')
-    # free_ad_message_id = generate_ad_message_id()
-    # print('free_ad_message_id:', free_ad_message_id)
     print('message:', message)
     
     try:
@@ -1056,9 +1054,9 @@ def list_free_ad_messages(request):
     print('user:', user)
 
     ad_id = request.GET.get('ad_id', '')
-    # free_ad_message_id = request.GET.get('free_ad_message_id', '')
+    free_ad_message_id = request.GET.get('free_ad_message_id', '')
     print('ad_id:', ad_id)
-    # print('free_ad_message_id:', free_ad_message_id)
+    print('free_ad_message_id:', free_ad_message_id)
 
     try:
         free_ad = PostFreeAd.objects.get(id=ad_id)
@@ -1071,7 +1069,7 @@ def list_free_ad_messages(request):
     except FreeAdMessageId.DoesNotExist:
         return Response({'detail': 'Ad ID not found'}, status=status.HTTP_404_NOT_FOUND)
     
-    print('free_ad:', free_ad)
+    # print('free_ad:', free_ad)
     print('free_ad_msg_id:', free_ad_msg_id) 
     
     try:
@@ -1122,7 +1120,7 @@ def seller_reply_free_ad_message(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def list_seller_free_ad_messages(request, pk):
+def list_seller_free_ad_messages(request, pk): 
     seller = request.user
     # data  = request.data
     # print('data:', data)
@@ -1162,7 +1160,6 @@ def create_paid_ad_message(request):
     ad_id = data.get('ad_id')
     message = data.get('message')
     paid_ad_message_id = generate_ad_message_id()
-    # print('pk:', pk)
     print('message:', message)
     print('paid_ad_message_id:', paid_ad_message_id)
     

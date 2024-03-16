@@ -1035,6 +1035,34 @@ class Message(models.Model):
         return f"{self.user} | {self.message}"
 
 
+class FreeAdMessage(models.Model):
+    buyer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="free_message_buyer")
+    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="free_message_seller")
+    free_ad_message_id = models.ForeignKey(FreeAdMessageId, on_delete=models.CASCADE, related_name='free_ad_mgs_id', blank=True, null=True)
+    free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE, related_name='free_ad_mgs', blank=True, null=True)
+    message = models.TextField(max_length=500, null=True, blank=True)
+    buyer_free_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
+    seller_free_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+    
+    def __str__(self):
+        return f"{self.free_ad_message_id}"
+
+
+class PaidAdMessage(models.Model):
+    buyer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_message_buyer")
+    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_message_seller")
+    paid_ad_message_id = models.ForeignKey(PaidAdMessageId, on_delete=models.CASCADE, related_name='paid_ad_mgs_id', blank=True, null=True)
+    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='paid_ad_mgs', blank=True, null=True)
+    message = models.TextField(max_length=500, null=True, blank=True)
+    buyer_paid_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
+    seller_paid_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+    
+    def __str__(self):
+        return f"{self.paid_ad_message_id}"
+
+
 class ReportFreeAd(models.Model): 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="fre_ad_reporter") 
     free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE, related_name='free_ad_report', blank=True, null=True)
