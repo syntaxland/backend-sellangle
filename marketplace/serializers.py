@@ -3,7 +3,8 @@ from rest_framework import serializers
 from .models import (MarketPlaceSellerAccount, MarketplaceSellerPhoto, 
                      PostFreeAd, PostPaidAd, PaysofterApiKey, Message,
                      ReportFreeAd, ReportPaidAd, ReviewFreeAdSeller, ReviewPaidAdSeller,
-                     FreeAdMessageId, PaidAdMessageId, AdChargeTotal
+                     FreeAdMessageId, PaidAdMessageId, AdChargeTotal,
+
                      )
 
 
@@ -65,9 +66,10 @@ class PaysofterApiKeySerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    first_name = serializers.CharField(source='user.first_name', read_only=True)
-    username = serializers.CharField(source='user.username', read_only=True)
-    free_ad_buyer = serializers.CharField(source='user.username', read_only=True)
+    buyer_first_name = serializers.CharField(source='buyer.first_name', read_only=True)
+    buyer_username = serializers.CharField(source='buyer.username', read_only=True)
+    seller_first_name = serializers.CharField(source='seller.first_name', read_only=True)
+    seller_username = serializers.CharField(source='seller.username', read_only=True)
     free_ad_id = serializers.CharField(source='free_ad.id', read_only=True)
     free_ad_name = serializers.CharField(source='free_ad.ad_name', read_only=True)
     free_ad_price = serializers.CharField(source='free_ad.price', read_only=True)
@@ -90,7 +92,7 @@ class MessageSerializer(serializers.ModelSerializer):
     paid_ad_rating = serializers.CharField(source='paid_ad.ad_rating', read_only=True)
     paid_ad_image1 = serializers.CharField(source='paid_ad.image1.photo.url', read_only=True)
     paid_seller_username = serializers.CharField(source='paid_ad.seller.username', read_only=True)
-    free_ad_messagpaid_ad_message_ide_id = serializers.CharField(source='paid_ad_message_id.paid_ad_message_id', read_only=True)
+    paid_ad_message_id = serializers.CharField(source='paid_ad_message_id.paid_ad_message_id', read_only=True)
 
     class Meta:
         model = Message
@@ -130,15 +132,12 @@ class ReviewPaidAdSellerSerializer(serializers.ModelSerializer):
 
 class FreeAdMessageIdSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
-    free_ad_buyer = serializers.CharField(source='user.username', read_only=True)
     free_ad_id = serializers.CharField(source='free_ad.id', read_only=True)
     free_ad_name = serializers.CharField(source='free_ad.ad_name', read_only=True)
     free_ad_price = serializers.CharField(source='free_ad.price', read_only=True)
     free_ad_currency = serializers.CharField(source='free_ad.currency', read_only=True)
     free_ad_expiration_date = serializers.CharField(source='free_ad.expiration_date', read_only=True)
     free_ad_rating = serializers.CharField(source='free_ad.ad_rating', read_only=True)
-    free_ad_image1 = serializers.CharField(source='free_ad.image1.photo.url', read_only=True)
-    free_seller_username = serializers.CharField(source='free_ad.seller.username', read_only=True)
     class Meta:
         model = FreeAdMessageId
         fields = '__all__'
@@ -146,6 +145,14 @@ class FreeAdMessageIdSerializer(serializers.ModelSerializer):
 
 class PaidAdMessageIdSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
+    paid_ad_id = serializers.CharField(source='paid_ad.id', read_only=True)
+    paid_ad_name = serializers.CharField(source='paid_ad.ad_name', read_only=True)
+    paid_ad_id = serializers.CharField(source='paid_ad.id', read_only=True)
+    paid_ad_name = serializers.CharField(source='paid_ad.ad_name', read_only=True)
+    paid_ad_price = serializers.CharField(source='paid_ad.price', read_only=True)
+    paid_ad_currency = serializers.CharField(source='paid_ad.currency', read_only=True)
+    paid_ad_expiration_date = serializers.CharField(source='paid_ad.expiration_date', read_only=True)
+    paid_ad_rating = serializers.CharField(source='paid_ad.ad_rating', read_only=True)
     class Meta:
         model = PaidAdMessageId
         fields = '__all__'

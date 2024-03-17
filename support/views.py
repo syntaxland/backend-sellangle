@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import SupportTicket, SupportResponse
-from .serializers import SupportTicketSerializer, SupportResponseSerializer
+from .serializers import SupportTicketSerializer, SupportResponseSerializer 
 from send_email.send_email_sendinblue import send_email_sendinblue
 from django.conf import settings
 from django.shortcuts import get_object_or_404 

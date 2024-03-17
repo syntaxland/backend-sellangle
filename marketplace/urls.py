@@ -38,14 +38,14 @@ urlpatterns = [
     path('get-seller-api-key/', views.get_seller_paysofter_api_key, name='get-seller-api-key'),
     path('save-seller-api-key/', views.save_seller_paysofter_api_key, name='save-seller-api-key'),
 
-    path('create-free-ad-message/', views.create_free_ad_message, name='create-free-ad-message'),
-    path('list-free-ad-messages/', views.list_free_ad_messages, name='list-free-ad-messages'),
+    path('buyer-create-free-ad-message/', views.buyer_create_free_ad_message, name='create-free-ad-message'),
+    path('list-buyer-free-ad-messages/', views.list_buyer_free_ad_messages, name='list_buyer_free_ad_messages'),
     path('seller-reply-free-ad-message/', views.seller_reply_free_ad_message, name='seller_reply_free_ad_message'),
     path('list-seller-free-ad-messages/<int:pk>/', views.list_seller_free_ad_messages, name='list_seller_free_ad_messages'),
     path('get-buyer-free-ad-messages/', views.get_buyer_free_ad_messages, name='get_buyer_free_ad_messages'),
 
-    path('create-paid-ad-message/', views.create_paid_ad_message, name='create-paid-ad-message'),
-    path('list-paid-ad-messages/', views.list_paid_ad_messages, name='list-paid-ad-messages'),
+    path('buyer-create-paid-ad-message/', views.buyer_create_paid_ad_message, name='create-paid-ad-message'),
+    path('list-buyer-paid-ad-messages/', views.list_buyer_paid_ad_messages, name='list_buyer_paid_ad_messages'),
     path('seller-reply-paid-ad-message/', views.seller_reply_paid_ad_message, name='seller_reply_paid_ad_message'),
     path('list-seller-paid-ad-messages/<int:pk>/', views.list_seller_paid_ad_messages, name='list_seller_paid_ad_messages'),
     path('get-buyer-paid-ad-messages/', views.get_buyer_paid_ad_messages, name='get_buyer_paid_ad_messages'),
@@ -73,8 +73,10 @@ urlpatterns = [
     path('pay-ad-charges/', views.pay_ad_charges, name='pay_ad_charges'),
     path('get-ad-charges-receipt/', views.get_ad_charges_receipt, name='get_ad_charges_receipt'),
     
-    # path('generate-ad-charges-receipt-pdf/', views.generate_ad_charges_receipt_pdf, name='generate_ad_charges_receipt_pdf'),
-    # path('send-monthly-ad-billing-receipt-email/', views.send_monthly_ad_billing_receipt_email, name='send_monthly_ad_billing_receipt_email'),
+    path('clear-seller-free-ad-message-counter/', views.clear_seller_free_ad_message_counter, name='clear_seller_free_ad_message_counter'),
+    path('clear-buyer-free-ad-message-counter/', views.clear_buyer_free_ad_message_counter, name='clear_buyer_free_ad_message_counter'),
+    path('clear-seller-paid-ad-message-counter/', views.clear_seller_paid_ad_message_counter, name='clear_seller_paid_ad_message_counter'),
+    path('clear-buyer-paid-ad-message-counter/', views.clear_buyer_paid_ad_message_counter, name='clear_buyer_paid_ad_message_counter'),
 
     path('search-seller-username/<str:seller_username>/', views.search_seller_username, name='search-seller-username'),
     path('get-seller-detail/<str:seller_username>/', views.get_seller_detail, name='get-seller-detail'),

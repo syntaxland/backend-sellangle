@@ -107,6 +107,8 @@ class AuthorAdmin(admin.ModelAdmin):
         'free_ad_message_id',
         'message',
         'free_ad',
+        'buyer_free_ad_msg_count',
+        'seller_free_ad_msg_count',
         'timestamp',
     )  
 
@@ -117,6 +119,8 @@ class AuthorAdmin(admin.ModelAdmin):
         'paid_ad_message_id',
         'message',
         'paid_ad',
+        'buyer_paid_ad_msg_count',
+        'seller_paid_ad_msg_count',
         'timestamp',
     )  
 
@@ -125,14 +129,15 @@ class AuthorAdmin(admin.ModelAdmin):
 class AuthorAdmin(admin.ModelAdmin):
     list_display = (
         'timestamp',
-        'user',
+        'buyer',
+        'seller',
         'message',
         'free_ad_message_id',
         'paid_ad_message_id',
-        'buyer_free_ad_msg_count',
-        'buyer_paid_ad_msg_count',
-        'seller_free_ad_msg_count',
-        'seller_paid_ad_msg_count',
+        # 'buyer_free_ad_msg_count',
+        # 'buyer_paid_ad_msg_count',
+        # 'seller_free_ad_msg_count',
+        # 'seller_paid_ad_msg_count',
         'free_ad',
         'paid_ad',
 

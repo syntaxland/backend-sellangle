@@ -23,6 +23,7 @@ ROOM_TOPIC = (
  
 class SupportTicket(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="support_ticket_user")
+    admin_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="admin_user")
     subject = models.CharField(max_length=225, null=True, blank=True)
     category = models.CharField(max_length=225, null=True, blank=True, choices=ROOM_TOPIC)
     ticket_id = models.CharField(max_length=20, unique=True, null=True)
