@@ -24,7 +24,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('admin/', admin.site.urls),
     
-    # path('api/', include('app.urls')),
+    path('api/', include('app.urls')),
     path('api/', include('user_profile.urls')),
     path('api/', include('send_email_otp.urls')), 
     path('api/', include('send_reset_password_email.urls')), 
@@ -32,7 +32,7 @@ urlpatterns = [
     path('api/', include('credit_point.urls')),
     path('api/', include('send_email_message.urls')),
     path('api/', include('send_message_inbox.urls')),
-    path('api/', include('recommender.urls')),
+    path('api/', include('recommender.urls')), 
     # path('api/', include('live_chat.urls')),
     # path('', include('live_chat.urls')),
     path('api/', include('sellers.urls')),
