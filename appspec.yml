@@ -1,3 +1,4 @@
+# appspec.yml
 version: 0.0
 os: linux
 files: 
@@ -9,6 +10,9 @@ permissions:
     group: ubuntu
 hooks:
   BeforeInstall:
+      - location: scripts/terminate_apt_processes.sh
+        timeout: 300
+        runas: ubuntu
       - location: scripts/clean_instance.sh  
         timeout: 300
         runas: ubuntu
