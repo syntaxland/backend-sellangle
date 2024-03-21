@@ -75,6 +75,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_user_6month_banned = models.BooleanField(default=False)  
     is_user_1year_banned = models.BooleanField(default=False)  
 
+    last_login = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now, blank=True, editable=False) 
   
     USERNAME_FIELD = 'email'

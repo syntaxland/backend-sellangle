@@ -109,6 +109,7 @@ class AuthorAdmin(admin.ModelAdmin):
         'free_ad',
         'buyer_free_ad_msg_count',
         'seller_free_ad_msg_count',
+        'modified_at',
         'timestamp',
     )  
 
@@ -121,6 +122,7 @@ class AuthorAdmin(admin.ModelAdmin):
         'paid_ad',
         'buyer_paid_ad_msg_count',
         'seller_paid_ad_msg_count',
+        'modified_at',
         'timestamp',
     )  
 

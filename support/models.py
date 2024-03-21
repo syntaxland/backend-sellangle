@@ -30,6 +30,9 @@ class SupportTicket(models.Model):
     message = models.TextField(max_length=5000, null=True, blank=True,)
     is_closed = models.BooleanField(default=False)  
     is_resolved = models.BooleanField(default=False)  
+    user_msg_count = models.PositiveIntegerField(default=0, editable=False)
+    admin_user_msg_count = models.PositiveIntegerField(default=0, editable=False)
+    modified_at = models.DateTimeField(null=True, auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self): 
@@ -38,10 +41,11 @@ class SupportTicket(models.Model):
 
 class SupportResponse(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="support_response_user")
+    admin_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="admin_user_response")
     support_ticket = models.ForeignKey(SupportTicket, on_delete=models.CASCADE, related_name='support_response', blank=True, null=True)
     message = models.TextField(max_length=5000, null=True, blank=True,)
     rating = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)  
-    modified = models.DateTimeField(null=True, blank=True)
+    modified_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     
     def __str__(self):

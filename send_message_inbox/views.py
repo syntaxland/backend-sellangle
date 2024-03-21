@@ -73,7 +73,7 @@ def get_user_message_inbox(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def clear_message_counter(request):
+def clear_message_counter(request): 
     user = request.user
     data = request.data
     print('data:', data, 'user:', user)

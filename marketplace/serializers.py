@@ -138,6 +138,7 @@ class FreeAdMessageIdSerializer(serializers.ModelSerializer):
     free_ad_currency = serializers.CharField(source='free_ad.currency', read_only=True)
     free_ad_expiration_date = serializers.CharField(source='free_ad.expiration_date', read_only=True)
     free_ad_rating = serializers.CharField(source='free_ad.ad_rating', read_only=True)
+    free_ad_seller_username = serializers.CharField(source='free_ad.seller.username', read_only=True)
     class Meta:
         model = FreeAdMessageId
         fields = '__all__'
@@ -153,6 +154,7 @@ class PaidAdMessageIdSerializer(serializers.ModelSerializer):
     paid_ad_currency = serializers.CharField(source='paid_ad.currency', read_only=True)
     paid_ad_expiration_date = serializers.CharField(source='paid_ad.expiration_date', read_only=True)
     paid_ad_rating = serializers.CharField(source='paid_ad.ad_rating', read_only=True)
+    paid_ad_seller_username = serializers.CharField(source='paid_ad.seller.username', read_only=True)
     class Meta:
         model = PaidAdMessageId
         fields = '__all__'

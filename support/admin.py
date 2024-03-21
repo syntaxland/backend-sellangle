@@ -9,7 +9,10 @@ class AuthorAdmin(admin.ModelAdmin):
                     'ticket_id',
                     'category',
                     'is_closed',
-                    'is_resolved', 
+                    'is_resolved',
+                    'user_msg_count',
+                    'admin_user_msg_count',
+                    'modified_at',  
                      'created_at',
                      )  
 

@@ -1002,6 +1002,7 @@ class FreeAdMessageId(models.Model):
     buyer_free_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
     seller_free_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
+    modified_at = models.DateTimeField(auto_now=True)  
 
     def __str__(self):
         return f"{self.free_ad_message_id}" 
@@ -1015,6 +1016,7 @@ class PaidAdMessageId(models.Model):
     buyer_paid_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
     seller_paid_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
+    modified_at = models.DateTimeField(auto_now=True)  
 
     def __str__(self):
         return f"{self.paid_ad_message_id}"
@@ -1029,10 +1031,6 @@ class Message(models.Model):
     free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE, related_name='free_ad_message', blank=True, null=True)
     paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='paid_ad_message', blank=True, null=True)
     message = models.TextField(max_length=500, null=True, blank=True)
-    # buyer_free_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
-    # buyer_paid_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
-    # seller_free_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
-    # seller_paid_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
     
     def __str__(self):
