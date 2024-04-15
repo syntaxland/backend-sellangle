@@ -44,7 +44,6 @@ def user_create_support_ticket(request):
 
     if ticket:
         ticket.admin_user_msg_count += 1
-        ticket.message = message
         ticket.modified_at = timezone.now()
         ticket.save()
 
@@ -147,7 +146,7 @@ def user_reply_support_ticket(request):
     
     if support_ticket:
         support_ticket.admin_user_msg_count += 1
-        support_ticket.message = message
+        # support_ticket.message = message
         support_ticket.is_closed = False
         support_ticket.is_resolved = False
         support_ticket.modified_at = timezone.now()
@@ -180,7 +179,7 @@ def admin_reply_support_ticket(request):
     
     if support_ticket:
         support_ticket.user_msg_count += 1
-        support_ticket.message = message
+        # support_ticket.message = message
         support_ticket.is_closed = False
         support_ticket.is_resolved = False
         support_ticket.modified_at = timezone.now()

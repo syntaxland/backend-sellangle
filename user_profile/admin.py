@@ -4,7 +4,7 @@ from . import models
 
 @admin.register(models.User)
 class AuthorAdmin(admin.ModelAdmin):
-    list_display = ('email', 'username', 'created_at', 'id', 'first_name',  
+    list_display = ('email', 'username', 'last_login', 'created_at', 'id', 'first_name',  
                     'phone_number',  'is_verified','referral_code', 'referral_link',
                       'is_marketplace_seller', 'is_ecommerce_seller', 
                       'is_staff', 'is_superuser', 'user_is_not_active', 

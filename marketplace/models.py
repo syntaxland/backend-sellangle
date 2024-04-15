@@ -1,80 +1,80 @@
-# marketplace/models.py 
+# marketplace/models.py
 from datetime import datetime, timedelta
 from django.db import models
 from django.contrib.auth import get_user_model
 
-User = get_user_model() 
+User = get_user_model()
 
-BUSINESS_TYPE_CHOICES = [ 
-        ('Registered', 'Registered'),
-        ('Unregistered', 'Unregistered'),  
-    ]
+BUSINESS_TYPE_CHOICES = [
+    ('Registered', 'Registered'),
+    ('Unregistered', 'Unregistered'),
+]
 
 STAFF_SIZE_CHOICES = [
-        ('Small', 'Small (1-50 employees)'),
-        ('Medium', 'Medium (51-250 employees)'), 
-        ('Large', 'Large (251+ employees)'),
-    ]
+    ('Small', 'Small (1-50 employees)'),
+    ('Medium', 'Medium (51-250 employees)'),
+    ('Large', 'Large (251+ employees)'),
+]
 
 BUSINESS_INDUSTRY_CHOICES = [
-        ('Information Technology', 'Information Technology'), 
-        ('Healthcare', 'Healthcare'),
-        ('Finance', 'Finance'),
-        ('Education', 'Education'),
-        ('Retail', 'Retail'),
-        ('Manufacturing', 'Manufacturing'),
-        ('Services', 'Services'),
-        ('Entertainment', 'Entertainment'),
-        ('Food', 'Food & Beverage'),
-        ('Travel', 'Travel & Tourism'),
-        ('Real Estate', 'Real Estate'),
-        ('Construction', 'Construction'),
-        ('Automotive', 'Automotive'),
-        ('Agriculture', 'Agriculture'),
-        ('Energy', 'Energy'),
-        ('Environmental', 'Environmental'),
-        ('Government', 'Government'),
-        ('Nonprofit', 'Nonprofit'),
-        ('Others', 'Others'),
-    ]
+    ('Information Technology', 'Information Technology'),
+    ('Healthcare', 'Healthcare'),
+    ('Finance', 'Finance'),
+    ('Education', 'Education'),
+    ('Retail', 'Retail'),
+    ('Manufacturing', 'Manufacturing'),
+    ('Services', 'Services'),
+    ('Entertainment', 'Entertainment'),
+    ('Food', 'Food & Beverage'),
+    ('Travel', 'Travel & Tourism'),
+    ('Real Estate', 'Real Estate'),
+    ('Construction', 'Construction'),
+    ('Automotive', 'Automotive'),
+    ('Agriculture', 'Agriculture'),
+    ('Energy', 'Energy'),
+    ('Environmental', 'Environmental'),
+    ('Government', 'Government'),
+    ('Nonprofit', 'Nonprofit'),
+    ('Others', 'Others'),
+]
 
 BUSINESS_CATEGORY_CHOICES = [
-  ('Startup', 'Startup'),
-  ('Small Business', 'Small Business'),
-  ('Medium Business', 'Medium Business'),
-  ('Large Business', 'Large Business'),
-  ('Corporation', 'Corporation'),
-  ('Sole Proprietorship', 'Sole Proprietorship'),
-  ('Partnership', 'Partnership'),
-  ('Franchise', 'Franchise'),
-  ('Family Owned', 'Family Owned'),
-  ('Online Business', 'Online Business'),
-  ('Brick and Mortar', 'Brick and Mortar'),
-  ('Service Provider', 'Service Provider'),
-  ('Retailer', 'Retailer'),
-  ('Wholesaler', 'Wholesaler'),
-  ('Manufacturer', 'Manufacturer'),
-  ('Restaurant', 'Restaurant'),
-  ('Hospitality', 'Hospitality'),
-  ('Healthcare', 'Healthcare'),
-  ('Education', 'Education'),
-  ('Tech', 'Tech'),
-  ('Creative', 'Creative'),
-  ('Entertainment', 'Entertainment'),
-  ('Travel', 'Travel'),
-  ('Construction', 'Construction'),
-  ('Automotive', 'Automotive'),
-  ('Agriculture', 'Agriculture'),
-  ('Energy', 'Energy'),
-  ('Environmental', 'Environmental'),
-  ('Government', 'Government'),
-  ('Nonprofit', 'Nonprofit'),
-  ('Others', 'Others'),
+    ('Startup', 'Startup'),
+    ('Small Business', 'Small Business'),
+    ('Medium Business', 'Medium Business'),
+    ('Large Business', 'Large Business'),
+    ('Corporation', 'Corporation'),
+    ('Sole Proprietorship', 'Sole Proprietorship'),
+    ('Partnership', 'Partnership'),
+    ('Franchise', 'Franchise'),
+    ('Family Owned', 'Family Owned'),
+    ('Online Business', 'Online Business'),
+    ('Brick and Mortar', 'Brick and Mortar'),
+    ('Service Provider', 'Service Provider'),
+    ('Retailer', 'Retailer'),
+    ('Wholesaler', 'Wholesaler'),
+    ('Manufacturer', 'Manufacturer'),
+    ('Restaurant', 'Restaurant'),
+    ('Hospitality', 'Hospitality'),
+    ('Healthcare', 'Healthcare'),
+    ('Education', 'Education'),
+    ('Tech', 'Tech'),
+    ('Creative', 'Creative'),
+    ('Entertainment', 'Entertainment'),
+    ('Travel', 'Travel'),
+    ('Construction', 'Construction'),
+    ('Automotive', 'Automotive'),
+    ('Agriculture', 'Agriculture'),
+    ('Energy', 'Energy'),
+    ('Environmental', 'Environmental'),
+    ('Government', 'Government'),
+    ('Nonprofit', 'Nonprofit'),
+    ('Others', 'Others'),
 ]
 
 ID_TYPE_CHOICES = [
     # ('NIN', 'NIN'),
-    ('Intl Passport', 'Intl Passport'), 
+    ('Intl Passport', 'Intl Passport'),
     ('Driving License', 'Driving License'),
     ('Govt Issued ID', 'Govt Issued ID'),
 ]
@@ -776,17 +776,26 @@ MAIN_CURRENCY_CHOICES = (
 )
 
 AD_REPORT_CHOICES = (
-    ('Misleading Content', 'False or deceptive information in the ad, claims that are not substantiated.'),
-    ('Inappropriate Content', 'Offensive language, images, or themes; content violating community standards or guidelines.'),
-    ('Irrelevant or Unwanted Ads', 'Ads that are not relevant to the user; too frequent display of the same ad.'),
-    ('Malware or Phishing', 'Ads containing malicious software or links to phishing websites.'),
+    ('Misleading Content',
+     'False or deceptive information in the ad, claims that are not substantiated.'),
+    ('Inappropriate Content',
+     'Offensive language, images, or themes; content violating community standards or guidelines.'),
+    ('Irrelevant or Unwanted Ads',
+     'Ads that are not relevant to the user; too frequent display of the same ad.'),
+    ('Malware or Phishing',
+     'Ads containing malicious software or links to phishing websites.'),
     ('Privacy Concerns', 'Collection of personal information without consent; violation of privacy policies.'),
-    ('Low-Quality or Unprofessional Design', 'Poorly designed or unprofessional-looking ads.'),
-    ('Counterfeit or Fraudulent Products', 'Ads promoting counterfeit goods or fraudulent services.'),
-    ('Political or Social Issues', 'Ads perceived as promoting hate speech, discrimination, or controversial political content.'),
+    ('Low-Quality or Unprofessional Design',
+     'Poorly designed or unprofessional-looking ads.'),
+    ('Counterfeit or Fraudulent Products',
+     'Ads promoting counterfeit goods or fraudulent services.'),
+    ('Political or Social Issues',
+     'Ads perceived as promoting hate speech, discrimination, or controversial political content.'),
     ('Technical Issues', 'Broken links or malfunctioning interactive elements in the ad.'),
-    ('Unsolicited or Spammy Ads', 'Ads that appear as spam or unsolicited marketing messages.'),
-    ('Disallowed Content', 'Ads promoting content that violates platform policies or legal regulations.'),
+    ('Unsolicited or Spammy Ads',
+     'Ads that appear as spam or unsolicited marketing messages.'),
+    ('Disallowed Content',
+     'Ads promoting content that violates platform policies or legal regulations.'),
     ('Unverified Claims', 'Ads making claims that cannot be verified or proven.'),
     ('Unrealistic Promises', 'Ads promising unrealistic results or benefits.'),
 )
@@ -805,29 +814,40 @@ AD_REPORT_CHOICES = (
 
 
 class MarketPlaceSellerAccount(models.Model):
-    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="seller_account_user")
+    seller = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="seller_account_user")
     business_name = models.CharField(max_length=100, null=True)
-    business_status = models.CharField(max_length=225, null=True, choices=BUSINESS_TYPE_CHOICES)
+    business_status = models.CharField(
+        max_length=225, null=True, choices=BUSINESS_TYPE_CHOICES)
     business_reg_num = models.CharField(max_length=50, null=True, blank=True)
-    business_reg_cert = models.ImageField(upload_to='media/sellers/', null=True, blank=True)
+    business_reg_cert = models.ImageField(
+        upload_to='media/sellers/', null=True, blank=True)
     business_address = models.CharField(max_length=225, null=True)
-    staff_size = models.CharField( max_length=50, null=True, choices=STAFF_SIZE_CHOICES)
-    business_industry = models.CharField( max_length=50, null=True, choices=BUSINESS_INDUSTRY_CHOICES)    
-    business_category = models.CharField( max_length=50, null=True, choices=BUSINESS_CATEGORY_CHOICES)
-    business_description = models.TextField(max_length=225, null=True, blank=True)
+    staff_size = models.CharField(
+        max_length=50, null=True, choices=STAFF_SIZE_CHOICES)
+    business_industry = models.CharField(
+        max_length=50, null=True, choices=BUSINESS_INDUSTRY_CHOICES)
+    business_category = models.CharField(
+        max_length=50, null=True, choices=BUSINESS_CATEGORY_CHOICES)
+    business_description = models.TextField(
+        max_length=225, null=True, blank=True)
     business_phone = models.CharField(max_length=20, null=True, blank=True)
     business_website = models.CharField(max_length=225, null=True, blank=True)
-    country = models.CharField(max_length=50, null=True, blank=True, choices=COUNTRY_CHOICES)
-    id_type = models.CharField( max_length=50, null=True, blank=True, choices=ID_TYPE_CHOICES)    
+    country = models.CharField(
+        max_length=50, null=True, blank=True, choices=COUNTRY_CHOICES)
+    id_type = models.CharField(
+        max_length=50, null=True, blank=True, choices=ID_TYPE_CHOICES)
     id_number = models.CharField(max_length=30, null=True)
     id_card_image = models.ImageField(upload_to='media/sellers/')
     dob = models.CharField(max_length=225, null=True, blank=True)
     home_address = models.CharField(max_length=225, null=True, blank=True)
     is_seller_verified = models.BooleanField(default=False)
     is_seller_banned = models.BooleanField(default=False)
-    rating = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True, editable=False)
+    rating = models.DecimalField(
+        max_digits=4, decimal_places=2, null=True, blank=True, editable=False)
     review = models.TextField(null=True, blank=True)
-    review_count = models.IntegerField(null=True, blank=True, default=0, editable=False)
+    review_count = models.IntegerField(
+        null=True, blank=True, default=0, editable=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
@@ -838,53 +858,70 @@ class MarketPlaceSellerAccount(models.Model):
 
 
 class MarketplaceSellerPhoto(models.Model):
-    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="photo_seller")  
+    seller = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="photo_seller")
     photo = models.ImageField(upload_to='media/sellers/')
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
-    def __str__(self): 
+    def __str__(self):
         return f'Photo {self.pk}'
 
 
-class PostFreeAd(models.Model): 
-    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="ad_seller") 
-    # seller_photo = models.ForeignKey(MarketplaceSellerPhoto, on_delete=models.SET_NULL, null=True, blank=True, related_name="seller_free_ad_photo") 
+class PostFreeAd(models.Model):
+    seller = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="ad_seller")
+    # seller_photo = models.ForeignKey(MarketplaceSellerPhoto, on_delete=models.SET_NULL, null=True, blank=True, related_name="seller_free_ad_photo")
     ad_name = models.CharField(max_length=80, null=True)
-    ad_category = models.CharField(max_length=100, choices=AD_CATEGORY_CHOICES, null=True) 
-    ad_type = models.CharField(max_length=100, choices=AD_TYPE_CHOICES, null=True, blank=True)
+    ad_category = models.CharField(
+        max_length=100, choices=AD_CATEGORY_CHOICES, null=True)
+    ad_type = models.CharField(
+        max_length=100, choices=AD_TYPE_CHOICES, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     country = models.CharField(max_length=255, null=True)
     state_province = models.CharField(max_length=255, null=True)
     city = models.CharField(max_length=255, null=True, blank=True)
-    condition = models.CharField(max_length=100, choices=AD_CONDITION_CHOICES, null=True, blank=True)
-    currency = models.CharField(max_length=50, choices=CURRENCY_CHOICES, default='NGN', null=True, blank=True)
+    condition = models.CharField(
+        max_length=100, choices=AD_CONDITION_CHOICES, null=True, blank=True)
+    currency = models.CharField(
+        max_length=50, choices=CURRENCY_CHOICES, default='NGN', null=True, blank=True)
     price = models.DecimalField(max_digits=16, decimal_places=2, null=True)
-    usd_price = models.DecimalField(max_digits=16, decimal_places=2, null=True, blank=True)
+    usd_price = models.DecimalField(
+        max_digits=16, decimal_places=2, null=True, blank=True)
     is_price_negotiable = models.BooleanField(default=False)
-    promo_price = models.DecimalField(max_digits=16, decimal_places=2, null=True, blank=True)    
-    brand = models.CharField(max_length=255, blank=True, null=True) 
+    promo_price = models.DecimalField(
+        max_digits=16, decimal_places=2, null=True, blank=True)
+    brand = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(max_length=4000, blank=True, null=True)
     youtube_link = models.URLField(max_length=255, blank=True, null=True)
-    ad_rating = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True, editable=False) 
-    num_reviews = models.IntegerField(null=True, blank=True, default=0, editable=False)
+    ad_rating = models.DecimalField(
+        max_digits=7, decimal_places=2, null=True, blank=True, editable=False)
+    num_reviews = models.IntegerField(
+        null=True, blank=True, default=0, editable=False)
     ad_is_saved = models.BooleanField(default=False)
     ad_save_count = models.PositiveIntegerField(default=0, editable=False)
     phone_view_count = models.PositiveIntegerField(default=0, editable=False)
-    phone_view_user_count = models.PositiveIntegerField(default=0, editable=False)
+    phone_view_user_count = models.PositiveIntegerField(
+        default=0, editable=False)
     ad_view_count = models.PositiveIntegerField(default=0, editable=False)
-    count_in_stock = models.PositiveIntegerField(default=1, null=True, blank=True)
+    count_in_stock = models.PositiveIntegerField(
+        default=1, null=True, blank=True)
     ad_count = models.PositiveIntegerField(default=0, editable=False)
     is_active = models.BooleanField(default=False)
     is_ad_reported = models.BooleanField(default=False)
     ad_report_count = models.PositiveIntegerField(default=0, editable=False)
-    ad_report = models.CharField(max_length=100, choices=AD_REPORT_CHOICES, null=True, blank=True)
-    image1 = models.ImageField(upload_to='./media/marketplace', null=True, blank=True)
-    image2 = models.ImageField(upload_to='./media/marketplace', null=True, blank=True)
-    image3 = models.ImageField(upload_to='./media/marketplace', null=True, blank=True)
-    duration = models.CharField(max_length=100, choices=DURATION_CHOICES, default='1 day', null=True, blank=True)
+    ad_report = models.CharField(
+        max_length=100, choices=AD_REPORT_CHOICES, null=True, blank=True)
+    image1 = models.ImageField(
+        upload_to='./media/marketplace', null=True, blank=True)
+    image2 = models.ImageField(
+        upload_to='./media/marketplace', null=True, blank=True)
+    image3 = models.ImageField(
+        upload_to='./media/marketplace', null=True, blank=True)
+    duration = models.CharField(
+        max_length=100, choices=DURATION_CHOICES, default='1 day', null=True, blank=True)
     duration_hours = models.DurationField(null=True, blank=True)
     expiration_date = models.DateTimeField(null=True, blank=True)
-    timestamp = models.DateTimeField(auto_now_add=True) 
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
         if self.duration:
@@ -903,10 +940,10 @@ class PostFreeAd(models.Model):
             elif self.duration == '2 weeks':
                 self.duration_hours = timedelta(weeks=2)
             elif self.duration == '1 month':
-                self.duration_hours = timedelta(days=30)  
+                self.duration_hours = timedelta(days=30)
 
             self.expiration_date = datetime.now() + self.duration_hours
-        
+
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -914,51 +951,71 @@ class PostFreeAd(models.Model):
 
 
 class PostPaidAd(models.Model):
-    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_seller") 
-    # seller_photo = models.ForeignKey(MarketplaceSellerPhoto, on_delete=models.SET_NULL, null=True, blank=True, related_name="seller_paid_ad_photo") 
+    seller = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_seller")
+    # seller_photo = models.ForeignKey(MarketplaceSellerPhoto, on_delete=models.SET_NULL, null=True, blank=True, related_name="seller_paid_ad_photo")
     ad_name = models.CharField(max_length=80, null=True)
-    ad_category = models.CharField(max_length=100, choices=AD_CATEGORY_CHOICES, null=True, blank=True)
-    ad_type = models.CharField(max_length=100, choices=AD_TYPE_CHOICES, null=True, blank=True)
+    ad_category = models.CharField(
+        max_length=100, choices=AD_CATEGORY_CHOICES, null=True, blank=True)
+    ad_type = models.CharField(
+        max_length=100, choices=AD_TYPE_CHOICES, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     country = models.CharField(max_length=255, null=True, blank=True)
     state_province = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=255, null=True, blank=True)
-    condition = models.CharField(max_length=100, choices=AD_CONDITION_CHOICES, null=True, blank=True)
-    currency = models.CharField(max_length=50, choices=MAIN_CURRENCY_CHOICES, default='NGN', null=True, blank=True)
+    condition = models.CharField(
+        max_length=100, choices=AD_CONDITION_CHOICES, null=True, blank=True)
+    currency = models.CharField(
+        max_length=50, choices=MAIN_CURRENCY_CHOICES, default='NGN', null=True, blank=True)
     price = models.DecimalField(max_digits=16, decimal_places=2, null=True)
-    usd_price = models.DecimalField(max_digits=16, decimal_places=2, null=True, blank=True)
-    usd_currency = models.CharField(max_length=50, choices=CURRENCY_CHOICES, default='USD', null=True, blank=True)
-    promo_price = models.DecimalField(max_digits=16, decimal_places=2, null=True, blank=True)    
-    brand = models.CharField(max_length=255, blank=True, null=True) 
+    usd_price = models.DecimalField(
+        max_digits=16, decimal_places=2, null=True, blank=True)
+    usd_currency = models.CharField(
+        max_length=50, choices=CURRENCY_CHOICES, default='USD', null=True, blank=True)
+    promo_price = models.DecimalField(
+        max_digits=16, decimal_places=2, null=True, blank=True)
+    brand = models.CharField(max_length=255, blank=True, null=True)
     promo_code = models.CharField(max_length=10, null=True, blank=True)
-    discount_percentage = models.DecimalField(max_digits=5, decimal_places=1, default=0, blank=True) 
+    discount_percentage = models.DecimalField(
+        max_digits=5, decimal_places=1, default=0, blank=True)
     show_strike_through_promo_price = models.BooleanField(default=False)
     description = models.TextField(max_length=4000, blank=True, null=True)
     youtube_link = models.URLField(max_length=255, blank=True, null=True)
-    ad_charges = models.DecimalField(max_digits=16, decimal_places=2, default=0, editable=False, blank=True)
-    ad_charge_hours  = models.PositiveIntegerField(null=True, default=0, editable=False) 
+    ad_charges = models.DecimalField(
+        max_digits=16, decimal_places=2, default=0, editable=False, blank=True)
+    ad_charge_hours = models.PositiveIntegerField(
+        null=True, default=0, editable=False)
     is_price_negotiable = models.BooleanField(default=False)
     phone_view_count = models.PositiveIntegerField(default=0, editable=False)
-    phone_view_user_count = models.PositiveIntegerField(default=0, editable=False)
-    ad_rating = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True, editable=False)
-    num_reviews = models.IntegerField(null=True, blank=True, default=0, editable=False)
+    phone_view_user_count = models.PositiveIntegerField(
+        default=0, editable=False)
+    ad_rating = models.DecimalField(
+        max_digits=7, decimal_places=2, null=True, blank=True, editable=False)
+    num_reviews = models.IntegerField(
+        null=True, blank=True, default=0, editable=False)
     ad_is_saved = models.BooleanField(default=False)
     ad_save_count = models.PositiveIntegerField(default=0, editable=False)
     ad_view_count = models.PositiveIntegerField(default=0, editable=False)
-    count_in_stock = models.PositiveIntegerField(default=1, null=True, blank=True)
+    count_in_stock = models.PositiveIntegerField(
+        default=1, null=True, blank=True)
     ad_count = models.PositiveIntegerField(default=0, editable=False)
     is_auto_renewal = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_ad_reported = models.BooleanField(default=False)
     ad_report_count = models.PositiveIntegerField(default=0, editable=False)
-    ad_report = models.CharField(max_length=100, choices=AD_REPORT_CHOICES, null=True, blank=True)
-    image1 = models.ImageField(upload_to='./media/marketplace', null=True, default='./media/default_ad_photo.jpg', blank=True)
-    image2 = models.ImageField(upload_to='./media/marketplace', null=True, blank=True)
-    image3 = models.ImageField(upload_to='./media/marketplace', null=True, blank=True)
-    duration = models.CharField(max_length=100, choices=DURATION_CHOICES, default='1 day', null=True, blank=True)
+    ad_report = models.CharField(
+        max_length=100, choices=AD_REPORT_CHOICES, null=True, blank=True)
+    image1 = models.ImageField(upload_to='./media/marketplace',
+                               null=True, default='./media/default_ad_photo.jpg', blank=True)
+    image2 = models.ImageField(
+        upload_to='./media/marketplace', null=True, blank=True)
+    image3 = models.ImageField(
+        upload_to='./media/marketplace', null=True, blank=True)
+    duration = models.CharField(
+        max_length=100, choices=DURATION_CHOICES, default='1 day', null=True, blank=True)
     duration_hours = models.DurationField(null=True, blank=True)
     expiration_date = models.DateTimeField(null=True, blank=True)
-    timestamp = models.DateTimeField(auto_now_add=True) 
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
         if self.duration:
@@ -977,133 +1034,159 @@ class PostPaidAd(models.Model):
             elif self.duration == '2 weeks':
                 self.duration_hours = timedelta(weeks=2)
             elif self.duration == '1 month':
-                self.duration_hours = timedelta(days=30)  
+                self.duration_hours = timedelta(days=30)
 
             self.expiration_date = datetime.now() + self.duration_hours
-        
+
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.ad_name
 
-   
+
 class PaysofterApiKey(models.Model):
-    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paysofter_seller") 
+    seller = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="paysofter_seller")
     live_api_key = models.CharField(max_length=100, null=True, blank=True)
-    is_api_key_live = models.BooleanField(default=False) 
+    is_api_key_live = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
 
 class FreeAdMessageId(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="free_ad_message_user")
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="free_ad_message_user")
     free_ad_message_id = models.CharField(max_length=20, null=True)
-    free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE, related_name='free_ad_message_id', blank=True, null=True)
+    free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE,
+                                related_name='free_ad_message_id', blank=True, null=True)
     message = models.TextField(max_length=500, null=True, blank=True)
-    buyer_free_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
-    seller_free_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
+    buyer_free_ad_msg_count = models.PositiveIntegerField(
+        default=0, editable=False)
+    seller_free_ad_msg_count = models.PositiveIntegerField(
+        default=0, editable=False)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
-    modified_at = models.DateTimeField(auto_now=True)  
+    modified_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.free_ad_message_id}" 
- 
+        return f"{self.free_ad_message_id}"
+
 
 class PaidAdMessageId(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_message_user") 
-    paid_ad_message_id = models.CharField(max_length=20, unique=True, null=True)
-    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='paid_ad_message_id', blank=True, null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_message_user")
+    paid_ad_message_id = models.CharField(
+        max_length=20, unique=True, null=True)
+    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE,
+                                related_name='paid_ad_message_id', blank=True, null=True)
     message = models.TextField(max_length=500, null=True, blank=True)
-    buyer_paid_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
-    seller_paid_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
+    buyer_paid_ad_msg_count = models.PositiveIntegerField(
+        default=0, editable=False)
+    seller_paid_ad_msg_count = models.PositiveIntegerField(
+        default=0, editable=False)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
-    modified_at = models.DateTimeField(auto_now=True)  
+    modified_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.paid_ad_message_id}"
 
 
 class Message(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="message_user")
-    buyer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="message_buyer")
-    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="message_seller")
-    free_ad_message_id = models.ForeignKey(FreeAdMessageId, on_delete=models.CASCADE, related_name='freead_message_id', blank=True, null=True)
-    paid_ad_message_id = models.ForeignKey(PaidAdMessageId, on_delete=models.CASCADE, related_name='paidad_message_id', blank=True, null=True)
-    free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE, related_name='free_ad_message', blank=True, null=True)
-    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='paid_ad_message', blank=True, null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="message_user")
+    buyer = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="message_buyer")
+    seller = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="message_seller")
+    free_ad_message_id = models.ForeignKey(
+        FreeAdMessageId, on_delete=models.CASCADE, related_name='freead_message_id', blank=True, null=True)
+    paid_ad_message_id = models.ForeignKey(
+        PaidAdMessageId, on_delete=models.CASCADE, related_name='paidad_message_id', blank=True, null=True)
+    free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE,
+                                related_name='free_ad_message', blank=True, null=True)
+    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE,
+                                related_name='paid_ad_message', blank=True, null=True)
     message = models.TextField(max_length=500, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
-    
+
     def __str__(self):
         return f"{self.user} | {self.message}"
 
 
 class FreeAdMessage(models.Model):
-    buyer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="free_message_buyer")
-    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="free_message_seller")
-    free_ad_message_id = models.ForeignKey(FreeAdMessageId, on_delete=models.CASCADE, related_name='free_ad_mgs_id', blank=True, null=True)
-    free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE, related_name='free_ad_mgs', blank=True, null=True)
+    buyer = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="free_message_buyer")
+    seller = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="free_message_seller")
+    free_ad_message_id = models.ForeignKey(
+        FreeAdMessageId, on_delete=models.CASCADE, related_name='free_ad_mgs_id', blank=True, null=True)
+    free_ad = models.ForeignKey(
+        PostFreeAd, on_delete=models.CASCADE, related_name='free_ad_mgs', blank=True, null=True)
     message = models.TextField(max_length=500, null=True, blank=True)
-    buyer_free_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
-    seller_free_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
+    buyer_free_ad_msg_count = models.PositiveIntegerField(
+        default=0, editable=False)
+    seller_free_ad_msg_count = models.PositiveIntegerField(
+        default=0, editable=False)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
-    
+
     def __str__(self):
         return f"{self.free_ad_message_id}"
 
 
 class PaidAdMessage(models.Model):
-    buyer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_message_buyer")
-    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_message_seller")
-    paid_ad_message_id = models.ForeignKey(PaidAdMessageId, on_delete=models.CASCADE, related_name='paid_ad_mgs_id', blank=True, null=True)
-    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='paid_ad_mgs', blank=True, null=True)
+    buyer = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="paid_message_buyer")
+    seller = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="paid_message_seller")
+    paid_ad_message_id = models.ForeignKey(
+        PaidAdMessageId, on_delete=models.CASCADE, related_name='paid_ad_mgs_id', blank=True, null=True)
+    paid_ad = models.ForeignKey(
+        PostPaidAd, on_delete=models.CASCADE, related_name='paid_ad_mgs', blank=True, null=True)
     message = models.TextField(max_length=500, null=True, blank=True)
-    buyer_paid_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
-    seller_paid_ad_msg_count = models.PositiveIntegerField(default=0, editable=False)
+    buyer_paid_ad_msg_count = models.PositiveIntegerField(
+        default=0, editable=False)
+    seller_paid_ad_msg_count = models.PositiveIntegerField(
+        default=0, editable=False)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
-    
+
     def __str__(self):
         return f"{self.paid_ad_message_id}"
 
 
-class ReportFreeAd(models.Model): 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="fre_ad_reporter") 
-    free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE, related_name='free_ad_report', blank=True, null=True)
-    ad_report = models.CharField(max_length=100, choices=AD_REPORT_CHOICES, null=True, blank=True)
+class ReportFreeAd(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="fre_ad_reporter")
+    free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE,
+                                related_name='free_ad_report', blank=True, null=True)
+    ad_report = models.CharField(
+        max_length=100, choices=AD_REPORT_CHOICES, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
 
- 
-class ReportPaidAd(models.Model): 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_reporter") 
-    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='paid_ad_report', blank=True, null=True)
-    ad_report = models.CharField(max_length=100, choices=AD_REPORT_CHOICES, null=True, blank=True)
+
+class ReportPaidAd(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_reporter")
+    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE,
+                                related_name='paid_ad_report', blank=True, null=True)
+    ad_report = models.CharField(
+        max_length=100, choices=AD_REPORT_CHOICES, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
 
 
 class ReviewFreeAdSeller(models.Model):
-    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="free_ad_seller_review")
-    seller_account = models.ForeignKey(MarketPlaceSellerAccount, on_delete=models.CASCADE, related_name='free_ad_seller_account_reivew', blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="review_free_ad_user") 
-    free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE, related_name='free_ad_reivew', blank=True, null=True)
-    rating = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
-    review_count = models.IntegerField(null=True, blank=True, default=0, editable=False)
+    seller = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="free_ad_seller_review")
+    seller_account = models.ForeignKey(MarketPlaceSellerAccount, on_delete=models.CASCADE,
+                                       related_name='free_ad_seller_account_reivew', blank=True, null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="review_free_ad_user")
+    free_ad = models.ForeignKey(PostFreeAd, on_delete=models.CASCADE,
+                                related_name='free_ad_reivew', blank=True, null=True)
+    rating = models.DecimalField(
+        max_digits=4, decimal_places=2, null=True, blank=True)
+    review_count = models.IntegerField(
+        null=True, blank=True, default=0, editable=False)
     is_review_liked = models.BooleanField(default=False)
-    review_like_count = models.IntegerField(null=True, blank=True, default=0, editable=False)
-    comment = models.TextField(null=True, blank=True)
-    timestamp = models.DateTimeField(auto_now_add=True, null=True)
-
-    def __str__(self): 
-        return str(self.rating)
-
-
-class ReviewPaidAdSeller(models.Model):
-    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_seller_review")
-    seller_account = models.ForeignKey(MarketPlaceSellerAccount, on_delete=models.CASCADE, related_name='paid_ad_seller_account_review', blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="review_paid_ad_user") 
-    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='paid_ad_reivew', blank=True, null=True)
-    rating = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
-    review_count = models.IntegerField(null=True, blank=True, default=0, editable=False)
-    is_review_liked = models.BooleanField(default=False)
-    review_like_count = models.IntegerField(null=True, blank=True, default=0, editable=False)
+    review_like_count = models.IntegerField(
+        null=True, blank=True, default=0, editable=False)
     comment = models.TextField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
 
@@ -1111,10 +1194,38 @@ class ReviewPaidAdSeller(models.Model):
         return str(self.rating)
 
 
-class AdChargeTotal(models.Model): 
-    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="ad_total_charge_seller") 
-    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE, related_name='total_ad_charge', blank=True, null=True)
-    total_ad_charges = models.DecimalField(max_digits=16, decimal_places=2, default=0, editable=False)
-    total_ad_charge_hours = models.PositiveIntegerField(null=True, default=0, editable=False)
-    total_ad_charge_id = models.CharField(max_length=20, unique=True, null=True)
+class ReviewPaidAdSeller(models.Model):
+    seller = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="paid_ad_seller_review")
+    seller_account = models.ForeignKey(MarketPlaceSellerAccount, on_delete=models.CASCADE,
+                                       related_name='paid_ad_seller_account_review', blank=True, null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="review_paid_ad_user")
+    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE,
+                                related_name='paid_ad_reivew', blank=True, null=True)
+    rating = models.DecimalField(
+        max_digits=4, decimal_places=2, null=True, blank=True)
+    review_count = models.IntegerField(
+        null=True, blank=True, default=0, editable=False)
+    is_review_liked = models.BooleanField(default=False)
+    review_like_count = models.IntegerField(
+        null=True, blank=True, default=0, editable=False)
+    comment = models.TextField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return str(self.rating)
+
+
+class AdChargeTotal(models.Model):
+    seller = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="ad_total_charge_seller")
+    paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE,
+                                related_name='total_ad_charge', blank=True, null=True)
+    total_ad_charges = models.DecimalField(
+        max_digits=16, decimal_places=2, default=0, editable=False)
+    total_ad_charge_hours = models.PositiveIntegerField(
+        null=True, default=0, editable=False)
+    total_ad_charge_id = models.CharField(
+        max_length=20, unique=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
