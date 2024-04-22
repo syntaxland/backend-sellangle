@@ -20,18 +20,18 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-if os.name == 'nt':
-    import platform
-    OSGEO4W = r"C:\OSGeo4W"
-    # if '64' in platform.architecture()[0]:
-    #     OSGEO4W += "64"
-    assert os.path.isdir(OSGEO4W), "Directory does not exist: " + OSGEO4W
-    os.environ['OSGEO4W_ROOT'] = OSGEO4W
-    os.environ['GDAL_DATA'] = OSGEO4W + r"\share\gdal"
-    os.environ['PROJ_LIB'] = OSGEO4W + r"\share\proj"
-    os.environ['PATH'] = OSGEO4W + r"\bin;" + os.environ['PATH'] 
+# if os.name == 'nt':
+#     import platform
+#     OSGEO4W = r"C:\OSGeo4W"
+#     # if '64' in platform.architecture()[0]:
+#     #     OSGEO4W += "64"
+#     assert os.path.isdir(OSGEO4W), "Directory does not exist: " + OSGEO4W
+#     os.environ['OSGEO4W_ROOT'] = OSGEO4W
+#     os.environ['GDAL_DATA'] = OSGEO4W + r"\share\gdal"
+#     os.environ['PROJ_LIB'] = OSGEO4W + r"\share\proj"
+#     os.environ['PATH'] = OSGEO4W + r"\bin;" + os.environ['PATH'] 
 
-GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal308.dll'
+# GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal308.dll'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
@@ -40,14 +40,14 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 # DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', 
-                 'localhost:8002',  
-                 '127.0.0.1', 
-                 '127.0.0.1:8002', 
-                 '34.202.53.39', 
-                 'ec2-34.202.53.39.compute-1.amazonaws.com', 
-                 'backend.sellangle.com' 
-                 ]
+# ALLOWED_HOSTS = ['localhost', 
+#                  'localhost:8002',  
+#                  '127.0.0.1', 
+#                  '127.0.0.1:8002', 
+#                  '34.202.53.39', 
+#                  'ec2-34.202.53.39.compute-1.amazonaws.com', 
+#                  'backend.sellangle.com' 
+#                  ]
 
 ALLOWED_HOSTS = ["*"] 
 
@@ -162,14 +162,14 @@ MIDDLEWARE = [
     
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "https://backend.sellangle.com",
-    "https://sellangle.com",
-    "http://127.0.0.1:3002",
-    "http://localhost:3002",
-    "http://localhost:8002",
-    "http://127.0.0.1:8002",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "https://backend.sellangle.com",
+#     "https://sellangle.com",
+#     "http://127.0.0.1:3002",
+#     "http://localhost:3002",
+#     "http://localhost:8002",
+#     "http://127.0.0.1:8002",
+# ]
 
 # Additional CORS Configuration
 CORS_ALLOWED_HEADERS = [
@@ -190,7 +190,6 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
-
 
 CORS_ALLOW_CREDENTIALS = True  
 
