@@ -216,7 +216,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend_drf.wsgi.application' 
 
 # WebSocket configuration
-# ASGI_APPLICATION = "backend_drf.asgi.application"
+# ASGI_APPLICATION = "backend_drf.asgi.application" 
 ASGI_APPLICATION = "backend_drf.routing.application"
 
 
