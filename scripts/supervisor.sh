@@ -13,10 +13,19 @@ SUPERVISOR_CONFIG_DIR="/etc/supervisor/conf.d/"
 LOG_DIR="/home/ubuntu/backend-sellangle/logs/celery/"
 
 # Ensure log directories exist
-sudo mkdir -p "$LOG_DIR"
-sudo mkdir -p "$SUPERVISOR_CONFIG_DIR"
+# sudo mkdir -p "$LOG_DIR"
+# sudo mkdir -p "$SUPERVISOR_CONFIG_DIR"
 
-# Reread and update Supervisor configuration
+# Ensure log directories exist and create if not
+if [ ! -d "$LOG_DIR" ]; then
+    sudo mkdir -p "$LOG_DIR"
+fi
+
+if [ ! -d "$SUPERVISOR_CONFIG_DIR" ]; then
+    sudo mkdir -p "$SUPERVISOR_CONFIG_DIR"
+fi
+
+# Reread and update Supervisor configuration 
 sudo supervisorctl reread
 sudo supervisorctl update
 
