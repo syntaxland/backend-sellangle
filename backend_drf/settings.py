@@ -44,8 +44,8 @@ DEBUG = True
 #                  'localhost:8002',  
 #                  '127.0.0.1', 
 #                  '127.0.0.1:8002', 
-#                  '34.202.53.39', 
-#                  'ec2-34.202.53.39.compute-1.amazonaws.com', 
+#                  "0.0.0.0",
+#                  "sellangle.com",
 #                  'backend.sellangle.com' 
 #                  ]
 
@@ -161,16 +161,25 @@ MIDDLEWARE = [
     
 ]
 
-# CORS_ALLOWED_ORIGINS = [
-#     "https://backend.sellangle.com",
-#     "https://sellangle.com",
-#     "http://127.0.0.1:3002",
-#     "http://localhost:3002",
-#     "http://localhost:8002",
-#     "http://127.0.0.1:8002",
-# ]
-
 # Additional CORS Configuration
+CORS_ALLOWED_ORIGINS = [
+    "https://sellangle.com",
+    "https://backend.sellangle.com",
+    "http://127.0.0.1:3002",
+    "http://localhost:3002",
+    "http://localhost:8002",
+    "http://127.0.0.1:8002",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://sellangle.com",
+    "https://backend.sellangle.com",
+    "http://127.0.0.1:3002",
+    "http://localhost:3002",
+    "http://localhost:8002",
+    "http://127.0.0.1:8002",
+]
+
 CORS_ALLOWED_HEADERS = [
     'access-control-allow-headers',
     'access-control-allow-origin',
@@ -190,7 +199,7 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
-CORS_ALLOW_CREDENTIALS = True  
+CORS_ALLOW_CREDENTIALS = True 
 
 CORS_ALLOW_ALL_ORIGINS = True 
 
@@ -438,7 +447,7 @@ PAYSOFTER_PUBLIC_KEY = os.getenv('PAYSOFTER_PUBLIC_KEY')
 PAYSOFTER_PAYMENT_URL = os.getenv('PAYSOFTER_PAYMENT_URL')
 
 SELLANGLE_URL = os.getenv('SELLANGLE_URL')
-MCDOFSHOP_URL = os.getenv('MCDOFSHOP_URL')
+# MCDOFSHOP_URL = os.getenv('MCDOFSHOP_URL')
 
 COMPANY_NAME = os.getenv('COMPANY_NAME')
 PARENT_COMPANY_NAME = os.getenv('PARENT_COMPANY_NAME')
