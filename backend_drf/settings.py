@@ -27,24 +27,51 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 # DEBUG = False
 
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "handlers": {
+#         "file": {
+#             "level": "ERROR",
+#             "class": "logging.FileHandler",
+#             'filename': f'{BASE_DIR}/logs/error.log',
+#         },
+#     },
+#     "loggers": {  
+#         "django": {
+#             "handlers": ["file"],
+#             "level": "ERROR",
+#             "propagate": True,
+#         },
+#     },
+# }
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {
-        "file": {
-            "level": "ERROR",
-            "class": "logging.FileHandler",
-            'filename': f'{BASE_DIR}/logs/error.log',
+    "formatters": {
+        "standard": {
+            # "format": "[%(asctime)s] %(levelname)s [%(module)s] [PID:%(process)d] [Thread:%(thread)d]: %(message)s",
+            "format": "[%(asctime)s] [%(levelname)s] [%(name)s: %(message)s]"
         },
     },
-    "loggers": {  
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": f"{BASE_DIR}/logs/error.log", 
+            "formatter": "standard",
+        },
+    },
+    "loggers": {
         "django": {
             "handlers": ["file"],
-            "level": "ERROR",
+            "level": "INFO",
             "propagate": True,
         },
     },
 }
+
 
 # ALLOWED_HOSTS = ['localhost', 
 #                  'localhost:8002',  
