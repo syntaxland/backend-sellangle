@@ -10,5 +10,5 @@ ExecStart=/home/ubuntu/env/bin/gunicorn --access-logfile - --workers 3 --bind un
  
        
 [Install]
-WantedBy=multi-user.target
+WantedBy=multi-user.target 
   
