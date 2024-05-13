@@ -38,7 +38,7 @@ LOGGING = {
     },
     "handlers": {
         "file": {
-            "level": "INFO",
+            "level": "DEBUG",
             "class": "logging.FileHandler",
             "filename": f"{BASE_DIR}/django_logs/error.log",  
             "formatter": "standard",
@@ -47,7 +47,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["file"],
-            "level": "INFO",
+            "level": "DEBUG",
             "propagate": True,
         },
         'corsheaders': {
