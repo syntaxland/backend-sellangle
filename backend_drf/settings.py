@@ -61,7 +61,7 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": f"{BASE_DIR}/logging/error.log",  
             "formatter": "standard",
-        },
+        }, 
     },
     "loggers": {
         "django": {
