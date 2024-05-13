@@ -59,16 +59,17 @@ LOGGING = {
 }
 
 
-# ALLOWED_HOSTS = ['localhost', 
-#                  'localhost:8002',  
-#                  '127.0.0.1', 
-#                  '127.0.0.1:8002', 
-#                  "0.0.0.0",
-#                  "sellangle.com",
-#                  'backend.sellangle.com' 
-#                  ]
+ALLOWED_HOSTS = [
+                "sellangle.com",
+                'backend.sellangle.com' 
+                'localhost', 
+                 'localhost:8002',  
+                 '127.0.0.1', 
+                 '127.0.0.1:8002', 
+                 "0.0.0.0",
+                 ]
 
-ALLOWED_HOSTS = ["*"] 
+# ALLOWED_HOSTS = ["*"] 
 
 # Application definition 
 INSTALLED_APPS = [
@@ -220,7 +221,7 @@ CORS_ALLOW_METHODS = [
 
 CORS_ALLOW_CREDENTIALS = True 
 
-CORS_ALLOW_ALL_ORIGINS = True 
+# CORS_ALLOW_ALL_ORIGINS = True 
 
 ROOT_URLCONF = 'backend_drf.urls'
 
