@@ -27,25 +27,6 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 # DEBUG = False
 
-# LOGGING = {
-#     "version": 1,
-#     "disable_existing_loggers": False,
-#     "handlers": {
-#         "file": {
-#             "level": "ERROR",
-#             "class": "logging.FileHandler",
-#             'filename': f'{BASE_DIR}/logs/error.log',
-#         },
-#     },
-#     "loggers": {  
-#         "django": {
-#             "handlers": ["file"],
-#             "level": "ERROR",
-#             "propagate": True,
-#         },
-#     },
-# }
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -68,6 +49,11 @@ LOGGING = {
             "handlers": ["file"],
             "level": "INFO",
             "propagate": True,
+        },
+        'corsheaders': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
         },
     },
 }
