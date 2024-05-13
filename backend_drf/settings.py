@@ -71,10 +71,10 @@ ALLOWED_HOSTS = [
                 '127.0.0.1:8002', 
                 '192.168.43.4',
                 '192.168.43.4:8002',
-                #  "0.0.0.0",
+                 "0.0.0.0",
                  ]
 
-# ALLOWED_HOSTS = ["*"] 
+ALLOWED_HOSTS = ["*"] 
 
 # Application definition 
 INSTALLED_APPS = [
