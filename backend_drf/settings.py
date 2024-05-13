@@ -60,8 +60,8 @@ LOGGING = {
 
 
 ALLOWED_HOSTS = [
-                'backend.sellangle.com',
                 'sellangle.com',
+                'backend.sellangle.com',
                 '172.31.24.212',
                 '34.202.53.39',
                 'localhost',
