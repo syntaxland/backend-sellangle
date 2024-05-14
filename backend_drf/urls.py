@@ -9,7 +9,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView, 
     TokenVerifyView, 
 )
-# from live_chat import consumers
+# from live_chat import consumers 
 
 # websocket_urlpatterns = [
 #     re_path(r'ws/chat/(?P<room_name>\w+)/$', consumers.ChatConsumer.as_asgi()),
@@ -24,11 +24,9 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('admin/', admin.site.urls),
     
-    path('api/', include('app.urls')),
     path('api/', include('user_profile.urls')),
     path('api/', include('send_email_otp.urls')), 
     path('api/', include('send_reset_password_email.urls')), 
-    # path('api/', include('payment.urls')),
     path('api/', include('credit_point.urls')),
     path('api/', include('send_email_message.urls')),
     path('api/', include('send_message_inbox.urls')),
@@ -37,7 +35,6 @@ urlpatterns = [
     # path('', include('live_chat.urls')),
     path('api/', include('sellers.urls')),
     path('api/', include('marketplace.urls')),
-    # path('api/', include('ecommerce.urls')),
     path('api/', include('promo.urls')),
     path('api/', include('support.urls')), 
     path('api/', include('feedback.urls')),

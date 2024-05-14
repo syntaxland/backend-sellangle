@@ -1,12 +1,12 @@
 
 from rest_framework import serializers
 from .models import PromoCode, Referral
-from user_profile.serializers import UserSerializer
+# from user_profile.serializers import UserSerializer
 from django.contrib.auth import get_user_model
 
 User = get_user_model() 
 
-class PromoCodeSerializer(serializers.ModelSerializer):
+class PromoCodeSerializer(serializers.ModelSerializer): 
     class Meta:
         model = PromoCode
         fields = "__all__"

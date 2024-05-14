@@ -87,10 +87,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
 
-    # Myapps 
-    'app', 
-    'payment',
-    'user_profile', 
+    # My apps  
+    'user_profile',  
     'send_email_otp',
     'send_reset_password_email',
     'credit_point',  
@@ -104,8 +102,6 @@ INSTALLED_APPS = [
     'support',
     'feedback',
     'marketplace',
-    # 'ecommerce', 
-    # 'products',
 
     # Third-party apps
     'rest_framework', 

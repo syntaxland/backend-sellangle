@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 
-from credit_point.models import CreditPoint, CpsBonus
+from credit_point.models import CreditPoint, CpsBonus 
 from send_message_inbox.models import SendMessageInbox
 
 from .models import EmailOtp

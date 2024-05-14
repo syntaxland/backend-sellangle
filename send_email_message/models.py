@@ -1,6 +1,4 @@
 from django.db import models
-from app.models import Order
-from payment.models import Payment
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
