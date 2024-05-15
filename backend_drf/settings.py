@@ -64,7 +64,7 @@ ALLOWED_HOSTS = [
                 'backend.sellangle.com',
                 '172.31.24.212',
                 '34.202.53.39',
-                '3.92.119.170',
+                # '3.92.119.170',
                 'localhost',
                 'localhost:8002',
                 '127.0.0.1',
@@ -74,7 +74,7 @@ ALLOWED_HOSTS = [
                  "0.0.0.0",
                  ]
 
-ALLOWED_HOSTS = ["*"] 
+# ALLOWED_HOSTS = ["*"] 
 
 # Application definition 
 INSTALLED_APPS = [
@@ -117,10 +117,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'storages',
     'channels', 
-    # 'channels_socketio',
     'django_celery_results',
     'django_celery_beat',
-    # 'cities',
 ]
 
 # Adding JWT Auth
@@ -179,7 +177,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
 ]
 
 # Additional CORS Configuration
