@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = [
     path('create-marketplace-seller/', views.create_marketplace_seller, name='create-marketplace-seller'),
-    path('marketplace-seller-photo/', views.create_marketplace_seller_photo, name='marketplace-seller-photo'),
+    path('marketplace-seller-photo/', views.create_marketplace_seller_photo, name='marketplace-seller-photo'), 
 
     path('create-free-ad/', views.create_free_ad, name='create-free-ad'),
     path('create-paid-ad/', views.create_paid_ad, name='create-paid-ad'),

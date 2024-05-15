@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Sum, F
 from django.http import HttpResponse, JsonResponse
 from django.template.loader import get_template
-from django.shortcuts import render
+# from django.shortcuts import render
 from django.views.generic import View
 
 # from .utils import render_to_pdf

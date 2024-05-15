@@ -26,7 +26,7 @@ urlpatterns = [
     # path('api/', include('send_message_inbox.urls')),
     # path('api/', include('recommender.urls')), 
     # path('api/', include('sellers.urls')),
-    # path('api/', include('marketplace.urls')),
+    path('api/', include('marketplace.urls')),
     # path('api/', include('promo.urls')),
     # path('api/', include('support.urls')), 
     # path('api/', include('feedback.urls')),
