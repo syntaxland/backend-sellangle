@@ -179,7 +179,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# Additional CORS Configuration
+# Additional CORS Configuration 
 CORS_ALLOWED_ORIGINS = [
     "https://sellangle.com",
     "https://backend.sellangle.com",
@@ -221,7 +221,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 # CORS_ALLOW_ALL_ORIGINS = True 
 
-ROOT_URLCONF = 'backend_drf.urls'
+ROOT_URLCONF = 'backend_drf.urls' 
 
 TEMPLATES = [
     {
