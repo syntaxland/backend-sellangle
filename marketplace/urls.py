@@ -52,7 +52,7 @@ urlpatterns = [
     # path('get-buyer-paid-ad-messages/', views.seller_get_buyer_paid_ad_messages, name='get_buyer_paid_ad_messages'),
     # path('get-active-buyer-paid-ad-messages/', views.get_active_buyer_paid_ad_messages, name='get_active_buyer_paid_ad_messages'),
 
-    # path('get-seller-shopfront-link/', views.get_seller_shopfront_link, name='get-seller-shopfront-link'),
+    path('get-seller-shopfront-link/', views.get_seller_shopfront_link, name='get-seller-shopfront-link'),
 
     path('toggle-free-ad-save/', views.toggle_free_ad_save, name='toggle_free_ad_save'),
     path('toggle-paid-ad-save/', views.toggle_paid_ad_save, name='toggle_paid_ad_save'),

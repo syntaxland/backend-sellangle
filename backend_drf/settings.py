@@ -32,8 +32,8 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "standard": {
-            # "format": "[%(asctime)s] %(levelname)s [%(module)s] [PID:%(process)d] [Thread:%(thread)d]: %(message)s",
-            "format": "[%(asctime)s] [%(levelname)s] [%(name)s: %(message)s]"
+            "format": "[%(asctime)s] %(levelname)s [%(module)s] [PID:%(process)d] [Thread:%(thread)d]: %(message)s",
+            # "format": "[%(asctime)s] [%(levelname)s] [%(name)s: %(message)s]"  
         },
     },
     "handlers": {
