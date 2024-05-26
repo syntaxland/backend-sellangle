@@ -105,6 +105,56 @@ def create_marketplace_seller_photo(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# @parser_classes([MultiPartParser, FormParser])
+# def create_free_ad(request):
+#     seller = request.user
+#     data = request.data
+#     serializer = PostFreeAdSerializer(data=data)
+
+#     try:
+#         free_ad_count = PostFreeAd.objects.filter(seller=seller).count()
+#         print('free_ad_count:', free_ad_count)
+#         print('data:', data)
+#         if free_ad_count >= 3:
+#             return Response({'detail': f'You can only post a maximum of 3 free ads. You have posted {free_ad_count} free ads.'}, 
+#                             status=status.HTTP_400_BAD_REQUEST
+#                             )
+#     except User.DoesNotExist:
+#         pass
+    
+#     print('\nMaximum of 3 free ads not exceeded...')
+
+#     if serializer.is_valid():
+#         ad = serializer.save(seller=seller)
+
+#         if ad.duration:
+#             durations_mapping = {
+#                 '0 day': timedelta(hours=0),
+#                 '1 day': timedelta(hours=24),
+#                 '2 days': timedelta(days=2),
+#                 '3 days': timedelta(days=3),
+#                 '5 days': timedelta(days=5),
+#                 '1 week': timedelta(weeks=1),
+#                 '2 weeks': timedelta(weeks=2),
+#                 '1 month': timedelta(days=30),
+#             }
+
+#             ad.duration_hours = durations_mapping.get(
+#                 ad.duration, timedelta(hours=0))
+#             ad.expiration_date = datetime.now() + ad.duration_hours
+        
+#         print('\nSerializer is valid...')
+
+#         ad.is_active = True
+#         ad.save()
+#         print('\nAd created successfully:')
+
+#         return Response({'success': f'Ad created successfully.'}, status=status.HTTP_201_CREATED)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser, FormParser])
@@ -116,36 +166,52 @@ def create_free_ad(request):
     try:
         free_ad_count = PostFreeAd.objects.filter(seller=seller).count()
         print('free_ad_count:', free_ad_count)
+        print('data:', data)
+        
         if free_ad_count >= 3:
-            return Response({'detail': f'You can only post a maximum of 3 free ads. You have posted {free_ad_count} free ads.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'detail': f'You can only post a maximum of 3 free ads. You have posted {free_ad_count} free ads.'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
     except User.DoesNotExist:
-        pass
+        return Response({'detail': 'User does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    print('\nMaximum of 3 free ads not exceeded...')
 
     if serializer.is_valid():
-        ad = serializer.save(seller=seller)
+        try:
+            ad = serializer.save(seller=seller)
+            print('\nSerializer is valid...')
 
-        if ad.duration:
-            durations_mapping = {
-                '0 day': timedelta(hours=0),
-                '1 day': timedelta(hours=24),
-                '2 days': timedelta(days=2),
-                '3 days': timedelta(days=3),
-                '5 days': timedelta(days=5),
-                '1 week': timedelta(weeks=1),
-                '2 weeks': timedelta(weeks=2),
-                '1 month': timedelta(days=30),
-            }
+            if ad.duration:
+                durations_mapping = {
+                    '0 day': timedelta(hours=0),
+                    '1 day': timedelta(hours=24),
+                    '2 days': timedelta(days=2),
+                    '3 days': timedelta(days=3),
+                    '5 days': timedelta(days=5),
+                    '1 week': timedelta(weeks=1),
+                    '2 weeks': timedelta(weeks=2),
+                    '1 month': timedelta(days=30),
+                }
 
-            ad.duration_hours = durations_mapping.get(
-                ad.duration, timedelta(hours=0))
-            ad.expiration_date = datetime.now() + ad.duration_hours
+                ad.duration_hours = durations_mapping.get(ad.duration, timedelta(hours=0))
+                ad.expiration_date = datetime.now() + ad.duration_hours
 
-        ad.is_active = True
-        ad.save()
+            ad.is_active = True
+            ad.save()
+            print('\nAd created successfully:', ad)
 
-        return Response({'success': f'Ad created successfully.'}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response({'success': 'Ad created successfully.'}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print('Error during ad creation:', str(e))
+            return Response({'detail': 'An error occurred during ad creation. Please try again.'}, 
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                            )
+    else:
+        print('Serializer errors:', serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

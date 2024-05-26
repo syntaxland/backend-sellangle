@@ -49,7 +49,7 @@ class PostFreeAdSerializer(serializers.ModelSerializer):
         model = PostFreeAd
         fields = '__all__'
         extra_kwargs = {'image1': {'required': True}, 'image2': {
-            'required': True}, 'image3': {'required': True}}
+            'required': False}, 'image3': {'required': False}}
 
     def get_seller_avatar_url(self, obj):
         request = self.context.get('request')
@@ -72,7 +72,7 @@ class PostPaidAdSerializer(serializers.ModelSerializer):
         model = PostPaidAd
         fields = '__all__'
         extra_kwargs = {'image1': {'required': True}, 'image2': {
-            'required': True}, 'image3': {'required': True}}
+            'required': False}, 'image3': {'required': False}}
 
     def get_seller_avatar_url(self, obj):
         request = self.context.get('request')
