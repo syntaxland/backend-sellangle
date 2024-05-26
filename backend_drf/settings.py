@@ -61,7 +61,7 @@ LOGGING = {
 
 ALLOWED_HOSTS = [
                 'sellangle.com',
-                'backend.sellangle.com',
+                'backend.sellangle.com', 
                 '172.31.24.212',
                 '34.202.53.39',
                 # '3.92.119.170',
@@ -74,7 +74,7 @@ ALLOWED_HOSTS = [
                  "0.0.0.0",
                  ]
 
-# ALLOWED_HOSTS = ["*"] 
+ALLOWED_HOSTS = ["*"] 
 
 # Application definition 
 INSTALLED_APPS = [
@@ -170,7 +170,7 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",  # Adding third-part corsheaders middleware
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.security.SecurityMiddleware',
+    'django.middleware.security.SecurityMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # whitenoise middleware added
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -219,7 +219,7 @@ CORS_ALLOW_METHODS = [
 
 CORS_ALLOW_CREDENTIALS = True 
 
-# CORS_ALLOW_ALL_ORIGINS = True 
+CORS_ALLOW_ALL_ORIGINS = True 
 
 ROOT_URLCONF = 'backend_drf.urls' 
 
