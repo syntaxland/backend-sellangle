@@ -42,7 +42,7 @@ def generate_referral_code():
 @permission_classes([IsAuthenticated])
 def generate_referral_link(request):
     user = request.user
-    url = settings.SELLANGLE_URL
+    url = settings.SELLANGLE_URL 
     print("url:", url)
     try:
         if not user.referral_code:

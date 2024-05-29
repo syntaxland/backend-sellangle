@@ -1484,7 +1484,7 @@ def search_seller_username(request, seller_username):
 @permission_classes([IsAuthenticated])
 def get_seller_shopfront_link(request):
     user = request.user
-    url = settings.MCDOFSHOP_URL
+    url = settings.SELLANGLE_URL
     print("url:", url)
     print("user:", user)
 
