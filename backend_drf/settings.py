@@ -10,11 +10,11 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/ 
 """
-  
+
 import os
 from pathlib import Path
 from datetime import timedelta
-# Adding dotenv 
+# Adding dotenv
 from dotenv import load_dotenv
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -33,16 +33,16 @@ LOGGING = {
     "formatters": {
         "standard": {
             "format": "[%(asctime)s] %(levelname)s [%(module)s] [PID:%(process)d] [Thread:%(thread)d]: %(message)s",
-            # "format": "[%(asctime)s] [%(levelname)s] [%(name)s: %(message)s]"  
+            # "format": "[%(asctime)s] [%(levelname)s] [%(name)s: %(message)s]"
         },
     },
     "handlers": {
         "file": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": f"{BASE_DIR}/django_logs/error.log",  
+            "filename": f"{BASE_DIR}/django_logs/error.log",
             "formatter": "standard",
-        }, 
+        },
     },
     "loggers": {
         "django": {
@@ -58,25 +58,24 @@ LOGGING = {
     },
 }
 
-
 ALLOWED_HOSTS = [
-                'sellangle.com',
-                'backend.sellangle.com', 
-                '172.31.24.212',
-                '34.202.53.39',
-                # '3.92.119.170',
-                'localhost',
-                'localhost:8002',
-                '127.0.0.1',
-                '127.0.0.1:8002', 
-                '192.168.43.4',
-                '192.168.43.4:8002',
-                 "0.0.0.0",
-                 ]
+    'sellangle.com',
+    'backend.sellangle.com',
+    '172.31.24.212',
+    '34.202.53.39',
+    # '3.92.119.170',
+    'localhost',
+    'localhost:8002',
+    '127.0.0.1',
+    '127.0.0.1:8002',
+    '192.168.43.4',
+    '192.168.43.4:8002',
+    "0.0.0.0",
+]
 
-ALLOWED_HOSTS = ["*"]   
+ALLOWED_HOSTS = ["*"]
 
-# Application definition 
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -87,13 +86,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
 
-    # My apps  
-    'user_profile',  
+    # My apps
+    'user_profile',
     'send_email_otp',
     'send_reset_password_email',
-    'credit_point',  
+    'credit_point',
     'send_email_message',
-    'send_message_inbox', 
+    'send_message_inbox',
     'send_email',
     'recommender',
     'live_chat',
@@ -104,7 +103,7 @@ INSTALLED_APPS = [
     'marketplace',
 
     # Third-party apps
-    'rest_framework', 
+    'rest_framework',
     'rest_framework_simplejwt',
     # 'rest_framework_simplejwt.token_blacklist',
 
@@ -112,11 +111,11 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google', 
+    'allauth.socialaccount.providers.google',
 
     'corsheaders',
     'storages',
-    'channels', 
+    'channels',
     'django_celery_results',
     'django_celery_beat',
 ]
@@ -125,7 +124,7 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         # 'rest_framework.permissions.IsAuthenticated',
-        # 'rest_framework.permissions.AllowAny',  
+        # 'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -133,8 +132,8 @@ REST_FRAMEWORK = {
     ]
 }
 
-SIMPLE_JWT = {      
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7), 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -166,11 +165,12 @@ SIMPLE_JWT = {
     # "TOKEN_OBTAIN_SERIALIZER": "app.serializers.MyTokenObtainPairSerializer",
     # "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
 }
-  
+
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  # Adding third-part corsheaders middleware
+    # Adding third-part corsheaders middleware
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.security.SecurityMiddleware', 
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # whitenoise middleware added
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -179,7 +179,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# Additional CORS Configuration 
+# Additional CORS Configuration
 CORS_ALLOWED_ORIGINS = [
     "https://sellangle.com",
     "https://backend.sellangle.com",
@@ -217,11 +217,11 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
-CORS_ALLOW_CREDENTIALS = True 
+CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_ALL_ORIGINS = True 
+CORS_ALLOW_ALL_ORIGINS = True
 
-ROOT_URLCONF = 'backend_drf.urls' 
+ROOT_URLCONF = 'backend_drf.urls'
 
 TEMPLATES = [
     {
@@ -239,10 +239,10 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'backend_drf.wsgi.application' 
+WSGI_APPLICATION = 'backend_drf.wsgi.application'
 
 # WebSocket configuration
-# ASGI_APPLICATION = "backend_drf.asgi.application" 
+# ASGI_APPLICATION = "backend_drf.asgi.application"
 ASGI_APPLICATION = "backend_drf.routing.application"
 
 
@@ -273,11 +273,11 @@ CHANNEL_LAYERS = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
 #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
-#     } 
-# } 
+#     }
+# }
 
 # # localhost (dev)
-# DATABASES = { 
+# DATABASES = {
 #      'default': {
 #        'ENGINE': 'django.db.backends.postgresql',
 #        'NAME': os.getenv('DB_NAME'),
@@ -295,12 +295,12 @@ DATABASES = {
         # 'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': os.getenv('DB_NAME'),
         'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'), 
+        'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
-        'PORT': int(os.getenv('DB_PORT')), 
-    }   
+        'PORT': int(os.getenv('DB_PORT')),
+    }
 }
-   
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
@@ -327,9 +327,6 @@ DATABASES = {
 #         },
 #     },
 # }
-
-
-
 
 
 # For AWS Secret Manager
@@ -399,12 +396,12 @@ STATIC_URL = '/static/'
 # STATIC_URL = 'http://mcdofshop.com.s3-website-us-east-1.amazonaws.com/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'), 
+    os.path.join(BASE_DIR, 'static'),
 ]
 
 MEDIA_URL = '/media/'
 # MEDIA_ROOT = BASE_DIR / 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/') 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -412,27 +409,26 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-
-# setting up s3 storages for media and static  
+# setting up s3 storages for media and static
 # from storages.backends.s3boto3 import S3Boto3Storage
 # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME') 
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_SIGNATURE_NAME = 's3v4',
-AWS_S3_REGION_NAME = 'us-east-1' 
+AWS_S3_REGION_NAME = 'us-east-1'
 AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL =  None 
+AWS_DEFAULT_ACL = None
 AWS_S3_VERITY = True
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage' 
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # for sms otp
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 
-MY_PHONE_NUMBER  = os.getenv('MY_PHONE_NUMBER')
+MY_PHONE_NUMBER = os.getenv('MY_PHONE_NUMBER')
 
 # for captcha
 RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
@@ -471,11 +467,11 @@ PARENT_COMPANY_NAME = os.getenv('PARENT_COMPANY_NAME')
 
 # for google login option
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend', 
+    'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
-]  
-  
-# SITE_ID = 1 
+]
+
+# SITE_ID = 1
 
 # Google OAuth2 settings
 SOCIALACCOUNT_PROVIDERS = {
@@ -504,12 +500,12 @@ LOGIN_REDIRECT_URL = '/'  # Replace with your desired URL
 LOGOUT_REDIRECT_URL = '/login'
 
 
-AUTH_USER_MODEL = 'user_profile.User' 
+AUTH_USER_MODEL = 'user_profile.User'
 
 # Celery Configuration
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  
-# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  
-CELERY_RESULT_BACKEND = 'django-db'  
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

@@ -15,6 +15,8 @@ urlpatterns = [
     path('get-marketplace-seller-photo/', views.get_marketplace_seller_photo, name='get_marketplace-seller-photo'),
     path('update-marketplace-seller-photo/', views.update_marketplace_seller_photo, name='update-marketplace-seller-photo'),
 
+    path('get-seller-ad-statistics/', views.get_seller_ad_statistics, name='get_seller_ad_statistics'),
+
     path('get-seller-free-ad/', views.get_seller_free_ad, name='get-seller-free-ad'),
     path('get-seller-active-free-ads/<str:seller_username>/', views.get_seller_active_free_ads, name='get-seller-active-free-ads'),
     path('get-free-ad-detail/<int:pk>/', views.get_free_ad_detail, name='get-free-ad-detail'),

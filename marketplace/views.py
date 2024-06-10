@@ -69,20 +69,45 @@ def generate_ad_charge_id():
     return 'CHG'+''.join(random.choices(letters_and_digits, k=16))
 
 
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# @parser_classes([MultiPartParser, FormParser])
+# def create_marketplace_seller(request):
+#     data = request.data
+#     print('data:', data)
+
+#     seller, created = MarketPlaceSellerAccount.objects.get_or_create(
+#         seller=request.user)
+#     serializer = MarketPlaceSellerAccountSerializer(instance=seller, data=data)
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser, FormParser])
 def create_marketplace_seller(request):
-    data = request.data
-    print('data:', data)
+    try:
+        data = request.data
+        print('data:', data)
 
-    seller, created = MarketPlaceSellerAccount.objects.get_or_create(
-        seller=request.user)
-    serializer = MarketPlaceSellerAccountSerializer(instance=seller, data=data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        seller, created = MarketPlaceSellerAccount.objects.get_or_create(
+            seller=request.user)
+        print('creating seller:', seller)
+        serializer = MarketPlaceSellerAccountSerializer(instance=seller, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            print('created seller a/c!:')
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print('serializer.errors:', serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        print('Error:', str(e))
+        return Response({'detail': 'An error occurred while creating the marketplace seller.'}, 
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
@@ -103,56 +128,6 @@ def create_marketplace_seller_photo(request):
         seller.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# @parser_classes([MultiPartParser, FormParser])
-# def create_free_ad(request):
-#     seller = request.user
-#     data = request.data
-#     serializer = PostFreeAdSerializer(data=data)
-
-#     try:
-#         free_ad_count = PostFreeAd.objects.filter(seller=seller).count()
-#         print('free_ad_count:', free_ad_count)
-#         print('data:', data)
-#         if free_ad_count >= 3:
-#             return Response({'detail': f'You can only post a maximum of 3 free ads. You have posted {free_ad_count} free ads.'}, 
-#                             status=status.HTTP_400_BAD_REQUEST
-#                             )
-#     except User.DoesNotExist:
-#         pass
-    
-#     print('\nMaximum of 3 free ads not exceeded...')
-
-#     if serializer.is_valid():
-#         ad = serializer.save(seller=seller)
-
-#         if ad.duration:
-#             durations_mapping = {
-#                 '0 day': timedelta(hours=0),
-#                 '1 day': timedelta(hours=24),
-#                 '2 days': timedelta(days=2),
-#                 '3 days': timedelta(days=3),
-#                 '5 days': timedelta(days=5),
-#                 '1 week': timedelta(weeks=1),
-#                 '2 weeks': timedelta(weeks=2),
-#                 '1 month': timedelta(days=30),
-#             }
-
-#             ad.duration_hours = durations_mapping.get(
-#                 ad.duration, timedelta(hours=0))
-#             ad.expiration_date = datetime.now() + ad.duration_hours
-        
-#         print('\nSerializer is valid...')
-
-#         ad.is_active = True
-#         ad.save()
-#         print('\nAd created successfully:')
-
-#         return Response({'success': f'Ad created successfully.'}, status=status.HTTP_201_CREATED)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -330,6 +305,29 @@ def update_marketplace_seller_photo(request):
         return Response({'detail': 'Marketplace seller photo updated successfully.'}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_seller_ad_statistics(request):
+    user = request.user
+    print('user:', user)
+    try:
+        free_ad_views = PostFreeAd.objects.filter(seller=user).aggregate(total_views=Sum('ad_view_count'))['total_views'] or 0
+        paid_ad_views = PostPaidAd.objects.filter(seller=user).aggregate(total_views=Sum('ad_view_count'))['total_views'] or 0
+        free_ad_saved = PostFreeAd.objects.filter(seller=user).aggregate(total_saved=Sum('ad_save_count'))['total_saved'] or 0
+        paid_ad_saved = PostPaidAd.objects.filter(seller=user).aggregate(total_saved=Sum('ad_save_count'))['total_saved'] or 0
+
+        total_views = free_ad_views + paid_ad_views
+        total_saved = free_ad_saved + paid_ad_saved
+        print('total_views:', total_views)
+       
+        return Response({
+            'totalSellerAdsViews': total_views,
+            'totalSellerAdSaved': total_saved 
+            }, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

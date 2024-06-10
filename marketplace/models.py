@@ -7,7 +7,7 @@ User = get_user_model()
 
 BUSINESS_TYPE_CHOICES = [
     ('Registered', 'Registered'),
-    ('Unregistered', 'Unregistered'),
+    ('Unregistered', 'Unregistered'), 
 ]
 
 STAFF_SIZE_CHOICES = [
