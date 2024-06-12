@@ -2,7 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
-
+ 
 class CustomUserManager(BaseUserManager):
     """Define a model manager for User model with no username field.""" 
 
@@ -47,6 +47,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     saved_paid_ads = models.ManyToManyField('marketplace.PostPaidAd', related_name='saved_paid_ads', editable=False) 
     viewed_free_ads = models.ManyToManyField('marketplace.PostFreeAd', related_name='viewed_free_ads', editable=False)
     viewed_paid_ads = models.ManyToManyField('marketplace.PostPaidAd', related_name='viewed_paid_ads', editable=False)  
+    seller_followers = models.ManyToManyField('marketplace.MarketPlaceSellerAccount', related_name='seller_followers', editable=False)  
 
 
     referral_code = models.CharField(max_length=10, unique=True, null=True) 

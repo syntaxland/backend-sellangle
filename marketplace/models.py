@@ -848,6 +848,7 @@ class MarketPlaceSellerAccount(models.Model):
     review = models.TextField(null=True, blank=True)
     review_count = models.IntegerField(
         null=True, blank=True, default=0, editable=False)
+    follow_seller_count = models.PositiveIntegerField(default=0, editable=False) 
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):

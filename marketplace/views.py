@@ -316,17 +316,46 @@ def get_seller_ad_statistics(request):
         paid_ad_views = PostPaidAd.objects.filter(seller=user).aggregate(total_views=Sum('ad_view_count'))['total_views'] or 0
         free_ad_saved = PostFreeAd.objects.filter(seller=user).aggregate(total_saved=Sum('ad_save_count'))['total_saved'] or 0
         paid_ad_saved = PostPaidAd.objects.filter(seller=user).aggregate(total_saved=Sum('ad_save_count'))['total_saved'] or 0
+        followers_count = MarketPlaceSellerAccount.objects.filter(seller=user).aggregate(total_followers_count=Sum('follow_seller_count'))['total_followers_count'] or 0
 
         total_views = free_ad_views + paid_ad_views
         total_saved = free_ad_saved + paid_ad_saved
+        total_followers_count = followers_count
         print('total_views:', total_views)
+        print('total_followers_count:', total_followers_count)
        
         return Response({
             'totalSellerAdsViews': total_views,
-            'totalSellerAdSaved': total_saved 
+            'totalSellerAdSaved': total_saved, 
+            'totalFollwersCount': total_followers_count, 
             }, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_follow_seller(request):
+    user = request.user
+    print("user:", user)
+
+    try:
+        seller_account = MarketPlaceSellerAccount.objects.get(seller=user)
+    except MarketPlaceSellerAccount.DoesNotExist:
+        return Response({'error': 'Seller account does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+    if seller_account in user.seller_followers.all():
+        user.seller_followers.remove(seller_account)
+        seller_account.follow_seller_count -= 1
+    else:
+        user.seller_followers.add(seller_account)
+        seller_account.follow_seller_count += 1
+
+    user.save()
+    seller_account.save()
+
+    serializer = MarketPlaceSellerAccountSerializer(seller_account)
+    return Response(serializer.data)
     
 
 @api_view(['GET'])
