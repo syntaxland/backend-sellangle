@@ -216,12 +216,12 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
-
+  
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-ROOT_URLCONF = 'backend_drf.urls'
+ROOT_URLCONF = 'backend_drf.urls' 
 
 TEMPLATES = [
     {

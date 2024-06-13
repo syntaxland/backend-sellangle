@@ -333,29 +333,86 @@ def get_seller_ad_statistics(request):
         return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def toggle_follow_seller(request):
+#     user = request.user
+#     data = request.data
+
+#     seller_username = data.get('seller_username')
+#     seller = User.objects.get(username=seller_username)
+
+#     print("seller:", seller)
+#     print("data:", data)
+
+#     try:
+#         seller_account = MarketPlaceSellerAccount.objects.get(seller=seller)
+#     except MarketPlaceSellerAccount.DoesNotExist:
+#         return Response({'error': 'Seller account does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+#     if seller_account in seller.seller_followers.all():
+#         seller.seller_followers.remove(seller_account)
+#         seller_account.follow_seller_count -= 1
+#         user.followed_sellers.remove(seller_account)
+#         print("removed")
+#     else:
+#         seller.seller_followers.add(seller_account)
+#         seller_account.follow_seller_count += 1
+#         user.followed_sellers.add(seller_account) 
+#         print("added")
+
+#     user.save()
+#     seller_account.save()
+
+#     serializer = MarketPlaceSellerAccountSerializer(seller_account)
+#     return Response(serializer.data)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def toggle_follow_seller(request):
     user = request.user
-    print("user:", user)
+    data = request.data
+
+    seller_username = data.get('seller_username')
+    seller = User.objects.get(username=seller_username)
+
+    print("seller:", seller)
+    print("data:", data)
 
     try:
-        seller_account = MarketPlaceSellerAccount.objects.get(seller=user)
+        seller_account = MarketPlaceSellerAccount.objects.get(seller=seller)
     except MarketPlaceSellerAccount.DoesNotExist:
         return Response({'error': 'Seller account does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
-    if seller_account in user.seller_followers.all():
-        user.seller_followers.remove(seller_account)
+    if seller_account in user.followed_sellers.all():
+        user.followed_sellers.remove(seller_account)
         seller_account.follow_seller_count -= 1
+        print("removed")
     else:
-        user.seller_followers.add(seller_account)
+        user.followed_sellers.add(seller_account)
         seller_account.follow_seller_count += 1
+        print("added")
 
     user.save()
     seller_account.save()
 
     serializer = MarketPlaceSellerAccountSerializer(seller_account)
     return Response(serializer.data)
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_followed_sellers(request):
+    user = request.user
+    print("user:", user)
+    try:
+        followed_sellers = user.followed_sellers.all()
+        serializer = MarketPlaceSellerAccountSerializer(followed_sellers, many=True)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
 
 @api_view(['GET'])

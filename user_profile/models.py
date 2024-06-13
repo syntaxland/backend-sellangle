@@ -47,15 +47,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     saved_paid_ads = models.ManyToManyField('marketplace.PostPaidAd', related_name='saved_paid_ads', editable=False) 
     viewed_free_ads = models.ManyToManyField('marketplace.PostFreeAd', related_name='viewed_free_ads', editable=False)
     viewed_paid_ads = models.ManyToManyField('marketplace.PostPaidAd', related_name='viewed_paid_ads', editable=False)  
-    seller_followers = models.ManyToManyField('marketplace.MarketPlaceSellerAccount', related_name='seller_followers', editable=False)  
+    seller_followers = models.ManyToManyField('marketplace.MarketPlaceSellerAccount', related_name='seller_followers', 
+    # editable=False
+    )  
+    followed_sellers = models.ManyToManyField('marketplace.MarketPlaceSellerAccount', related_name='followed_sellers', 
+    # editable=False
+    )  
 
 
     referral_code = models.CharField(max_length=10, unique=True, null=True) 
     referral_link = models.CharField(max_length=225, unique=True, null=True)
-    # referred_users = models.ManyToManyField('promo.Referral', related_name='referred_users')    
+    # referred_users = models.ManyToManyField('promo.Referral', related_name='referred_users')     
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)  
     is_marketplace_seller = models.BooleanField(default=False)  
+    is_followed_seller = models.BooleanField(default=False)  
     is_ecommerce_seller = models.BooleanField(default=False)  
     ad_charge_is_owed = models.BooleanField(default=False)
     is_terms_conditions_read = models.BooleanField(default=False)

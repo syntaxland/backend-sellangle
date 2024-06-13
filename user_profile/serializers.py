@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
                   'is_verified', 'is_superuser', 'is_staff', 
                   'is_ecommerce_seller', 'is_marketplace_seller', 
                   'ad_charge_is_owed', 
-
+                  'is_followed_seller', 
                 'user_is_not_active',
                 'is_user_live_banned',
                 'is_user_1day_banned',
