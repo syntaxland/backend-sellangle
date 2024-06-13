@@ -27,6 +27,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 # DEBUG = False
 
+APPEND_SLASH = True
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
