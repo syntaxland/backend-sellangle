@@ -402,17 +402,57 @@ def toggle_follow_seller(request):
 
 
 
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def get_followed_sellers(request):
+#     user = request.user
+#     print("user:", user)
+
+#     try:
+#         seller_avatar = MarketplaceSellerPhoto.objects.get(seller=seller)
+#         seller_avatar_url = seller_avatar.photo.url
+#     except MarketplaceSellerPhoto.DoesNotExist:
+#         seller_avatar_url = None
+
+#     try:
+#         followed_sellers = user.followed_sellers.all()
+#         serializer = MarketPlaceSellerAccountSerializer(followed_sellers, many=True)
+
+#         return Response({'data': serializer.data,
+#                          'seller_avatar_url': seller_avatar_url,
+#                          },
+#                         status=status.HTTP_200_OK)
+
+#     except Exception as e:
+#         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_followed_sellers(request):
     user = request.user
     print("user:", user)
+
     try:
         followed_sellers = user.followed_sellers.all()
         serializer = MarketPlaceSellerAccountSerializer(followed_sellers, many=True)
-        return Response(serializer.data)
+
+        followed_sellers_data = []
+        for seller_data in serializer.data:
+            seller_id = seller_data['seller']
+            try:
+                seller_avatar = MarketplaceSellerPhoto.objects.get(seller_id=seller_id)
+                seller_avatar_url = seller_avatar.photo.url
+            except MarketplaceSellerPhoto.DoesNotExist:
+                seller_avatar_url = None
+            seller_data['seller_avatar_url'] = seller_avatar_url
+            followed_sellers_data.append(seller_data)
+
+        return Response({'data': followed_sellers_data}, status=status.HTTP_200_OK)
+
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
     
 
 @api_view(['GET'])
@@ -467,11 +507,9 @@ def get_free_ad_detail(request, pk):
 
         try:
             seller_avatar = MarketplaceSellerPhoto.objects.get(seller=seller)
-
             seller_avatar_url = seller_avatar.photo.url
         except MarketplaceSellerPhoto.DoesNotExist:
             seller_avatar_url = None
-            # return Response({'detail': 'MarketplaceSellerPhoto not found'}, status=status.HTTP_404_NOT_FOUND)
 
         try:
             seller_info = MarketPlaceSellerAccount.objects.get(seller=seller)
