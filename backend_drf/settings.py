@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 # DEBUG = False
 
-APPEND_SLASH = True
+APPEND_SLASH = True 
 
 LOGGING = {
     "version": 1,
@@ -75,7 +75,7 @@ ALLOWED_HOSTS = [
     "0.0.0.0",
 ]
 
-ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = ["*"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -189,6 +189,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3002",
     "http://localhost:8002",
     "http://127.0.0.1:8002",
+    "http://192.168.43.4", 
+    "http://192.168.43.4:8002",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -221,7 +223,7 @@ CORS_ALLOW_METHODS = [
   
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'backend_drf.urls' 
 

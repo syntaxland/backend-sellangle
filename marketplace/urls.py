@@ -88,4 +88,6 @@ urlpatterns = [
     path('get-seller-detail/<str:seller_username>/', views.get_seller_detail, name='get-seller-detail'),
 
     path('search-ads/', views.search_ads, name='search-ads'),
+    
+    path('get-payment-details/', views.PaymentDetailsView.as_view(), name='get_payment_details'),
 ]

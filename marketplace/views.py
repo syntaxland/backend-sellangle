@@ -23,6 +23,7 @@ from django.views.generic import View
 # from nltk.corpus import wordnet
 
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -96,7 +97,8 @@ def create_marketplace_seller(request):
         seller, created = MarketPlaceSellerAccount.objects.get_or_create(
             seller=request.user)
         print('creating seller:', seller)
-        serializer = MarketPlaceSellerAccountSerializer(instance=seller, data=data)
+        serializer = MarketPlaceSellerAccountSerializer(
+            instance=seller, data=data)
         if serializer.is_valid():
             serializer.save()
             print('created seller a/c!:')
@@ -106,7 +108,7 @@ def create_marketplace_seller(request):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         print('Error:', str(e))
-        return Response({'detail': 'An error occurred while creating the marketplace seller.'}, 
+        return Response({'detail': 'An error occurred while creating the marketplace seller.'},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -142,10 +144,10 @@ def create_free_ad(request):
         free_ad_count = PostFreeAd.objects.filter(seller=seller).count()
         print('free_ad_count:', free_ad_count)
         print('data:', data)
-        
+
         if free_ad_count >= 3:
             return Response(
-                {'detail': f'You can only post a maximum of 3 free ads. You have posted {free_ad_count} free ads.'}, 
+                {'detail': f'You can only post a maximum of 3 free ads. You have posted {free_ad_count} free ads.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
     except User.DoesNotExist:
@@ -170,7 +172,8 @@ def create_free_ad(request):
                     '1 month': timedelta(days=30),
                 }
 
-                ad.duration_hours = durations_mapping.get(ad.duration, timedelta(hours=0))
+                ad.duration_hours = durations_mapping.get(
+                    ad.duration, timedelta(hours=0))
                 ad.expiration_date = datetime.now() + ad.duration_hours
 
             ad.is_active = True
@@ -180,13 +183,13 @@ def create_free_ad(request):
             return Response({'success': 'Ad created successfully.'}, status=status.HTTP_201_CREATED)
         except Exception as e:
             print('Error during ad creation:', str(e))
-            return Response({'detail': 'An error occurred during ad creation. Please try again.'}, 
+            return Response({'detail': 'An error occurred during ad creation. Please try again.'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR
                             )
     else:
         print('Serializer errors:', serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -312,23 +315,28 @@ def get_seller_ad_statistics(request):
     user = request.user
     print('user:', user)
     try:
-        free_ad_views = PostFreeAd.objects.filter(seller=user).aggregate(total_views=Sum('ad_view_count'))['total_views'] or 0
-        paid_ad_views = PostPaidAd.objects.filter(seller=user).aggregate(total_views=Sum('ad_view_count'))['total_views'] or 0
-        free_ad_saved = PostFreeAd.objects.filter(seller=user).aggregate(total_saved=Sum('ad_save_count'))['total_saved'] or 0
-        paid_ad_saved = PostPaidAd.objects.filter(seller=user).aggregate(total_saved=Sum('ad_save_count'))['total_saved'] or 0
-        followers_count = MarketPlaceSellerAccount.objects.filter(seller=user).aggregate(total_followers_count=Sum('follow_seller_count'))['total_followers_count'] or 0
+        free_ad_views = PostFreeAd.objects.filter(seller=user).aggregate(
+            total_views=Sum('ad_view_count'))['total_views'] or 0
+        paid_ad_views = PostPaidAd.objects.filter(seller=user).aggregate(
+            total_views=Sum('ad_view_count'))['total_views'] or 0
+        free_ad_saved = PostFreeAd.objects.filter(seller=user).aggregate(
+            total_saved=Sum('ad_save_count'))['total_saved'] or 0
+        paid_ad_saved = PostPaidAd.objects.filter(seller=user).aggregate(
+            total_saved=Sum('ad_save_count'))['total_saved'] or 0
+        followers_count = MarketPlaceSellerAccount.objects.filter(seller=user).aggregate(
+            total_followers_count=Sum('follow_seller_count'))['total_followers_count'] or 0
 
         total_views = free_ad_views + paid_ad_views
         total_saved = free_ad_saved + paid_ad_saved
         total_followers_count = followers_count
         print('total_views:', total_views)
         print('total_followers_count:', total_followers_count)
-       
+
         return Response({
             'totalSellerAdsViews': total_views,
-            'totalSellerAdSaved': total_saved, 
-            'totalFollwersCount': total_followers_count, 
-            }, status=status.HTTP_200_OK)
+            'totalSellerAdSaved': total_saved,
+            'totalFollwersCount': total_followers_count,
+        }, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -358,7 +366,7 @@ def get_seller_ad_statistics(request):
 #     else:
 #         seller.seller_followers.add(seller_account)
 #         seller_account.follow_seller_count += 1
-#         user.followed_sellers.add(seller_account) 
+#         user.followed_sellers.add(seller_account)
 #         print("added")
 
 #     user.save()
@@ -401,7 +409,6 @@ def toggle_follow_seller(request):
     return Response(serializer.data)
 
 
-
 # @api_view(['GET'])
 # @permission_classes([IsAuthenticated])
 # def get_followed_sellers(request):
@@ -435,13 +442,15 @@ def get_followed_sellers(request):
 
     try:
         followed_sellers = user.followed_sellers.all()
-        serializer = MarketPlaceSellerAccountSerializer(followed_sellers, many=True)
+        serializer = MarketPlaceSellerAccountSerializer(
+            followed_sellers, many=True)
 
         followed_sellers_data = []
         for seller_data in serializer.data:
             seller_id = seller_data['seller']
             try:
-                seller_avatar = MarketplaceSellerPhoto.objects.get(seller_id=seller_id)
+                seller_avatar = MarketplaceSellerPhoto.objects.get(
+                    seller_id=seller_id)
                 seller_avatar_url = seller_avatar.photo.url
             except MarketplaceSellerPhoto.DoesNotExist:
                 seller_avatar_url = None
@@ -453,7 +462,6 @@ def get_followed_sellers(request):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -2321,3 +2329,16 @@ def search_ads(request):
 #         return Response({'detail': 'Ad not found'}, status=status.HTTP_404_NOT_FOUND)
 #     except Exception as e:
 #         return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class PaymentDetailsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        paystack_public_key = settings.PAYSTACK_PUBLIC_KEY
+        paysofter_public_key = settings.PAYSOFTER_PUBLIC_KEY
+
+        return Response({
+            "paystackPublicKey": paystack_public_key,
+            "paysofterPublicKey": paysofter_public_key,
+        })

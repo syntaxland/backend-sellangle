@@ -48,10 +48,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     viewed_free_ads = models.ManyToManyField('marketplace.PostFreeAd', related_name='viewed_free_ads', editable=False)
     viewed_paid_ads = models.ManyToManyField('marketplace.PostPaidAd', related_name='viewed_paid_ads', editable=False)  
     seller_followers = models.ManyToManyField('marketplace.MarketPlaceSellerAccount', related_name='seller_followers', 
-    # editable=False
+    editable=False
     )  
     followed_sellers = models.ManyToManyField('marketplace.MarketPlaceSellerAccount', related_name='followed_sellers', 
-    # editable=False
+    editable=False
     )  
 
 
