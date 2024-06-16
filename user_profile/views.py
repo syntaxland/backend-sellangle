@@ -66,7 +66,17 @@ def register_user_view(request):
     username = data.get('username')
     email = data.get('email')
     phone_number = data.get('phone_number')
-
+    
+    # Check if the user has a referral code
+    referral_code = data.get('referral_code')
+    # print('referral_code:', referral_code)
+    if referral_code:
+        try:
+            referrer = User.objects.get(referral_code=referral_code)
+        except User.DoesNotExist:
+            return Response({'detail': 'Incorrect or user with this referral code does not exist.'}, 
+                            status=status.HTTP_400_BAD_REQUEST)
+    
     try:
         user_with_username = User.objects.get(username=username)
         if user_with_username.is_verified:
@@ -120,17 +130,17 @@ def register_user_view(request):
             print(e)
 
         # Check if the user has a referral code in the URL
-        referral_code = data.get('referral_code')
-        print('referral_code:', referral_code)
+        # referral_code = data.get('referral_code')
+        # print('referral_code:', referral_code)
 
         if referral_code:
-            try:
-                referrer = User.objects.get(referral_code=referral_code)
-                if not referrer:
-                    return Response({'detail': 'Incorrect or user with this referral code does not exist.'}, 
-                                    status=status.HTTP_400_BAD_REQUEST)
-            except User.DoesNotExist:
-                pass
+            # try:
+            #     referrer = User.objects.get(referral_code=referral_code)
+            #     if not referrer:
+            #         return Response({'detail': 'Incorrect or user with this referral code does not exist.'}, 
+            #                         status=status.HTTP_400_BAD_REQUEST)
+            # except User.DoesNotExist:
+            #     pass
 
             try:
                 # Find the user associated with the referral code

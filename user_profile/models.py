@@ -53,8 +53,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     followed_sellers = models.ManyToManyField('marketplace.MarketPlaceSellerAccount', related_name='followed_sellers', 
     editable=False
     )  
-
-
     referral_code = models.CharField(max_length=10, unique=True, null=True) 
     referral_link = models.CharField(max_length=225, unique=True, null=True)
     # referred_users = models.ManyToManyField('promo.Referral', related_name='referred_users')     
