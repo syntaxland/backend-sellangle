@@ -17,4 +17,4 @@ sudo touch /home/ubuntu/backend-sellangle/logs/celery/beat-access.log
 sudo service supervisor restart 
 
 # Check Supervisor status after restarting services
-sudo service supervisor status
+sudo service supervisor status 
