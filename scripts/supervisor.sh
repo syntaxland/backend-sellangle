@@ -2,7 +2,7 @@
 
 # Create Supervisor Configuration Directory
 sudo mkdir -p /etc/supervisor/conf.d/ 
-
+ 
 # Create Supervisor Log Directory
 sudo mkdir -p /var/log/supervisor/
 
