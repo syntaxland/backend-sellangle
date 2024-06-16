@@ -26,6 +26,22 @@ def deactivate_inactive_users_every_six_months():
 
     print("Inactive users deactivated.")
 
+
+@shared_task
+def delete_unverified_users_after_one_hour():
+    one_hour_ago = timezone.now() - timedelta(hours=1)
+    unverified_users = User.objects.filter(
+        is_verified=False,
+        is_staff=False,
+        is_superuser=False,
+        date_joined__lte=one_hour_ago
+    )
+
+    unverified_users_count = unverified_users.count()
+    unverified_users.delete()
+    
+    print(f"Deleted {unverified_users_count} unverified users.")
+
  
 """
 redis-server

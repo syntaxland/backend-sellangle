@@ -479,8 +479,8 @@ def get_seller_free_ad(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
-@parser_classes([MultiPartParser, FormParser])
+@permission_classes([AllowAny])
+# @parser_classes([MultiPartParser, FormParser])
 def get_seller_active_free_ads(request, seller_username):
     seller = User.objects.get(username=seller_username)
     print('seller_username:', seller_username)
@@ -749,11 +749,10 @@ def get_seller_paid_ad(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
-@parser_classes([MultiPartParser, FormParser])
+@permission_classes([AllowAny])
 def get_seller_active_paid_ads(request, seller_username):
     seller = User.objects.get(username=seller_username)
-    print('seller_username:', seller_username)
+    print('seller_username:', seller_username) 
 
     current_datetime = datetime.now()
     try:
@@ -1629,7 +1628,8 @@ def get_seller_shopfront_link(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 @parser_classes([MultiPartParser, FormParser])
 def get_seller_detail(request, seller_username):
 
