@@ -30,7 +30,7 @@ hooks:
         timeout: 300
         runas: ubuntu
       - location: scripts/supervisor.sh
-        timeout: 300
+        timeout: 300 
         runas: ubuntu
   ApplicationStop:
       - location: scripts/stop_app.sh
