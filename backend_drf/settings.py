@@ -73,7 +73,7 @@ ALLOWED_HOSTS = [
     '192.168.43.4:8002',
     "0.0.0.0",
 ]
-
+ 
 # ALLOWED_HOSTS = ["*"]
 
 # Application definition
