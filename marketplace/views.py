@@ -1189,7 +1189,7 @@ def generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month_formatted):
         pisa.CreatePDF(html, dest=response)
         return response
 
-    except AdChargeCreditPoint.DoesNotExist:
+    except AdChargeCreditPoint.DoesNotExist: 
         return None
 
 
