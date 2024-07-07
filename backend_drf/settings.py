@@ -40,7 +40,7 @@ LOGGING = {
     },
     "handlers": {
         "file": {
-            "level": "DEBUG",
+            "level": "ERROR",
             "class": "logging.FileHandler",
             "filename": f"{BASE_DIR}/django_logs/error.log",
             "formatter": "standard",
@@ -49,7 +49,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["file"],
-            "level": "DEBUG",
+            "level": "ERROR",
             "propagate": True,
         },
         'corsheaders': {
@@ -65,7 +65,9 @@ ALLOWED_HOSTS = [
     'backend.sellangle.com',
     '172.31.24.212',
     '34.202.53.39',
-    # '3.92.119.170',
+    # t3
+    '172.31.39.187',
+    '52.90.44.153',
     'localhost',
     'localhost:8002',
     '127.0.0.1',
