@@ -13,13 +13,12 @@ from rest_framework.request import Request
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from rest_auth.registration.views import SocialLoginView
-
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter
+# from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+# from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+# from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter
 # from allauth.socialaccount.providers.oauth2.views import SocialLoginView
-from rest_auth.registration.serializers import SocialLoginSerializer
+# from rest_auth.registration.serializers import SocialLoginSerializer
+# from rest_auth.registration.views import SocialLoginView
 
 # from .models import UserProfile
 from .serializers import (
@@ -259,11 +258,16 @@ def update_user_last_login(request):
         return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-class GoogleLogin(SocialLoginView):
+class GoogleLogin():
+    ...
     # permission_classes = [AllowAny]
-    adapter_class = GoogleOAuth2Adapter
-    client_class = OAuth2Client
-    serializer_class = GoogleLoginSerializer
+
+# class GoogleLogin(SocialLoginView):
+#     ...
+    # permission_classes = [AllowAny]
+    # adapter_class = GoogleOAuth2Adapter
+    # client_class = OAuth2Client
+    # serializer_class = GoogleLoginSerializer
 
 
 class LogoutView(APIView):
