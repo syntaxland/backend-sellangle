@@ -65,9 +65,6 @@ ALLOWED_HOSTS = [
     'backend.sellangle.com',
     '172.31.24.212',
     '34.202.53.39',
-    # t3
-    '172.31.39.187',
-    '52.90.44.153',
     'localhost',
     'localhost:8002',
     '127.0.0.1',
