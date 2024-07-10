@@ -57,7 +57,7 @@ LOGGING = {
             'propagate': True,
         },
     },
-}
+} 
 
 ALLOWED_HOSTS = [
     'sellangle.com',
