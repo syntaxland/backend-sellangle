@@ -10,9 +10,6 @@ permissions:
     group: ubuntu
 hooks:
   BeforeInstall:
-      # - location: scripts/terminate_apt_processes.sh
-      #   timeout: 300
-      #   runas: ubuntu
       - location: scripts/clean_instance.sh  
         timeout: 300
         runas: ubuntu
@@ -29,9 +26,9 @@ hooks:
       - location: scripts/nginx.sh
         timeout: 300
         runas: ubuntu
-      - location: scripts/supervisor.sh
-        timeout: 300 
-        runas: ubuntu
+      # - location: scripts/supervisor.sh
+      #   timeout: 300 
+      #   runas: ubuntu
   ApplicationStop:
       - location: scripts/stop_app.sh
         timeout: 300
@@ -40,4 +37,3 @@ hooks:
       - location: scripts/start_app.sh
         timeout: 300
         runas: ubuntu
-  
