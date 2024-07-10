@@ -708,8 +708,6 @@ def get_all_free_ad(request):
     selected_country = request.GET.get('country', '')
     selected_state = request.GET.get('state', '')
     selected_city = request.GET.get('city', '')
-    # selected_category = request.GET.get('category', '')
-    # selected_type = request.GET.get('type', '')
     print('free location:', selected_country, selected_state, selected_city)
 
     try:
@@ -722,10 +720,6 @@ def get_all_free_ad(request):
             free_ads = free_ads.filter(state_province=selected_state)
         if selected_city:
             free_ads = free_ads.filter(city=selected_city)
-        # if selected_category:
-        #     free_ads = free_ads.filter(ad_category=selected_category)
-        # if selected_type:
-        #     free_ads = free_ads.filter(ad_type=selected_type)
 
         serializer = PostFreeAdSerializer(free_ads, many=True)
         return Response(serializer.data)

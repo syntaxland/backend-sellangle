@@ -35,7 +35,6 @@ LOGGING = {
     "formatters": {
         "standard": {
             "format": "[%(asctime)s] %(levelname)s [%(module)s] [PID:%(process)d] [Thread:%(thread)d]: %(message)s",
-            # "format": "[%(asctime)s] [%(levelname)s] [%(name)s: %(message)s]"
         },
     },
     "handlers": {
@@ -54,7 +53,7 @@ LOGGING = {
         },
         'corsheaders': {
             'handlers': ['file'],
-            'level': 'DEBUG',
+            'level': 'ERROR',
             'propagate': True,
         },
     },
@@ -63,7 +62,7 @@ LOGGING = {
 ALLOWED_HOSTS = [
     'sellangle.com',
     'backend.sellangle.com',
-    '172.31.24.212',
+    '172.31.39.187',
     '34.202.53.39',
     'localhost',
     'localhost:8002',
@@ -71,7 +70,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1:8002',
     '192.168.43.4',
     '192.168.43.4:8002',
-    "0.0.0.0",
+    # "0.0.0.0",
 ]
  
 # ALLOWED_HOSTS = ["*"]
@@ -385,7 +384,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 # TIME_ZONE = 'UTC'
-TIME_ZONE = 'Africa/Lagos'
+TIME_ZONE = 'Africa/Lagos' 
 
 USE_I18N = True
 
