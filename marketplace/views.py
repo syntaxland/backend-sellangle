@@ -2070,7 +2070,8 @@ def apply_promo_code(request):
 
     promo_code = data.get('promo_code')
     ad_id = data.get('ad_id')
-    print('promo_code, ad_id:', promo_code, ad_id)
+    selected_qty = data.get('selected_qty')
+    print('ad_id:', ad_id, 'promo_code', promo_code, 'selected_qty', selected_qty)
 
     ad_promo = None
 
@@ -2096,7 +2097,8 @@ def apply_promo_code(request):
         ad_price = ad_promo.price
         discount_amount = (discount_percentage / 100) * ad_price
         promo_discount = discount_amount.quantize(
-            Decimal('0.00'), rounding=ROUND_DOWN)
+            Decimal('0.00'), rounding=ROUND_DOWN) * selected_qty
+        # promo_discount = promo_discount * selected_qty
 
     print('promo_discount:', promo_discount,
           'discount_percentage:', discount_percentage)
