@@ -76,7 +76,7 @@ ALLOWED_HOSTS = [
     "0.0.0.0", 
 ]
  
-ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = ["*"]
 
 # Application definition
 INSTALLED_APPS = [
