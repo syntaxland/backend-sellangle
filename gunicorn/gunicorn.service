@@ -6,7 +6,7 @@ After=network.target
 User=ubuntu
 Group=www-data
 WorkingDirectory=/home/ubuntu/backend-sellangle
-ExecStart=/home/ubuntu/venv/bin/gunicorn --access-logfile - --workers 3 --timeout 120 --bind unix:/home/ubuntu/backend-sellangle/backend_drf/backend_drf.sock backend_drf.wsgi:application
+ExecStart=/home/ubuntu/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/home/ubuntu/backend-sellangle/backend_drf/backend_drf.sock backend_drf.wsgi:application
  
 [Install]
 WantedBy=multi-user.target 
