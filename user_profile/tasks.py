@@ -34,7 +34,7 @@ def delete_unverified_users_after_one_hour():
         is_verified=False,
         is_staff=False,
         is_superuser=False,
-        date_joined__lte=one_hour_ago
+        created_at__lte=one_hour_ago
     )
 
     unverified_users_count = unverified_users.count()
