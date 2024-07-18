@@ -504,7 +504,6 @@ LOGIN_REDIRECT_URL = '/'  # Replace with your desired URL
 # Logout URL
 LOGOUT_REDIRECT_URL = '/login'
 
-
 AUTH_USER_MODEL = 'user_profile.User'
 
 # Celery Configuration

@@ -36,7 +36,7 @@ def generate_ad_charge_id():
 
 @shared_task
 def charge_ad():
-    active_ads = PostPaidAd.objects.filter(expiration_date__gt=datetime.now())
+    active_ads = PostPaidAd.objects.filter(expiration_date__gt=timezone.now()())
 
     for ad in active_ads:
         ad_charges_hourly = 1.2  # cps per hr
@@ -53,7 +53,7 @@ def charge_ad():
 @shared_task
 def get_total_ad_charge():
     sellers = User.objects.filter(
-        paid_ad_seller__expiration_date__gt=datetime.now(),
+        paid_ad_seller__expiration_date__gt=timezone.now()(),
         paid_ad_seller__ad_charges__gt=0
     ).distinct()
 
@@ -73,7 +73,7 @@ def get_total_ad_charge():
                 total_ad_charges=total_ad_charges,
                 total_ad_charge_hours=total_ad_charge_hours,
                 total_ad_charge_id=generate_ad_charge_id(),
-                timestamp=datetime.now()
+                timestamp=timezone.now()()
             )
 
     return 'Total ad charges and hours calculated and saved for sellers:', len(sellers)
@@ -243,7 +243,7 @@ def send_seller_insufficient_cps_bal_msg(user, credit_point_balance, insufficien
 @shared_task
 def auto_reactivate_paid_ad():
     try:
-        current_datetime = datetime.now()
+        current_datetime = timezone.now()()
 
         expired_ads = PostPaidAd.objects.filter(is_auto_renewal=True, expiration_date__lt=current_datetime)
 
@@ -304,8 +304,8 @@ def send_auto_renewal_insufficient_cps_bal_msg(user, credit_point_balance):
 
 @shared_task
 def delete_expired_ads():
-    # threshold_date = datetime.now() - timedelta(seconds=100)
-    threshold_date = datetime.now() - timedelta(days=7)
+    # threshold_date = timezone.now()() - timedelta(seconds=100)
+    threshold_date = timezone.now()() - timedelta(days=7)
 
     expired_paid_ads = PostPaidAd.objects.filter(
         expiration_date__lte=threshold_date,
@@ -330,7 +330,7 @@ def send_monthly_ad_billing_receipt_email():
     try:
         for user in sellers:
             print('user:', user)
-            current_datetime = datetime.now()
+            current_datetime = timezone.now()()
 
             previous_month_start = datetime(current_datetime.year, current_datetime.month, 1) - relativedelta(months=1)
             previous_month_end = datetime(current_datetime.year, current_datetime.month, 1) - timedelta(days=1)
@@ -448,7 +448,7 @@ def generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month_formatted):
             'ad_charges': ad_charges,
             'account_id': 'Your Account ID Here',  
             'bill_status': 'Issued',
-            'date_printed': datetime.now().strftime('%b %d, %Y'),  
+            'date_printed': timezone.now()().strftime('%b %d, %Y'),  
             'formatted_total_amount': formatted_total_amount,
             'total_amount': total_amount,
             

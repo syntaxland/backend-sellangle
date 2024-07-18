@@ -174,7 +174,7 @@ def create_free_ad(request):
 
                 ad.duration_hours = durations_mapping.get(
                     ad.duration, timedelta(hours=0))
-                ad.expiration_date = datetime.now() + ad.duration_hours
+                ad.expiration_date = timezone.now() + ad.duration_hours
 
             ad.is_active = True
             ad.save()
@@ -231,7 +231,7 @@ def create_paid_ad(request):
 
             ad.duration_hours = durations_mapping.get(
                 ad.duration, timedelta(hours=0))
-            ad.expiration_date = datetime.now() + ad.duration_hours
+            ad.expiration_date = timezone.now() + ad.duration_hours
 
         ad.is_active = True
         ad.save()
@@ -468,7 +468,7 @@ def get_followed_sellers(request):
 @parser_classes([MultiPartParser, FormParser])
 def get_seller_free_ad(request):
     user = request.user
-    # current_datetime = datetime.now()
+    # current_datetime = timezone.now()
     try:
         free_ad = PostFreeAd.objects.filter(seller=user)
         # free_ad = PostFreeAd.objects.filter(seller=user, expiration_date__gt=current_datetime)
@@ -485,7 +485,7 @@ def get_seller_active_free_ads(request, seller_username):
     seller = User.objects.get(username=seller_username)
     print('seller_username:', seller_username)
 
-    current_datetime = datetime.now()
+    current_datetime = timezone.now()
 
     try:
         free_ad = PostFreeAd.objects.filter(
@@ -624,7 +624,7 @@ def deactivate_free_ad(request):
 
             ad.duration_hours = durations_mapping.get(
                 ad.duration, timedelta(hours=0))
-            ad.expiration_date = datetime.now() + ad.duration_hours
+            ad.expiration_date = timezone.now() + ad.duration_hours
 
         ad.is_active = False
         ad.save()
@@ -666,7 +666,7 @@ def reactivate_free_ad(request):
 
             ad.duration_hours = durations_mapping.get(
                 ad.duration, timedelta(hours=0))
-            ad.expiration_date = datetime.now() + ad.duration_hours
+            ad.expiration_date = timezone.now() + ad.duration_hours
 
         ad.is_active = True
         ad.save()
@@ -703,7 +703,7 @@ def delete_free_ad(request):
 @parser_classes([MultiPartParser, FormParser])
 def get_all_free_ad(request):
 
-    current_datetime = datetime.now()
+    current_datetime = timezone.now()
 
     selected_country = request.GET.get('country', '')
     selected_state = request.GET.get('state', '')
@@ -732,7 +732,7 @@ def get_all_free_ad(request):
 @parser_classes([MultiPartParser, FormParser])
 def get_seller_paid_ad(request):
     user = request.user
-    # current_datetime = datetime.now()
+    # current_datetime = timezone.now()
     try:
         paid_ad = PostPaidAd.objects.filter(seller=user)
         # paid_ad = PostPaidAd.objects.filter(seller=user, expiration_date__gt=current_datetime)
@@ -748,7 +748,7 @@ def get_seller_active_paid_ads(request, seller_username):
     seller = User.objects.get(username=seller_username)
     print('seller_username:', seller_username) 
 
-    current_datetime = datetime.now()
+    current_datetime = timezone.now()
     try:
         paid_ad = PostPaidAd.objects.filter(
             seller=seller, expiration_date__gt=current_datetime)
@@ -878,7 +878,7 @@ def deactivate_paid_ad(request):
 
             ad.duration_hours = durations_mapping.get(
                 ad.duration, timedelta(hours=0))
-            ad.expiration_date = datetime.now() + ad.duration_hours
+            ad.expiration_date = timezone.now() + ad.duration_hours
 
         ad.is_active = False
         ad.save()
@@ -935,7 +935,7 @@ def reactivate_paid_ad(request):
 
             ad.duration_hours = durations_mapping.get(
                 ad.duration, timedelta(hours=0))
-            ad.expiration_date = datetime.now() + ad.duration_hours
+            ad.expiration_date = timezone.now() + ad.duration_hours
 
         ad.is_active = True
         ad.save()
@@ -972,7 +972,7 @@ def delete_paid_ad(request):
 @parser_classes([MultiPartParser, FormParser])
 def get_all_paid_ad(request):
 
-    current_datetime = datetime.now()
+    current_datetime = timezone.now()
 
     selected_country = request.GET.get('country', '')
     selected_state = request.GET.get('state', '')
@@ -1007,7 +1007,7 @@ def get_all_paid_ad(request):
 @permission_classes([IsAuthenticated])
 def get_seller_paid_ads_charges(request):
     user = request.user
-    current_datetime = datetime.now()
+    current_datetime = timezone.now()
 
     try:
         paid_ads = PostPaidAd.objects.filter(
@@ -1159,7 +1159,7 @@ def generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month_formatted):
             'ad_charges': ad_charges,
             'account_id': 'Your Account ID Here',
             'bill_status': 'Issued',
-            'date_printed': datetime.now().strftime('%b %d, %Y'),
+            'date_printed': timezone.now().strftime('%b %d, %Y'),
             'formatted_total_amount': formatted_total_amount,
             'total_amount': total_amount,
 
@@ -1452,7 +1452,7 @@ def list_paid_ad_messages(request):
 def seller_get_buyer_free_ad_messages(request):
     user = request.user
     print('user:', user)
-    current_datetime = datetime.now()
+    current_datetime = timezone.now()
     seller_free_ads = PostFreeAd.objects.filter(
         seller=user, expiration_date__gt=current_datetime)
     messages = FreeAdMessageId.objects.filter(
@@ -1466,7 +1466,7 @@ def seller_get_buyer_free_ad_messages(request):
 def seller_get_buyer_paid_ad_messages(request):
     user = request.user
     print('user:', user)
-    current_datetime = datetime.now()
+    current_datetime = timezone.now()
     seller_paid_ads = PostPaidAd.objects.filter(
         seller=user, expiration_date__gt=current_datetime)
     messages = PaidAdMessageId.objects.filter(
@@ -1480,7 +1480,7 @@ def seller_get_buyer_paid_ad_messages(request):
 def get_active_buyer_free_ad_messages(request):
     user = request.user
     print('user:', user)
-    current_datetime = datetime.now()
+    current_datetime = timezone.now()
     messages = FreeAdMessageId.objects.filter(
         user=user,
         free_ad__expiration_date__gt=current_datetime
@@ -1494,7 +1494,7 @@ def get_active_buyer_free_ad_messages(request):
 def get_active_buyer_paid_ad_messages(request):
     user = request.user
     print('user:', user)
-    current_datetime = datetime.now()
+    current_datetime = timezone.now()
     messages = PaidAdMessageId.objects.filter(
         user=user,
         paid_ad__expiration_date__gt=current_datetime
@@ -2220,7 +2220,7 @@ def search_ads(request):
 
     try:
         search_term = search_term.strip()
-        current_datetime = datetime.now()
+        current_datetime = timezone.now()
 
         selected_country = request.GET.get('country', '')
         selected_state = request.GET.get('state', '')
@@ -2279,7 +2279,7 @@ def search_ads(request):
 #         nltk.download('wordnet')
 
 #         search_term = search_term.strip()
-#         current_datetime = datetime.now()
+#         current_datetime = timezone.now()
 
 #         synonyms = set()
 #         for syn in wordnet.synsets(search_term):
