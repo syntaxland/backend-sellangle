@@ -45,9 +45,8 @@ app.conf.beat_schedule = {
     'delete-expired-ads': {
         'task': 'marketplace.tasks.delete_expired_ads',
         # 'schedule': crontab(hour=0, minute=0),  
-        'schedule': timedelta(hours=12),
-        # 'schedule': timedelta(days=7),
-        # 'schedule': crontab(minute=0, hour=2, day_of_month=2),
+        # 'schedule': timedelta(hours=12),
+        'schedule': timedelta(days=7),
     },
     'send-monthly-ad-billing-receipt-email': {
         'task': 'marketplace.tasks.send_monthly_ad_billing_receipt_email',
@@ -57,7 +56,7 @@ app.conf.beat_schedule = {
     },
     'close-resolved-tickets': {
         'task': 'support.tasks.close_resolved_tickets',
-        'schedule': timedelta(seconds=60),
+        'schedule': timedelta(hours=12),
     },
     'deactivate-inactive-users-every-six-months': {  
         'task': 'user_profile.tasks.deactivate_inactive_users_every_six_months',
