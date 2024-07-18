@@ -60,12 +60,12 @@ app.conf.beat_schedule = {
     },
     'deactivate-inactive-users-every-six-months': {  
         'task': 'user_profile.tasks.deactivate_inactive_users_every_six_months',
-        'schedule': crontab(month_of_year='*/6'), 
+        # 'schedule': crontab(month_of_year='*/6'), 
+        'schedule': timedelta(weeks=26),
         # 'schedule': timedelta(seconds=30),
     },
     'delete-unverified-users-after-one-hour': {
         'task': 'user_profile.tasks.delete_unverified_users_after_one_hour',
-        # 'schedule': crontab(minute=0, hour='*/1'),
         'schedule': timedelta(hours=1),
     },
 } 
