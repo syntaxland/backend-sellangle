@@ -509,12 +509,15 @@ AUTH_USER_MODEL = 'user_profile.User'
 
 # Celery Configuration
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-# CELERY_RESULT_BACKEND = 'django-db'
-CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'django-db'
+result_backend = 'redis://localhost:6379/0'
+accept_content = ['json']
+# CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 CELERY_BROKER_RETRY_ON_STARTUP = False
 broker_connection_retry_on_startup = True
-CELERY_BEAT_SHEDULER = 'django-celery-beat.shedulers.DatabaseSheduler'
+# CELERY_BEAT_SHEDULER = 'django-celery-beat.shedulers.DatabaseSheduler'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
