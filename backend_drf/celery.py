@@ -22,7 +22,7 @@ app.conf.beat_schedule = {
     'get-total-ad-charge': {
         'task': 'marketplace.tasks.get_total_ad_charge',
         # 'schedule': crontab(hour=0, minute=0),
-        # 'schedule': timedelta(seconds=62),
+        # 'schedule': timedelta(seconds=30),
         'schedule': timedelta(minutes=1),
     },
     'deduct-total-ad-charge-from-cps': {
@@ -31,14 +31,9 @@ app.conf.beat_schedule = {
         # 'schedule': timedelta(seconds=100),
         # 'schedule': crontab(minute=0, hour=1, day_of_month=1),
         # 'schedule': crontab(minute=0, hour=1, day_of_week=1),
-        # 'schedule': timedelta(days=7),
-        'schedule': timedelta(hours=48),
-    },
-    'send-monthly-ad-billing-receipt-email': {
-        'task': 'marketplace.tasks.send_monthly_ad_billing_receipt_email',
-        'schedule': crontab(minute=0, hour=2, day_of_month=1),
-        # 'schedule': timedelta(seconds=420),
-        # 'schedule': timedelta(minutes=180),
+        'schedule': timedelta(days=7),
+        # 'schedule': timedelta(hours=48),
+        # 'schedule': timedelta(minutes=15),
     },
     'charge-owed-ads': {
         'task': 'marketplace.tasks.charge_owed_ads',
@@ -46,17 +41,22 @@ app.conf.beat_schedule = {
         # 'schedule': timedelta(seconds=15),
         'schedule': timedelta(days=5),
     },
-    'auto-reactivate-paid-ad': {
-        'task': 'marketplace.tasks.auto_reactivate_paid_ad',
-        'schedule': timedelta(seconds=60),
-    },
     'delete-expired-ads': {
         'task': 'marketplace.tasks.delete_expired_ads',
         # 'schedule': crontab(hour=0, minute=0),
         # 'schedule': timedelta(hours=12),
         'schedule': timedelta(days=7),
     },
-
+    'send-monthly-ad-billing-receipt-email': {
+        'task': 'marketplace.tasks.send_monthly_ad_billing_receipt_email',
+        'schedule': crontab(minute=0, hour=2, day_of_month=1),
+        # 'schedule': timedelta(seconds=420),
+        # 'schedule': timedelta(minutes=180),
+    },
+    'auto-reactivate-paid-ad': {
+        'task': 'marketplace.tasks.auto_reactivate_paid_ad',
+        'schedule': timedelta(seconds=60),
+    },
     'close-resolved-tickets': {
         'task': 'support.tasks.close_resolved_tickets',
         'schedule': timedelta(hours=12),

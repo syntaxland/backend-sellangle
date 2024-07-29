@@ -14,7 +14,8 @@ from .models import (PostPaidAd,
                       )
 
 # from .views import generate_ad_charges_receipt_pdf                   
-from credit_point.models import CreditPoint, AdChargeCreditPoint
+from credit_point.models import CreditPoint, CpsBonus, AdChargeCreditPoint
+from promo.models import Referral
 from send_message_inbox.models import SendMessageInbox
 from send_email.send_email_sendinblue import send_email_sendinblue, send_email_with_attachment_sendinblue
 
@@ -34,13 +35,58 @@ def generate_ad_charge_id():
     return 'CHG'+''.join(random.choices(letters_and_digits, k=16))
 
 
+# @shared_task
+# def charge_ad():
+#     active_ads = PostPaidAd.objects.filter(expiration_date__gt=timezone.now())
+
+#     for ad in active_ads:
+#         ad_charges_hourly = 1.2  # cps per hr
+#         charge_hours = 1 # hrs
+        
+#         PostPaidAd.objects.filter(id=ad.id).update(
+#             ad_charges=F('ad_charges') + ad_charges_hourly,
+#             ad_charge_hours=F('ad_charge_hours') + charge_hours
+#         ) 
+
+#     return 'Active ads found and charged:', len(active_ads)
+
+
+# @shared_task
+# def get_total_ad_charge():
+#     sellers = User.objects.filter(
+#         paid_ad_seller__expiration_date__gt=timezone.now(),
+#         paid_ad_seller__ad_charges__gt=0
+#     ).distinct()
+
+#     for seller in sellers:
+#         total_ad_charges = PostPaidAd.objects.filter(seller=seller, ad_charges__gt=0).aggregate(Sum('ad_charges'))['ad_charges__sum'] or 0
+#         total_ad_charge_hours = PostPaidAd.objects.filter(seller=seller, ad_charges__gt=0).aggregate(Sum('ad_charge_hours'))['ad_charge_hours__sum'] or 0
+
+#         total_ad_charge = AdChargeTotal.objects.filter(seller=seller).first()
+#         if total_ad_charge:
+#             AdChargeTotal.objects.filter(seller=seller).update(
+#                 total_ad_charges=F('total_ad_charges') + total_ad_charges,
+#                 total_ad_charge_hours=F('total_ad_charge_hours') + total_ad_charge_hours
+#             )
+#         else:
+#             AdChargeTotal.objects.create(
+#                 seller=seller,
+#                 total_ad_charges=total_ad_charges,
+#                 total_ad_charge_hours=total_ad_charge_hours,
+#                 total_ad_charge_id=generate_ad_charge_id(),
+#                 timestamp=timezone.now()
+#             )
+
+#     return 'Total ad charges and hours calculated and saved for sellers:', len(sellers)
+
+
 @shared_task
 def charge_ad():
     active_ads = PostPaidAd.objects.filter(expiration_date__gt=timezone.now())
 
     for ad in active_ads:
         ad_charges_hourly = 1.2  # cps per hr
-        charge_hours = 1 # hrs
+        charge_hours = 1  # hrs
         
         PostPaidAd.objects.filter(id=ad.id).update(
             ad_charges=F('ad_charges') + ad_charges_hourly,
@@ -64,8 +110,8 @@ def get_total_ad_charge():
         total_ad_charge = AdChargeTotal.objects.filter(seller=seller).first()
         if total_ad_charge:
             AdChargeTotal.objects.filter(seller=seller).update(
-                total_ad_charges=F('total_ad_charges') + total_ad_charges,
-                total_ad_charge_hours=F('total_ad_charge_hours') + total_ad_charge_hours
+                total_ad_charges=total_ad_charges,
+                total_ad_charge_hours=total_ad_charge_hours
             )
         else:
             AdChargeTotal.objects.create(
@@ -138,6 +184,10 @@ def deduct_total_ad_charge_from_cps():
                 total_ad_charge.seller.ad_charge_is_owed=False
                 total_ad_charge.seller.save()
 
+                # After deducting ad charges, apply the referral and followers bonuses
+                implement_referral_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+                implement_followers_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+
             except CreditPoint.DoesNotExist:
                 print(f'CreditPoint not found for seller {total_ad_charge.seller.username}')
 
@@ -199,10 +249,84 @@ def charge_owed_ads():
                 user.ad_charge_is_owed = False
                 user.save()
 
+                # After deducting ad charges, apply the referral and followers bonuses
+                implement_referral_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+                implement_followers_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+
             except CreditPoint.DoesNotExist:
                 print(f'CreditPoint not found for seller {user.username}')
 
     return 'Owed ad charges deducted from users successfully. Owed Users:', len(owed_users) 
+
+
+def implement_referral_cps_bonus(user, total_ad_charges):
+    try:
+        referral = Referral.objects.get(referred_users=user)
+        referrer = referral.referrer
+
+        if not referrer:
+            print(f"No referrer found for user {user.username}")
+            return
+
+        cps_bonus_amount = total_ad_charges * 0.10  # 10% of ad charges
+
+        referrer_credit_point = CreditPoint.objects.get(user=referrer)
+        old_balance = referrer_credit_point.balance
+        new_balance = old_balance + cps_bonus_amount
+
+        CpsBonus.objects.create(
+            user=referrer,
+            cps_bonus_type='Referral Bonus',
+            cps_amount=cps_bonus_amount,
+            cps_bonus_id=generate_ad_charge_id(),
+            old_bal=old_balance,
+            new_bal=new_balance,
+            is_success=True,
+        )
+
+        referrer_credit_point.balance = new_balance
+        referrer_credit_point.save()
+
+        print(f"Referral bonus of {cps_bonus_amount} credited to referrer {referrer.username}")
+
+    except Referral.DoesNotExist:
+        print(f"No referral record found for user {user.username}")
+    except CreditPoint.DoesNotExist:
+        print(f"No credit point record found for referrer {referrer.username}")
+
+
+def implement_followers_cps_bonus(user, total_ad_charges):
+    try:
+        followed_sellers = user.followed_sellers.all()
+        if not followed_sellers:
+            print(f"No followed sellers for user {user.username}")
+            return
+
+        cps_bonus_amount = total_ad_charges * 0.40  # 40% of ad charges
+        cps_bonus_per_seller = cps_bonus_amount / followed_sellers.count()
+
+        for seller in followed_sellers:
+            seller_credit_point = CreditPoint.objects.get(user=seller)
+            old_balance = seller_credit_point.balance
+            new_balance = old_balance + cps_bonus_per_seller
+
+            CpsBonus.objects.create(
+                user=seller,
+                cps_bonus_type='Followers',
+                cps_amount=cps_bonus_per_seller,
+                cps_bonus_id=generate_ad_charge_id(),
+                old_bal=old_balance,
+                new_bal=new_balance,
+                is_success=True,
+            )
+
+            seller_credit_point.balance = new_balance
+            seller_credit_point.save()
+
+            print(f"Followers bonus of {cps_bonus_per_seller} credited to seller {seller.username}")
+
+    except CreditPoint.DoesNotExist:
+        print(f"No credit point record found for a followed seller")
 
 
 def send_seller_insufficient_cps_bal_msg(user, credit_point_balance, insufficient_cps_balance):
