@@ -69,7 +69,7 @@ app.conf.beat_schedule = {
     },
     'delete-unverified-users-after-one-hour': {
         'task': 'user_profile.tasks.delete_unverified_users_after_one_hour',
-        'schedule': timedelta(hours=1),
+        'schedule': timedelta(hours=24),
     },
 }
 

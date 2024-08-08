@@ -29,7 +29,7 @@ def deactivate_inactive_users_every_six_months():
 
 @shared_task
 def delete_unverified_users_after_one_hour():
-    one_hour_ago = timezone.now() - timedelta(hours=1)
+    one_hour_ago = timezone.now() - timedelta(hours=24)
     unverified_users = User.objects.filter(
         is_verified=False,
         is_staff=False,
