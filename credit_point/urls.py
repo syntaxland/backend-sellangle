@@ -20,7 +20,7 @@ urlpatterns = [
     path('buy-credit-point/', views.buy_credit_point, name='buy-credit-point'), 
     path('get-buyer-credit-point/', views.get_buyer_credit_point, name='get-buyer-credit-point'),
 
-    path('buy-usd-credit-point/', views.buy_usd_credit_point, name='buy-usd-credit-point'), 
+    # path('buy-usd-credit-point/', views.buy_usd_credit_point, name='buy-usd-credit-point'), 
     path('get-usd-buy-credit-point/', views.get_usd_buy_credit_point, name='get-buy-usd-credit-point'), 
 
     path('get-ad-charges-cps/', views.get_ad_charges_cps, name='get_ad_charges_cps'), 

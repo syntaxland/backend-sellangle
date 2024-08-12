@@ -1,14 +1,12 @@
 # credit_point/serializers.py
 from rest_framework import serializers
-from .models import (CreditPoint, 
-                    #  CreditPointRequest, 
-                    #  CreditPointPayment, 
-                    #  CreditPointEarning, 
-                     BuyCreditPoint,
-                     BuyUsdCreditPoint,
-                       SellCreditPoint,
-                       AdChargeCreditPoint,
-                       CpsBonus
+from .models import (CreditPoint,
+                    BuyCreditPoint,
+                    BuyUsdCreditPoint,
+                    SellCreditPoint,
+                    AdChargeCreditPoint,
+                    CpsBonus,
+                    SellCpsToSellangle, 
 
                      )
  
@@ -43,6 +41,14 @@ class SellCreditPointSerializer(serializers.ModelSerializer):
     buyer_username = serializers.CharField(source='buyer.username', read_only=True)
     class Meta:
         model = SellCreditPoint
+        fields = "__all__" 
+
+
+class SellCpsToSellangleSerializer(serializers.ModelSerializer):
+    seller_username = serializers.CharField(source='seller.username', read_only=True)
+    buyer_username = serializers.CharField(source='buyer.username', read_only=True)
+    class Meta:
+        model = SellCpsToSellangle
         fields = "__all__" 
 
 
