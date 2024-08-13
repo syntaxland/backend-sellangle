@@ -41,8 +41,25 @@ class AuthorAdmin(admin.ModelAdmin):
     list_display = ('created_at',
                      'seller', 
                      'buyer', 
+                    'amount',                 
+                    'cps_sell_id', 
+                    'is_success', 
+                    'buyer_old_bal', 
+                    'buyer_new_bal', 
+                    'seller_old_bal', 
+                    'seller_new_bal',
+                      )
+
+
+@admin.register(models.SellCpsToSellangle)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ('created_at',
+                     'seller', 
+                     'buyer', 
                     'amount',                  
                     'cps_sell_id', 
+                    'paysofter_account_id', 
+                    'paysofter_seller_id', 
                     'is_success', 
                     'buyer_old_bal', 
                     'buyer_new_bal', 
