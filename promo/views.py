@@ -1,6 +1,10 @@
 # promo/views.py
 import random
 import string
+import base64
+from io import BytesIO
+from PIL import Image, ImageDraw
+import qrcode
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -49,8 +53,6 @@ def generate_referral_link(request):
             user.referral_code = generate_referral_code()
             user.save()
         if not user.referral_link:
-            # referral_link =  f"http://localhost:3000/register?ref={user.referral_code}"
-            # referral_link =  f"http://mcdofglobal.s3-website-us-east-1.amazonaws.com/register?ref={user.referral_code}"
             referral_link =  f"{url}/register?ref={user.referral_code}"
             user.referral_link = referral_link
             user.save()
@@ -67,6 +69,43 @@ def generate_referral_link(request):
             {"error": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
+
+# @api_view(["GET"])
+# @permission_classes([IsAuthenticated])
+# def generate_referral_link(request):
+#     user = request.user
+#     url = settings.SELLANGLE_URL
+#     try:
+#         if not user.referral_code:
+#             user.referral_code = generate_referral_code()
+#         if not user.referral_link:
+#             referral_link = f"{url}/register?ref={user.referral_code}"
+#             user.referral_link = referral_link
+
+#         # Generate QR code
+#         qr_code_img = qrcode.make(user.referral_link)
+#         buffer = BytesIO()
+#         qr_code_img.save(buffer, format="PNG")
+#         qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+#         # Save the user to trigger the QR code save in the model (if needed)
+#         user.save()
+
+#         return Response(
+#             {
+#                 "message": "Referral link and code generated successfully.",
+#                 "referral_link": user.referral_link,
+#                 "referral_code": user.referral_code,
+#                 "qr_code_base64": qr_code_base64,
+#             },
+#             status=status.HTTP_201_CREATED,
+#         )
+#     except Exception as e:
+#         return Response(
+#             {"error": str(e)},
+#             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#         )
 
 
 @api_view(["GET"])

@@ -2,6 +2,10 @@
 from datetime import datetime, timedelta
 from django.utils import timezone
 from django.db import models
+from io import BytesIO
+from django.core.files import File
+from PIL import Image, ImageDraw
+import qrcode
 from django.contrib.auth import get_user_model
 
 User = get_user_model()

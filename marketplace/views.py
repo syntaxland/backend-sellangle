@@ -1,8 +1,10 @@
 # marketplace/views.py
-from io import BytesIO
 import random
 import string
 import base64
+from io import BytesIO
+from PIL import Image, ImageDraw
+import qrcode
 from decimal import ROUND_DOWN, Decimal
 from xhtml2pdf import pisa
 from dateutil.relativedelta import relativedelta
@@ -1612,7 +1614,7 @@ def get_seller_shopfront_link(request):
     print("user:", user)
 
     try:
-        shopfront_link = f"{url}/seller-shop-front/{user.username}/"
+        shopfront_link = f"{url}/shopfront/{user.username}/"
         print("shopfront_link:", shopfront_link)
         return Response({"shopfrontLink": shopfront_link}, status=status.HTTP_200_OK)
     except object.DoesNotExist:
