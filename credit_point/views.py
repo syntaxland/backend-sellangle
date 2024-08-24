@@ -38,7 +38,7 @@ def generate_cps_sell_id():
     return 'CPS'+''.join(random.choices(letters_and_digits, k=17))
 
 
-def send_sell_cps_msg_alert_to_buyer(request, buyer, seller, old_bal, new_bal, cps_amount):
+def send_sell_cps_to_sellangle_msg_alert_to_buyer(request, seller, buyer, amount, currency, buyer_old_bal, buyer_new_bal, cps_amount):
     message_content = f"""
         <html>
         <head>
@@ -47,8 +47,8 @@ def send_sell_cps_msg_alert_to_buyer(request, buyer, seller, old_bal, new_bal, c
         <body>
             <p>Dear {buyer.first_name},</p>
             <p>Your credit point wallet has been credited with <b>{cps_amount} CPS</b> sent by <b>{seller.username}</b>.</p>
-            <p>Old Bal: <b>{old_bal} CPS</b></p>
-            <p>New Bal: <b>{new_bal} CPS</b></p>
+            <p>Old Bal: <b>{buyer_old_bal} CPS</b></p>
+            <p>New Bal: <b>{buyer_new_bal} CPS</b></p>
             <p>Best regards,</p>
             <p>Sellangle Team</p>
         </body>
@@ -65,7 +65,7 @@ def send_sell_cps_msg_alert_to_buyer(request, buyer, seller, old_bal, new_bal, c
     print(f"Notification sent to {buyer.username} about CPS Transaction.")
 
 
-def send_sell_cps_msg_alert_to_seller(request, buyer, seller, old_bal, new_bal, cps_amount):
+def send_sell_cps_to_sellangle_msg_alert_to_seller(request, seller, buyer, amount, currency, seller_old_bal, seller_new_bal, cps_amount):
     message_content = f"""
         <html>
         <head>
@@ -74,8 +74,62 @@ def send_sell_cps_msg_alert_to_seller(request, buyer, seller, old_bal, new_bal, 
         <body>
             <p>Dear {seller.first_name},</p>
             <p>Your credit point wallet has been debited with <b>{cps_amount} CPS</b> sold to <b>{buyer.username}</b>.</p>
-            <p>Old Bal: <b>{old_bal} CPS</b></p>
-            <p>New Bal: <b>{new_bal} CPS</b></p>
+            <p>Old Bal: <b>{seller_old_bal} CPS</b></p>
+            <p>New Bal: <b>{seller_new_bal} CPS</b></p>
+            <p>Best regards,</p>
+            <p>Sellangle Team</p>
+        </body>
+        </html>
+    """
+    inbox_message = SendMessageInbox.objects.create(
+        receiver=seller,
+        subject="CPS Transaction",
+        message=message_content,
+        is_read=False,
+    )
+    inbox_message.msg_count += 1
+    inbox_message.save()
+    print(f"Notification sent to {seller.username} about CPS Transaction.")
+
+
+def send_sell_cps_msg_alert_to_buyer(request, seller, buyer, amount, currency, buyer_old_bal, buyer_new_bal, cps_amount):
+    message_content = f"""
+        <html>
+        <head>
+            <title>CPS Transaction</title>
+        </head>
+        <body>
+            <p>Dear {buyer.first_name},</p>
+            <p>Your credit point wallet has been credited with <b>{cps_amount} CPS</b> sent by <b>{seller.username}</b> for <b>{amount} {currency}</b>.</p>
+            <p>Old Bal: <b>{buyer_old_bal} CPS</b></p>
+            <p>New Bal: <b>{buyer_new_bal} CPS</b></p>
+            <p>Best regards,</p>
+            <p>Sellangle Team</p>
+        </body>
+        </html>
+    """
+    inbox_message = SendMessageInbox.objects.create(
+        receiver=buyer,
+        subject="CPS Transaction",
+        message=message_content,
+        is_read=False,
+    )
+    inbox_message.msg_count += 1
+    inbox_message.save()
+    print(f"Notification sent to {buyer.username} about CPS Transaction.")
+
+
+def send_sell_cps_msg_alert_to_seller(request, seller, buyer, amount, currency, seller_old_bal, seller_new_bal, cps_amount):
+    message_content = f"""
+        <html>
+        <head>
+            <title>CPS Transaction</title>
+        </head>
+        <body>
+            <p>Dear {seller.first_name},</p>
+            <p>Your credit point wallet has been debited with <b>{cps_amount} CPS</b> sold to <b>{buyer.username}</b> for <b>{amount} {currency}</b>.</p>
+            <p>Old Bal: <b>{seller_old_bal} CPS</b></p>
+            <p>New Bal: <b>{seller_new_bal} CPS</b></p>
             <p>Best regards,</p>
             <p>Sellangle Team</p>
         </body>
@@ -258,38 +312,185 @@ def buy_credit_point(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def sell_cps_to_sellangle(request):
-    user = request.user
+    seller = request.user
     data = request.data
     amount = Decimal(request.data.get('amount'))
     # cps_amount = Decimal(request.data.get('cps_amount'))
     currency = request.data.get('currency')
+    paysofter_account_id = request.data.get('paysofter_account_id')
+    paysofter_seller_id = request.data.get('paysofter_seller_id')
+    password = data.get('password')
     created_at = request.data.get('created_at')
     print('amount:', amount, currency)
+    # buyer_username = data.get('username')
+    buyer_username='sellangle'
+    buyer = User.objects.get(username=buyer_username)
 
-    buyer_username = data.get('username')
-    password = data.get('password')
-
-    if not user.check_password(password):
+    if not seller.check_password(password):
         return Response({'detail': 'Invalid password.'}, status=status.HTTP_401_UNAUTHORIZED)
-
-    try:
-        buyer = User.objects.get(username=buyer_username)
-    except User.DoesNotExist:
-        return Response({'detail': f'CPS Buyer/Receiver with username "{buyer_username}" not found.'}, status=status.HTTP_404_NOT_FOUND)
-    print('buyer:', buyer)
     
     try:  
         if currency == "NGN": 
-            sell_ngn_cps_to_sellangle(request, user, amount, currency, created_at)
+            # sell_ngn_cps_to_sellangle(request, seller, amount, currency, paysofter_account_id, paysofter_seller_id, created_at)
+            NGN_AMOUNT_TO_CPS_MAPPING = {
+            '1000000': 2000000,
+            '2500000': 5000000,
+            '5000000': 10000000,
+            '7500000': 15000000,
+            '10000000': 20000000,
+            }
+
+            cps_sell_id = generate_cps_sell_id()
+            print('cps_sell_id:', cps_sell_id)
+
+            cps_amount = NGN_AMOUNT_TO_CPS_MAPPING.get(str(amount), 0)
+            print('amount:', amount, 'cps_amount:', cps_amount)
+
+            try:
+                seller_credit_point, created = CreditPoint.objects.get_or_create(user=seller)
+                seller_old_bal = seller_credit_point.balance
+
+                buyer_credit_point, created = CreditPoint.objects.get_or_create(user=buyer)
+                buyer_old_bal = buyer_credit_point.balance
+
+                if seller_old_bal < cps_amount: 
+                    return Response({'detail': 'Insufficient credit point balance. Fund your cps wallet and try again.'}, 
+                                    status=status.HTTP_400_BAD_REQUEST)
+                seller_credit_point.balance -= cps_amount
+                seller_credit_point.save()
+                
+                buyer_credit_point.balance += cps_amount
+                buyer_credit_point.save()
+
+                sell_credit_point = SellCpsToSellangle.objects.create(
+                    buyer=buyer,
+                    seller=seller,
+                    amount=amount,
+                    cps_amount=cps_amount,
+                    currency=currency,
+                    paysofter_account_id=paysofter_account_id,
+                    paysofter_seller_id=paysofter_seller_id,
+                    buyer_old_bal=buyer_old_bal,
+                    seller_old_bal=seller_old_bal,
+                    cps_sell_id=cps_sell_id, 
+                )
+
+                sell_credit_point.is_success = True
+                sell_credit_point.buyer_new_bal = buyer_credit_point.balance 
+                sell_credit_point.seller_new_bal = seller_credit_point.balance
+                sell_credit_point.save()
+
+                buyer_new_bal = buyer_credit_point.balance
+                seller_new_bal = seller_credit_point.balance
+                # send mgs
+                amount = '{:,.0f}'.format(float(amount))
+                cps_amount = '{:,.0f}'.format(cps_amount)
+                seller_old_bal = '{:,.0f}'.format(seller_old_bal)
+                buyer_old_bal = '{:,.0f}'.format(buyer_old_bal)
+                buyer_new_bal = '{:,.0f}'.format(buyer_new_bal)
+                seller_new_bal = '{:,.0f}'.format(seller_new_bal)
+
+                try:
+                    send_sell_cps_to_sellangle_msg_alert_to_buyer(request, seller, buyer, amount, currency, buyer_old_bal, buyer_new_bal, cps_amount)
+                except Exception as e:
+                    print(e)
+                    return Response({'error': 'Error sending email.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+                try:
+                    send_sell_cps_to_sellangle_msg_alert_to_seller(request, seller, buyer, amount, currency, seller_old_bal, seller_new_bal, cps_amount)
+                except Exception as e:
+                    print(e)
+                    return Response({'error': 'Error sending email.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+                return Response({'detail': f'Credit point request successful.'}, 
+                                status=status.HTTP_201_CREATED)
+            except CreditPoint.DoesNotExist:
+                    return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)
+
         elif currency == "USD":
-            sell_usd_cps_to_sellangle(request, user, amount, currency, created_at)
+            # sell_usd_cps_to_sellangle(request, seller, amount, currency, paysofter_account_id, paysofter_seller_id, created_at)
+
+            USD_AMOUNT_TO_CPS_MAPPING = {
+            '1000': 2000000,
+            '2500': 5000000,
+            '5000': 10000000,
+            '7500': 15000000,
+            '10000': 20000000,
+            }
+
+            cps_sell_id = generate_cps_sell_id()
+            print('cps_sell_id:', cps_sell_id)
+
+            cps_amount = USD_AMOUNT_TO_CPS_MAPPING.get(str(amount), 0)
+            print('amount:', amount, 'cps_amount:', cps_amount)
+
+            try:
+                seller_credit_point, created = CreditPoint.objects.get_or_create(user=seller)
+                seller_old_bal = seller_credit_point.balance
+
+                buyer_credit_point, created = CreditPoint.objects.get_or_create(user=buyer)
+                buyer_old_bal = buyer_credit_point.balance
+
+                if seller_old_bal < cps_amount: 
+                    return Response({'detail': 'Insufficient credit point balance. Fund your cps wallet and try again.'}, 
+                                    status=status.HTTP_400_BAD_REQUEST)
+                seller_credit_point.balance -= cps_amount
+                seller_credit_point.save()
+                
+                buyer_credit_point.balance += cps_amount
+                buyer_credit_point.save()
+
+                sell_credit_point = SellCpsToSellangle.objects.create(
+                    buyer=buyer,
+                    seller=seller,
+                    amount=amount,
+                    cps_amount=cps_amount,
+                    currency=currency,
+                    paysofter_account_id=paysofter_account_id,
+                    paysofter_seller_id=paysofter_seller_id,
+                    buyer_old_bal=buyer_old_bal,
+                    seller_old_bal=seller_old_bal,
+                    cps_sell_id=cps_sell_id, 
+                )
+
+                sell_credit_point.is_success = True
+                sell_credit_point.buyer_new_bal = buyer_credit_point.balance 
+                sell_credit_point.seller_new_bal = seller_credit_point.balance
+                sell_credit_point.save()
+
+                buyer_new_bal = buyer_credit_point.balance
+                seller_new_bal = seller_credit_point.balance
+                # send mgs
+                amount = '{:,.0f}'.format(float(amount))
+                cps_amount = '{:,.0f}'.format(cps_amount)
+                seller_old_bal = '{:,.0f}'.format(seller_old_bal)
+                buyer_old_bal = '{:,.0f}'.format(buyer_old_bal)
+                buyer_new_bal = '{:,.0f}'.format(buyer_new_bal)
+                seller_new_bal = '{:,.0f}'.format(seller_new_bal)
+
+                try:
+                    send_sell_cps_to_sellangle_msg_alert_to_buyer(request, seller, buyer, amount, currency, buyer_old_bal, buyer_new_bal, cps_amount)
+                except Exception as e:
+                    print(e)
+                    return Response({'error': 'Error sending email.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+                try:
+                    send_sell_cps_to_sellangle_msg_alert_to_seller(request, seller, buyer, amount, currency, seller_old_bal, seller_new_bal, cps_amount)
+                except Exception as e:
+                    print(e)
+                    return Response({'error': 'Error sending email.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+                return Response({'detail': f'Credit point request successful.'}, 
+                                status=status.HTTP_201_CREATED)
+            except CreditPoint.DoesNotExist:
+                    return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)
+
         # elif currency == "EUR":
         #     buy_eur_credit_point(request, amount, currency, created_at)
         else:
             return Response({'detail': 'Invalid currency format. Please contact the seller.'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_200_OK)
     except User.DoesNotExist:
-        return Response({'detail': 'Invalid API key. Please contact the seller.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -398,9 +599,9 @@ def sell_cps_to_sellangle(request):
 #         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-def sell_ngn_cps_to_sellangle(request, user, amount, currency, created_at):
-    seller_username='sellangle'
-    seller = User.objects.get(username=seller_username)
+def sell_ngn_cps_to_sellangle(request, seller, amount, currency, paysofter_account_id, paysofter_seller_id, created_at):
+    buyer_username='sellangle'
+    buyer = User.objects.get(username=buyer_username)
 
     NGN_AMOUNT_TO_CPS_MAPPING = {
     '1000000': 2000000,
@@ -413,17 +614,8 @@ def sell_ngn_cps_to_sellangle(request, user, amount, currency, created_at):
     cps_sell_id = generate_cps_sell_id()
     print('cps_sell_id:', cps_sell_id)
 
-    # buyer_username = data.get('username')
-    # password = data.get('password')
-
-    # if not seller.check_password(password):
-    #     return Response({'detail': 'Invalid password.'}, status=status.HTTP_401_UNAUTHORIZED)
-
-    # try:
-    #     buyer = User.objects.get(username=buyer_username)
-    # except User.DoesNotExist:
-    #     return Response({'detail': f'CPS Buyer/Receiver with username "{buyer_username}" not found.'}, status=status.HTTP_404_NOT_FOUND)
-    # print('buyer:', buyer)
+    cps_amount = NGN_AMOUNT_TO_CPS_MAPPING.get(str(amount), 0)
+    print('amount:', amount, 'cps_amount:', cps_amount)
 
     try:
         seller_credit_point, created = CreditPoint.objects.get_or_create(user=seller)
@@ -432,23 +624,27 @@ def sell_ngn_cps_to_sellangle(request, user, amount, currency, created_at):
         buyer_credit_point, created = CreditPoint.objects.get_or_create(user=buyer)
         buyer_old_bal = buyer_credit_point.balance
 
-        sell_credit_point = SellCreditPoint.objects.create(
+        if seller_old_bal < cps_amount: 
+            return Response({'detail': 'Insufficient credit point balance. Fund your cps wallet and try again.'}, 
+                            status=status.HTTP_400_BAD_REQUEST)
+        seller_credit_point.balance -= cps_amount
+        seller_credit_point.save()
+        
+        buyer_credit_point.balance += cps_amount
+        buyer_credit_point.save()
+
+        sell_credit_point = SellCpsToSellangle.objects.create(
             buyer=buyer,
             seller=seller,
             amount=amount,
+            cps_amount=cps_amount,
+            currency=currency,
+            paysofter_account_id=paysofter_account_id,
+            paysofter_seller_id=paysofter_seller_id,
             buyer_old_bal=buyer_old_bal,
             seller_old_bal=seller_old_bal,
             cps_sell_id=cps_sell_id, 
         )
-        
-        if seller_old_bal < amount: 
-            return Response({'detail': 'Insufficient credit point balance. Fund your cps wallet and try again.'}, 
-                            status=status.HTTP_400_BAD_REQUEST)
-        seller_credit_point.balance -= amount
-        seller_credit_point.save()
-        
-        buyer_credit_point.balance += amount
-        buyer_credit_point.save()
 
         sell_credit_point.is_success = True
         sell_credit_point.buyer_new_bal = buyer_credit_point.balance 
@@ -463,7 +659,7 @@ def sell_ngn_cps_to_sellangle(request, user, amount, currency, created_at):
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-def sell_usd_cps_to_sellangle(request, user, amount, currency, created_at):
+def sell_usd_cps_to_sellangle(request, seller, amount, currency, paysofter_account_id, paysofter_seller_id, created_at):
     seller_username='sellangle'
     seller = User.objects.get(username=seller_username)
     data = request.data

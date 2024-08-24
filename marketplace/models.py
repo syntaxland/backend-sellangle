@@ -846,7 +846,8 @@ class MarketPlaceSellerAccount(models.Model):
     id_card_image = models.ImageField(upload_to='media/sellers/')
     dob = models.CharField(max_length=225, null=True, blank=True)
     home_address = models.CharField(max_length=225, null=True, blank=True)
-    is_seller_verified = models.BooleanField(default=False)
+    # is_seller_verified = models.BooleanField(default=False)
+    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="seller_verified_by")
     is_seller_banned = models.BooleanField(default=False)
     rating = models.DecimalField(
         max_digits=4, decimal_places=2, null=True, blank=True, editable=False)

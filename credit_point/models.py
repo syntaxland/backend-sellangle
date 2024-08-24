@@ -41,6 +41,26 @@ CPS_BONUS_TYPE_CHOICES = (
 )
 
 
+CURRENCY_CHOICES = (
+        ('NGN', 'Nigerian Naira'),
+        ('USD', 'United States Dollar'),
+        ('GBP', 'British Pound Sterling'),
+        ('EUR', 'Euro'),  
+        ('JPY', 'Japanese Yen'),
+        ('CAD', 'Canadian Dollar'),
+        ('AUD', 'Australian Dollar'),
+        ('INR', 'Indian Rupee'),
+        ('CNY', 'Chinese Yuan'),
+        ('ZAR', 'South African Rand'),
+        ('BRL', 'Brazilian Real'),
+        ('KES', 'Kenyan Shilling'),
+        ('GHS', 'Ghanaian Cedi'),
+        ('AED', 'United Arab Emirates Dirham'),
+        ('SAR', 'Saudi Riyal'),
+        ('GBP', 'British Pound Sterling'),
+    )
+
+
 class CreditPoint(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0, editable=False)
@@ -62,6 +82,7 @@ class SellCreditPoint(models.Model):
     buyer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='buyer_credit_point')
     seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='seller_credit_point')
     amount = models.DecimalField(max_digits=50, decimal_places=2, default=0, editable=False)
+    cps_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, editable=False)
     cps_sell_id = models.CharField(max_length=50, unique=True, blank=True)
     buyer_old_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     buyer_new_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -74,7 +95,10 @@ class SellCreditPoint(models.Model):
 class SellCpsToSellangle(models.Model):
     buyer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sell_cps_to_sellangle_buyer')
     seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='ssell_cps_to_sellangle_seller')
+    cps_sold_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="cps_sold_by_user")
     amount = models.DecimalField(max_digits=50, decimal_places=2, default=0, editable=False)
+    cps_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, editable=False)
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, null=True, blank=True)
     paysofter_account_id = models.CharField(max_length=50, blank=True)
     paysofter_seller_id = models.CharField(max_length=50, blank=True)
     cps_sell_id = models.CharField(max_length=50, unique=True, blank=True)

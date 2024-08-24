@@ -19,7 +19,7 @@ class AuthorAdmin(admin.ModelAdmin):
         'country',
         'id_card_image',
         'dob',
-        'is_seller_verified',
+        # 'is_seller_verified',
     )  
 
 

@@ -11,7 +11,9 @@ urlpatterns = [
 
     path('get-user-cps-bonuses/', views.get_user_cps_bonuses, name='get_user_cps_bonuses'),
     # path('get-all-credit-point-payments/', views.get_all_credit_point_payments, name='get-all-credit-point-payments'),
-    # path('get-all-credit-point-payments/', views.get_all_credit_point_payments, name='get-all-credit-point-payments'), 
+    # path('get-all-credit-point-payments/', views.get_all_credit_point_payments, name='get-all-credit-point-payments'),
+    
+    path('sell-cps-to-sellangle/', views.sell_cps_to_sellangle, name='sell_cps_to_sellangle'), 
 
     path('sell-credit-point/', views.sell_credit_point, name='sell-credit-point'),
     path('get-user-buy-credit-point/', views.get_user_buy_credit_point, name='get-user-buy-credit-point'),

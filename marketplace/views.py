@@ -773,7 +773,6 @@ def get_paid_ad_detail(request, pk):
         try:
             api_key = PaysofterApiKey.objects.get(seller=seller)
             seller_api_key = api_key.live_api_key
-
         except PaysofterApiKey.DoesNotExist:
             seller_api_key = None
 

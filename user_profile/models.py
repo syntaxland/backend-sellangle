@@ -64,6 +64,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)  
     is_marketplace_seller = models.BooleanField(default=False)  
+    is_seller_account_verified = models.BooleanField(default=False)
+    is_seller_account_disabled = models.BooleanField(default=False)
     is_followed_seller = models.BooleanField(default=False)  
     is_ecommerce_seller = models.BooleanField(default=False)  
     ad_charge_is_owed = models.BooleanField(default=False)
