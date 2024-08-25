@@ -101,12 +101,15 @@ class SellCpsToSellangle(models.Model):
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, null=True, blank=True)
     paysofter_account_id = models.CharField(max_length=50, blank=True)
     paysofter_seller_id = models.CharField(max_length=50, blank=True)
+    cps_checkout_link = models.CharField(max_length=225, null=True, blank=True)
     cps_sell_id = models.CharField(max_length=50, unique=True, blank=True)
     buyer_old_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     buyer_new_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     seller_old_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     seller_new_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_success = models.BooleanField(default=False)
+    is_fulfilled = models.BooleanField(default=False)
+    paysofter_promise_id = models.CharField(max_length=50, unique=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True) 
 
 

@@ -784,7 +784,7 @@ def get_paid_ad_detail(request, pk):
 
         try:
             seller_info = MarketPlaceSellerAccount.objects.get(seller=seller)
-            is_seller_verified = seller_info.is_seller_verified
+            is_seller_verified = seller.is_seller_account_verified 
             seller_rating = seller_info.rating
             seller_review_count = seller_info.review_count
         except MarketPlaceSellerAccount.DoesNotExist:

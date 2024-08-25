@@ -26,5 +26,10 @@ urlpatterns = [
     path('get-usd-buy-credit-point/', views.get_usd_buy_credit_point, name='get-buy-usd-credit-point'), 
 
     path('get-ad-charges-cps/', views.get_ad_charges_cps, name='get_ad_charges_cps'), 
+
+    path('sellangle-fulfilled-cps/', views.sellangle_fulfilled_cps, name='sellangle_fulfilled_cps'), 
+    path('get-seller-sell-cps-to-sellangle/', views.get_seller_sell_cps_to_sellangle, name='get_seller_sell_cps_to_sellangle'), 
+    path('update-cps-checkout-link/', views.update_cps_checkout_link, name='update_cps_checkout_link'), 
+    path('get-all-sell-cps-to-sellangle/', views.get_all_sell_cps_to_sellangle, name='get_all_sell_cps_to_sellangle'), 
 ]
  

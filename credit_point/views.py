@@ -319,6 +319,7 @@ def sell_cps_to_sellangle(request):
     currency = request.data.get('currency')
     paysofter_account_id = request.data.get('paysofter_account_id')
     paysofter_seller_id = request.data.get('paysofter_seller_id')
+    cps_checkout_link = request.data.get('cps_checkout_link')
     password = data.get('password')
     created_at = request.data.get('created_at')
     print('amount:', amount, currency)
@@ -370,6 +371,7 @@ def sell_cps_to_sellangle(request):
                     currency=currency,
                     paysofter_account_id=paysofter_account_id,
                     paysofter_seller_id=paysofter_seller_id,
+                    cps_checkout_link=cps_checkout_link,
                     buyer_old_bal=buyer_old_bal,
                     seller_old_bal=seller_old_bal,
                     cps_sell_id=cps_sell_id, 
@@ -448,6 +450,7 @@ def sell_cps_to_sellangle(request):
                     currency=currency,
                     paysofter_account_id=paysofter_account_id,
                     paysofter_seller_id=paysofter_seller_id,
+                    cps_checkout_link=cps_checkout_link,
                     buyer_old_bal=buyer_old_bal,
                     seller_old_bal=seller_old_bal,
                     cps_sell_id=cps_sell_id, 
@@ -494,6 +497,82 @@ def sell_cps_to_sellangle(request):
     except Exception as e:
         return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def sellangle_fulfilled_cps(request):
+    seller = request.user
+    data = request.data
+    seller_username = data.get('seller_username')
+    paysofter_promise_id = data.get('paysofter_promise_id')
+    cps_id = data.get('cps_id')
+    print('data:', data)
+    
+    try:
+        seller = User.objects.get(username=seller_username)
+    except User.DoesNotExist:
+        return Response({'detail': 'Seller fund not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        cps = SellCpsToSellangle.objects.get(seller=seller, id=cps_id)
+    except SellCpsToSellangle.DoesNotExist:
+        return Response({'detail': 'CPS not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    cps.is_fulfilled = True
+    cps.paysofter_promise_id = paysofter_promise_id
+    cps.save()
+    print('is_fulfilled:', cps.is_fulfilled)
+
+    return Response({'detail': f'Success!', }, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_seller_sell_cps_to_sellangle(request):
+    user = request.user
+    try:
+        credit_point = SellCpsToSellangle.objects.filter(seller=user).order_by('-created_at')
+        serializer = SellCpsToSellangleSerializer(credit_point, many=True)
+        return Response(serializer.data)
+    except SellCpsToSellangle.DoesNotExist:
+        return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_cps_checkout_link(request):
+    seller = request.user
+    data = request.data
+    cps_id = data.get('cps_id')
+    # cps_checkout_link = data.get('cps_checkout_link')
+    print('data:', data)
+
+    try:
+        cps = SellCpsToSellangle.objects.get(seller=seller, id=cps_id)
+        # cps.cps_checkout_link = cps_checkout_link
+        # cps.save()
+        # return Response({'detail': 'CPS updated successfully.'}, status=status.HTTP_200_OK)
+    except SellCpsToSellangle.DoesNotExist:
+        return Response({'detail': 'CPS not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = SellCpsToSellangleSerializer(cps, data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'detail': 'CPS updated successfully.'}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminUser])
+def get_all_sell_cps_to_sellangle(request):
+    try:
+        credit_point = SellCpsToSellangle.objects.all().order_by('-created_at')
+        serializer = SellCpsToSellangleSerializer(credit_point, many=True)
+        return Response(serializer.data)
+    except SellCpsToSellangle.DoesNotExist:
+        return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)
+    
 
 # # @transaction.atomic
 # def buy_cps_in_ngn(request, user, amount, currency, created_at): 
@@ -599,131 +678,131 @@ def sell_cps_to_sellangle(request):
 #         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-def sell_ngn_cps_to_sellangle(request, seller, amount, currency, paysofter_account_id, paysofter_seller_id, created_at):
-    buyer_username='sellangle'
-    buyer = User.objects.get(username=buyer_username)
+# def sell_ngn_cps_to_sellangle(request, seller, amount, currency, paysofter_account_id, paysofter_seller_id, created_at):
+#     buyer_username='sellangle'
+#     buyer = User.objects.get(username=buyer_username)
 
-    NGN_AMOUNT_TO_CPS_MAPPING = {
-    '1000000': 2000000,
-    '2500000': 5000000,
-    '5000000': 10000000,
-    '7500000': 15000000,
-    '10000000': 20000000,
-    }
+#     NGN_AMOUNT_TO_CPS_MAPPING = {
+#     '1000000': 2000000,
+#     '2500000': 5000000,
+#     '5000000': 10000000,
+#     '7500000': 15000000,
+#     '10000000': 20000000,
+#     }
 
-    cps_sell_id = generate_cps_sell_id()
-    print('cps_sell_id:', cps_sell_id)
+#     cps_sell_id = generate_cps_sell_id()
+#     print('cps_sell_id:', cps_sell_id)
 
-    cps_amount = NGN_AMOUNT_TO_CPS_MAPPING.get(str(amount), 0)
-    print('amount:', amount, 'cps_amount:', cps_amount)
+#     cps_amount = NGN_AMOUNT_TO_CPS_MAPPING.get(str(amount), 0)
+#     print('amount:', amount, 'cps_amount:', cps_amount)
 
-    try:
-        seller_credit_point, created = CreditPoint.objects.get_or_create(user=seller)
-        seller_old_bal = seller_credit_point.balance
+#     try:
+#         seller_credit_point, created = CreditPoint.objects.get_or_create(user=seller)
+#         seller_old_bal = seller_credit_point.balance
 
-        buyer_credit_point, created = CreditPoint.objects.get_or_create(user=buyer)
-        buyer_old_bal = buyer_credit_point.balance
+#         buyer_credit_point, created = CreditPoint.objects.get_or_create(user=buyer)
+#         buyer_old_bal = buyer_credit_point.balance
 
-        if seller_old_bal < cps_amount: 
-            return Response({'detail': 'Insufficient credit point balance. Fund your cps wallet and try again.'}, 
-                            status=status.HTTP_400_BAD_REQUEST)
-        seller_credit_point.balance -= cps_amount
-        seller_credit_point.save()
+#         if seller_old_bal < cps_amount: 
+#             return Response({'detail': 'Insufficient credit point balance. Fund your cps wallet and try again.'}, 
+#                             status=status.HTTP_400_BAD_REQUEST)
+#         seller_credit_point.balance -= cps_amount
+#         seller_credit_point.save()
         
-        buyer_credit_point.balance += cps_amount
-        buyer_credit_point.save()
+#         buyer_credit_point.balance += cps_amount
+#         buyer_credit_point.save()
 
-        sell_credit_point = SellCpsToSellangle.objects.create(
-            buyer=buyer,
-            seller=seller,
-            amount=amount,
-            cps_amount=cps_amount,
-            currency=currency,
-            paysofter_account_id=paysofter_account_id,
-            paysofter_seller_id=paysofter_seller_id,
-            buyer_old_bal=buyer_old_bal,
-            seller_old_bal=seller_old_bal,
-            cps_sell_id=cps_sell_id, 
-        )
+#         sell_credit_point = SellCpsToSellangle.objects.create(
+#             buyer=buyer,
+#             seller=seller,
+#             amount=amount,
+#             cps_amount=cps_amount,
+#             currency=currency,
+#             paysofter_account_id=paysofter_account_id,
+#             paysofter_seller_id=paysofter_seller_id,
+#             buyer_old_bal=buyer_old_bal,
+#             seller_old_bal=seller_old_bal,
+#             cps_sell_id=cps_sell_id, 
+#         )
 
-        sell_credit_point.is_success = True
-        sell_credit_point.buyer_new_bal = buyer_credit_point.balance 
-        sell_credit_point.seller_new_bal = seller_credit_point.balance
-        sell_credit_point.save()
+#         sell_credit_point.is_success = True
+#         sell_credit_point.buyer_new_bal = buyer_credit_point.balance 
+#         sell_credit_point.seller_new_bal = seller_credit_point.balance
+#         sell_credit_point.save()
 
-        return Response({'detail': f'Credit point request successful.'}, 
-                        status=status.HTTP_201_CREATED)
-    except CreditPoint.DoesNotExist:
-            return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#         return Response({'detail': f'Credit point request successful.'}, 
+#                         status=status.HTTP_201_CREATED)
+#     except CreditPoint.DoesNotExist:
+#             return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)
+#     except Exception as e:
+#         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-def sell_usd_cps_to_sellangle(request, seller, amount, currency, paysofter_account_id, paysofter_seller_id, created_at):
-    seller_username='sellangle'
-    seller = User.objects.get(username=seller_username)
-    data = request.data
-    print('data:', data)
+# def sell_usd_cps_to_sellangle(request, seller, amount, currency, paysofter_account_id, paysofter_seller_id, created_at):
+#     seller_username='sellangle'
+#     seller = User.objects.get(username=seller_username)
+#     data = request.data
+#     print('data:', data)
 
-    USD_AMOUNT_TO_CPS_MAPPING = {
-    '1000': 2000000,
-    '2500': 5000000,
-    '5000': 10000000,
-    '7500': 15000000,
-    '10000': 20000000,
-    }
+#     USD_AMOUNT_TO_CPS_MAPPING = {
+#     '1000': 2000000,
+#     '2500': 5000000,
+#     '5000': 10000000,
+#     '7500': 15000000,
+#     '10000': 20000000,
+#     }
 
-    cps_sell_id = generate_cps_sell_id()
-    print('cps_sell_id:', cps_sell_id)
+#     cps_sell_id = generate_cps_sell_id()
+#     print('cps_sell_id:', cps_sell_id)
 
-    # buyer_username = data.get('username')
-    # password = data.get('password')
+#     # buyer_username = data.get('username')
+#     # password = data.get('password')
 
-    # if not seller.check_password(password):
-    #     return Response({'detail': 'Invalid password.'}, status=status.HTTP_401_UNAUTHORIZED)
+#     # if not seller.check_password(password):
+#     #     return Response({'detail': 'Invalid password.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    # try:
-    #     buyer = User.objects.get(username=buyer_username)
-    # except User.DoesNotExist:
-    #     return Response({'detail': f'CPS Buyer/Receiver with username "{buyer_username}" not found.'}, status=status.HTTP_404_NOT_FOUND)
-    # print('buyer:', buyer)
+#     # try:
+#     #     buyer = User.objects.get(username=buyer_username)
+#     # except User.DoesNotExist:
+#     #     return Response({'detail': f'CPS Buyer/Receiver with username "{buyer_username}" not found.'}, status=status.HTTP_404_NOT_FOUND)
+#     # print('buyer:', buyer)
 
-    try:
-        seller_credit_point, created = CreditPoint.objects.get_or_create(user=seller)
-        seller_old_bal = seller_credit_point.balance
+#     try:
+#         seller_credit_point, created = CreditPoint.objects.get_or_create(user=seller)
+#         seller_old_bal = seller_credit_point.balance
 
-        buyer_credit_point, created = CreditPoint.objects.get_or_create(user=buyer)
-        buyer_old_bal = buyer_credit_point.balance
+#         buyer_credit_point, created = CreditPoint.objects.get_or_create(user=buyer)
+#         buyer_old_bal = buyer_credit_point.balance
 
-        sell_credit_point = SellCreditPoint.objects.create(
-            buyer=buyer,
-            seller=seller,
-            amount=amount,
-            buyer_old_bal=buyer_old_bal,
-            seller_old_bal=seller_old_bal,
-            cps_sell_id=cps_sell_id, 
-        )
+#         sell_credit_point = SellCreditPoint.objects.create(
+#             buyer=buyer,
+#             seller=seller,
+#             amount=amount,
+#             buyer_old_bal=buyer_old_bal,
+#             seller_old_bal=seller_old_bal,
+#             cps_sell_id=cps_sell_id, 
+#         )
         
-        if seller_old_bal < amount: 
-            return Response({'detail': 'Insufficient credit point balance. Fund your cps wallet and try again.'}, 
-                            status=status.HTTP_400_BAD_REQUEST)
-        seller_credit_point.balance -= amount
-        seller_credit_point.save()
+#         if seller_old_bal < amount: 
+#             return Response({'detail': 'Insufficient credit point balance. Fund your cps wallet and try again.'}, 
+#                             status=status.HTTP_400_BAD_REQUEST)
+#         seller_credit_point.balance -= amount
+#         seller_credit_point.save()
         
-        buyer_credit_point.balance += amount
-        buyer_credit_point.save()
+#         buyer_credit_point.balance += amount
+#         buyer_credit_point.save()
 
-        sell_credit_point.is_success = True
-        sell_credit_point.buyer_new_bal = buyer_credit_point.balance 
-        sell_credit_point.seller_new_bal = seller_credit_point.balance
-        sell_credit_point.save()
+#         sell_credit_point.is_success = True
+#         sell_credit_point.buyer_new_bal = buyer_credit_point.balance 
+#         sell_credit_point.seller_new_bal = seller_credit_point.balance
+#         sell_credit_point.save()
 
-        return Response({'detail': f'Credit point request successful.'}, 
-                        status=status.HTTP_201_CREATED)
-    except CreditPoint.DoesNotExist:
-            return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#         return Response({'detail': f'Credit point request successful.'}, 
+#                         status=status.HTTP_201_CREATED)
+#     except CreditPoint.DoesNotExist:
+#             return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)
+#     except Exception as e:
+#         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
