@@ -109,7 +109,7 @@ class SellCpsToSellangle(models.Model):
     seller_new_bal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_success = models.BooleanField(default=False)
     is_fulfilled = models.BooleanField(default=False)
-    paysofter_promise_id = models.CharField(max_length=50, unique=True, blank=True)
+    paysofter_promise_id = models.CharField(max_length=50, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True) 
 
 

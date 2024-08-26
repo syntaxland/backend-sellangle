@@ -500,14 +500,19 @@ def sell_cps_to_sellangle(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@permission_classes([IsAdminUser])
 def sellangle_fulfilled_cps(request):
-    seller = request.user
+    admin = request.user
     data = request.data
     seller_username = data.get('seller_username')
     paysofter_promise_id = data.get('paysofter_promise_id')
     cps_id = data.get('cps_id')
+    password = data.get('password')
     print('data:', data)
-    
+
+    if not admin.check_password(password):
+        return Response({'detail': 'Invalid password.'}, status=status.HTTP_401_UNAUTHORIZED)  
+
     try:
         seller = User.objects.get(username=seller_username)
     except User.DoesNotExist:
@@ -520,6 +525,7 @@ def sellangle_fulfilled_cps(request):
 
     cps.is_fulfilled = True
     cps.paysofter_promise_id = paysofter_promise_id
+    cps.cps_sold_by = admin
     cps.save()
     print('is_fulfilled:', cps.is_fulfilled)
 
