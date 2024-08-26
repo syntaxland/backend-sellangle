@@ -329,6 +329,15 @@ def sell_cps_to_sellangle(request):
 
     if not seller.check_password(password):
         return Response({'detail': 'Invalid password.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if seller.is_marketplace_seller == False:
+        return Response({'detail': "You are currently not a Sellangle's seller. Please create a Sellangle's seller account."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if seller.is_seller_account_verified == False:
+        return Response({'detail': "Your Sellangle's seller account is currently not verified. Please contact support."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if seller.is_seller_account_disabled == True:
+        return Response({'detail': "Your Sellangle's seller account is currently disabled. Please contact support."}, status=status.HTTP_400_BAD_REQUEST)
     
     try:  
         if currency == "NGN": 
@@ -354,7 +363,7 @@ def sell_cps_to_sellangle(request):
                 buyer_old_bal = buyer_credit_point.balance
 
                 if seller_old_bal < cps_amount: 
-                    return Response({'detail': 'Insufficient credit point balance. Fund your cps wallet and try again.'}, 
+                    return Response({'detail': 'Insufficient credit point balance. Please fund your CPS wallet and try again.'}, 
                                     status=status.HTTP_400_BAD_REQUEST)
                 seller_credit_point.balance -= cps_amount
                 seller_credit_point.save()
@@ -431,7 +440,7 @@ def sell_cps_to_sellangle(request):
                 buyer_old_bal = buyer_credit_point.balance
 
                 if seller_old_bal < cps_amount: 
-                    return Response({'detail': 'Insufficient credit point balance. Fund your cps wallet and try again.'}, 
+                    return Response({'detail': 'Insufficient credit point balance. Please fund your CPS wallet and try again.'}, 
                                     status=status.HTTP_400_BAD_REQUEST)
                 seller_credit_point.balance -= cps_amount
                 seller_credit_point.save()
