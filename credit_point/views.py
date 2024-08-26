@@ -332,7 +332,6 @@ def sell_cps_to_sellangle(request):
     
     try:  
         if currency == "NGN": 
-            # sell_ngn_cps_to_sellangle(request, seller, amount, currency, paysofter_account_id, paysofter_seller_id, created_at)
             NGN_AMOUNT_TO_CPS_MAPPING = {
             '1000000': 2000000,
             '2500000': 5000000,
@@ -410,8 +409,6 @@ def sell_cps_to_sellangle(request):
                     return Response({'detail': 'Credit point not found'}, status=status.HTTP_404_NOT_FOUND)
 
         elif currency == "USD":
-            # sell_usd_cps_to_sellangle(request, seller, amount, currency, paysofter_account_id, paysofter_seller_id, created_at)
-
             USD_AMOUNT_TO_CPS_MAPPING = {
             '1000': 2000000,
             '2500': 5000000,
