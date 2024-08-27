@@ -2,6 +2,9 @@
 from decimal import Decimal
 import random
 import string
+from datetime import datetime, timedelta
+from django.utils import timezone
+from django.db.models import Sum
 
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import api_view, permission_classes
@@ -9,7 +12,6 @@ from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.views import APIView  
  
-
 from .models import (CreditPoint,  
                       BuyCreditPoint, BuyUsdCreditPoint, 
                       SellCreditPoint,
@@ -325,7 +327,7 @@ def sell_cps_to_sellangle(request):
     print('amount:', amount, currency)
     # buyer_username = data.get('username')
     buyer_username='sellangle'
-    buyer = User.objects.get(username=buyer_username)
+    buyer = User.objects.get(username=buyer_username, is_superuser=True)
 
     if not seller.check_password(password):
         return Response({'detail': 'Invalid password.'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -338,6 +340,20 @@ def sell_cps_to_sellangle(request):
     
     if seller.is_seller_account_disabled == True:
         return Response({'detail': "Your Sellangle's seller account is currently disabled. Please contact support."}, status=status.HTTP_400_BAD_REQUEST)
+
+    current_time = timezone.now()
+    account_age = current_time - seller.created_at
+    print('account_age:', account_age)
+    if account_age < timedelta(days=30):
+    # if account_age < timedelta(weeks=52):
+        return Response({'detail': 'Your Sellangle account is less than 30 days old. Please wait until your account is older than 30 days to sell CPS.'}, 
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    total_cps_spent = AdChargeCreditPoint.objects.filter(user=seller, is_success=True).aggregate(total_spent=Sum('cps_amount'))['total_spent'] or Decimal(0)
+    print('total_cps_spent:', total_cps_spent)
+    if total_cps_spent < Decimal(1000):
+    # if total_cps_spent < Decimal(900000000):
+        return Response({'detail': 'You need to spend at least 1000 CPS to create a CPS sell request.'}, status=status.HTTP_400_BAD_REQUEST)
     
     try:  
         if currency == "NGN": 
