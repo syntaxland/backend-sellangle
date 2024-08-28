@@ -27,13 +27,14 @@ from django.views.generic import View
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes, parser_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 
 from send_email.send_email_sendinblue import send_email_with_attachment_sendinblue
 from credit_point.models import CreditPoint, AdChargeCreditPoint
 from credit_point.serializer import AdChargeCreditPointSerializer
+from user_profile.serializers import UserSerializer
 
 from .models import (MarketPlaceSellerAccount,
                      MarketplaceSellerPhoto,
@@ -2205,6 +2206,83 @@ def clear_buyer_paid_ad_message_counter(request):
               ad_message_id.buyer_paid_ad_msg_count)
 
     return Response({'message': 'Message cleared.'}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminUser])
+def get_all_sellers(request):
+    try:
+        sellers = User.objects.filter(is_marketplace_seller=True)
+        serializer = UserSerializer(sellers, many=True)
+        return Response(serializer.data)
+    except User.DoesNotExist:
+        return Response({'detail': 'Sellers not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminUser])
+def get_seller_account_detail(request, seller_username):
+    seller = User.objects.get(username=seller_username) 
+    print('seller_username:', seller_username)
+    print('seller:', seller)
+ 
+    try:
+        seller_account_serializer = None
+        seller_api_key_serializer = None
+        seller_photo_url = None
+
+        seller_account = MarketPlaceSellerAccount.objects.get(seller=seller)
+        seller_account_serializer = MarketPlaceSellerAccountSerializer(seller_account)
+
+        try:
+            seller_api_key = PaysofterApiKey.objects.get(seller=seller)
+            seller_api_key_serializer = PaysofterApiKeySerializer(seller_api_key)
+        except PaysofterApiKey.DoesNotExist:
+            seller_api_key_serializer = None
+            pass
+       
+        try:
+            seller_photo = MarketplaceSellerPhoto.objects.get(seller=seller)
+            seller_photo_url = seller_photo.photo.url
+        except MarketplaceSellerPhoto.DoesNotExist:
+            seller_photo_url = None
+            pass
+        
+        print('data processed!')
+        return Response({
+            'seller_account': seller_account_serializer.data if seller_account_serializer else None,
+            'seller_api_key': seller_api_key_serializer.data if seller_api_key_serializer else None,
+            'seller_photo_url': seller_photo_url,
+        }, status=status.HTTP_200_OK)
+    except MarketPlaceSellerAccount.DoesNotExist:
+        return Response({'detail': 'Seller Account not found'}, status=status.HTTP_404_NOT_FOUND) 
+
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+@permission_classes([IsAuthenticated])
+def verify_seller(request):
+    data = request.data
+    admin_user = request.user
+    print('data:', data)
+
+    seller_username = data.get('seller_username')
+    password = data.get('password')
+
+    if not admin_user.check_password(password):
+        return Response({'detail': 'Invalid password.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        seller = User.objects.get(username=seller_username)
+    except User.DoesNotExist:
+        return Response({'detail': 'Seller fund not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    seller.is_seller_account_verified = True
+    seller.save()
+
+    return Response({'detail': f'Success!', }, status=status.HTTP_200_OK) 
 
 
 @api_view(['GET'])

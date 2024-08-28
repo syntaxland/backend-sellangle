@@ -6,31 +6,35 @@ from django.db.models import Q
 
 from django.contrib.auth import get_user_model
 
-User = get_user_model() 
+User = get_user_model()
 
- 
-class UserSerializer(serializers.ModelSerializer): 
+
+class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 
-                  'last_name', 'password', 'phone_number', 
-                  'is_verified', 'is_superuser', 'is_staff', 
-                  'is_ecommerce_seller', 'is_marketplace_seller', 
-                  'ad_charge_is_owed', 
-                  'is_followed_seller', 
-                'user_is_not_active',
-                'is_user_live_banned',
-                'is_user_1day_banned',
-                'is_user_2day_banned',
-                'is_user_3day_banned',
-                'is_user_1week_banned',
-                'is_user_3week_banned',
-                'is_user_1month_banned',
-                'is_user_2month_banned',
-                'is_user_3month_banned',
-                'is_user_6month_banned',
-                'is_user_1year_banned',
+        fields = '__all__'
+        fields = ['id', 'username', 'email', 'first_name',
+                  'last_name', 'password', 'phone_number',
+                  'is_verified', 'is_superuser', 'is_staff',
+                  'is_ecommerce_seller',
+                  'is_marketplace_seller',
+                  'is_seller_account_verified',
+                  'is_seller_account_disabled',
+                  'ad_charge_is_owed',
+                  'is_followed_seller',
+                  'user_is_not_active',
+                  'is_user_live_banned',
+                  'is_user_1day_banned',
+                  'is_user_2day_banned',
+                  'is_user_3day_banned',
+                  'is_user_1week_banned',
+                  'is_user_3week_banned',
+                  'is_user_1month_banned',
+                  'is_user_2month_banned',
+                  'is_user_3month_banned',
+                  'is_user_6month_banned',
+                  'is_user_1year_banned',
                   'created_at'
                   ]
         extra_kwargs = {
@@ -53,7 +57,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         return data
 
 # class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    
+
 #     def get_user(self, attrs):
 #         identifier = attrs.get('identifier')
 #         user = None
@@ -136,14 +140,15 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class GoogleLoginSerializer(TokenObtainPairSerializer):
-    
+
     def validate(self, attrs):
         email = attrs.get("email")
         google_id = attrs.get("google_id")
         token_id = attrs.get("token_id")
 
         if not email or not google_id or not token_id:
-            raise serializers.ValidationError("Email, google_id, and token_id are required.")
+            raise serializers.ValidationError(
+                "Email, google_id, and token_id are required.")
 
         # Custom authentication logic
         try:
@@ -167,7 +172,7 @@ class GoogleLoginSerializer(TokenObtainPairSerializer):
             "user": UserSerializer(user).data,
         }
         return data
-    
+
 
 # class GoogleLoginSerializer(serializers.Serializer):
 #     access_token = serializers.CharField()  # This field should match the parameter name you're using
@@ -192,19 +197,19 @@ class GoogleLoginSerializer(TokenObtainPairSerializer):
 #         else:
 #             raise serializers.ValidationError("Google login failed. User not found.")
 
-    
 
 class UserSerializerWithToken(UserSerializer):
     token = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'token']
+        fields = ['id', 'username', 'email',
+                  'first_name', 'last_name', 'token']
 
     def get_token(self, obj):
         token = RefreshToken.for_user(obj)
         return str(token.access_token)
-    
+
 
 class UpdateUserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -214,11 +219,11 @@ class UpdateUserProfileSerializer(serializers.ModelSerializer):
 
 class AvatarUpdateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User  
+        model = User
         fields = ('avatar',)
 
 
-class ChangePasswordSerializer(serializers.Serializer): 
+class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
 

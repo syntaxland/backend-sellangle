@@ -87,6 +87,10 @@ urlpatterns = [
     path('search-seller-username/<str:seller_username>/', views.search_seller_username, name='search-seller-username'),
     path('get-seller-detail/<str:seller_username>/', views.get_seller_detail, name='get-seller-detail'),
 
+    path('get-all-sellers/', views.get_all_sellers, name='get_all_sellers'),
+    path('get-seller-account-detail/<str:seller_username>/', views.get_seller_account_detail, name='get_seller_account_detail'),
+    path('verify-seller/', views.verify_seller, name='verify_seller'),
+
     path('search-ads/', views.search_ads, name='search-ads'),
     
     path('get-payment-details/', views.PaymentDetailsView.as_view(), name='get_payment_details'),
