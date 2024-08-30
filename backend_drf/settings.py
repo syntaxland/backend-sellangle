@@ -169,6 +169,10 @@ SIMPLE_JWT = {
     # "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
 }
 
+# Session settings
+SESSION_COOKIE_AGE = 3600  
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 MIDDLEWARE = [
     # Adding third-part corsheaders middleware
     "corsheaders.middleware.CorsMiddleware",
@@ -180,6 +184,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'custom_middleware.auto_logout.AutoLogoutMiddleware', 
 ]
 
 # Additional CORS Configuration
