@@ -1638,10 +1638,19 @@ def get_seller_detail(request, seller_username):
         seller_avatar_url = None
 
     try:
+        url = settings.SELLANGLE_URL
+        shopfront_link = f"{url}/shopfront/{seller.username}/"
+    except object.DoesNotExist:
+        shopfront_link = None
+
+    try:
         seller_detail = MarketPlaceSellerAccount.objects.get(seller=seller)
         serializer = MarketPlaceSellerAccountSerializer(seller_detail)
 
-        return Response({'data': serializer.data, 'seller_avatar_url': seller_avatar_url}, status=status.HTTP_200_OK)
+        return Response({'data': serializer.data, 
+                         'seller_avatar_url': seller_avatar_url, 
+                         'shopfront_link': shopfront_link
+                         }, status=status.HTTP_200_OK)
 
     except MarketPlaceSellerAccount.DoesNotExist:
         return Response({'detail': 'Seller detail not found'}, status=status.HTTP_404_NOT_FOUND)
