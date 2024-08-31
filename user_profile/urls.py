@@ -1,10 +1,12 @@
 # user_profile/urls.py
 from django.urls import path
 from . import views
+# from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path('users/register/', views.register_user_view, name='user-register'),
     path('users/login/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'), 
+    # path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # path('google-login/', views.GoogleLogin.as_view(), name='google_login'),
     path('update-user-last-login/', views.update_user_last_login, name='update_user_last_login'),
     path('users/logout/', views.LogoutView.as_view(), name='user-logout'),
