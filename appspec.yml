@@ -7,7 +7,7 @@ files:
 permissions:
   - object: /home/ubuntu/backend-sellangle
     owner: ubuntu
-    group: ubuntu
+    group: ubuntu 
 hooks:
   BeforeInstall:
       - location: scripts/clean_instance.sh  

@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny 
 from rest_framework import status, generics
 from rest_framework.request import Request
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -45,7 +45,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-
+ 
 def generate_referral_code():
     letters_and_digits = string.ascii_letters + string.digits
     return ''.join(random.choices(letters_and_digits, k=9))

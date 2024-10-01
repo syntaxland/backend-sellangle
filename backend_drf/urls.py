@@ -9,7 +9,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView, 
     TokenVerifyView, 
 )
-
+ 
 urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
@@ -26,7 +26,7 @@ urlpatterns = [
     path('api/', include('send_message_inbox.urls')),
     path('api/', include('recommender.urls')), 
     path('api/', include('sellers.urls')),
-    path('api/', include('marketplace.urls')),
+    path('api/', include('marketplace.urls')), 
     path('api/', include('promo.urls')),
     path('api/', include('support.urls')), 
     path('api/', include('feedback.urls')),

@@ -5,7 +5,7 @@ import base64
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from io import BytesIO
-from xhtml2pdf import pisa
+from xhtml2pdf import pisa 
 
 from celery import shared_task
 from .models import (PostPaidAd, 
@@ -602,6 +602,13 @@ def generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month_formatted):
 
 
 """
+sudo service redis-server start 
+sudo service redis-server status 
+redis-cli 
+redis-server 
+sudo service redis-server restart 
+sudo service redis-server stop 
+venv\Scripts\activate.bat 
 celery -A backend_drf.celery worker --pool=solo -l info 
 (Windows)
 celery -A backend_drf.celery worker --loglevel=info (Unix) 

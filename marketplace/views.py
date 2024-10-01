@@ -6,7 +6,9 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 import qrcode
 from decimal import ROUND_DOWN, Decimal
-from xhtml2pdf import pisa
+# from xhtml2pdf import pisa 
+# import xhtml2pdf.pisa as pisa
+# from xhtml2pdf.pisa import CreatePDF 
 from dateutil.relativedelta import relativedelta
 from calendar import month_name
 from datetime import datetime, timedelta
@@ -30,10 +32,10 @@ from rest_framework.decorators import api_view, permission_classes, parser_class
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
-
-from send_email.send_email_sendinblue import send_email_with_attachment_sendinblue
+ 
+# from send_email.send_email_sendinblue import send_email_with_attachment_sendinblue
 from credit_point.models import CreditPoint, AdChargeCreditPoint
-from credit_point.serializer import AdChargeCreditPointSerializer
+# from credit_point.serializer import AdChargeCreditPointSerializer
 from user_profile.serializers import UserSerializer
 
 from .models import (MarketPlaceSellerAccount,

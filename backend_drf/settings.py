@@ -15,7 +15,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 # Adding dotenv
-from dotenv import load_dotenv
+from dotenv import load_dotenv 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -59,17 +59,63 @@ LOGGING = {
     },
 } 
 
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'standard': {
+#             'format': '[%(asctime)s] %(levelname)s [%(module)s] [PID:%(process)d] [Thread:%(thread)d]: %(message)s',
+#         },
+#     },
+#     'handlers': {
+#         'file': {
+#             'level': 'ERROR',  # Keep the logging level at DEBUG
+#             'class': 'logging.FileHandler',
+#             'filename': f'{BASE_DIR}/django_logs/error.log',
+#             'formatter': 'standard',
+#         },
+#         'console': {
+#             'level': 'ERROR',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'standard',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file', 'console'],
+#             'level': 'ERROR',  # Log everything including errors, warnings, and debug info
+#             'propagate': True,
+#         },
+#         'django.request': {
+#             'handlers': ['file', 'console'],
+#             'level': 'ERROR',  # Capture request-level errors in detail
+#             'propagate': False,
+#         },
+#         'django.db.backends': {
+#             'handlers': ['file', 'console'],
+#             'level': 'ERROR',  # Log all database queries for debugging
+#             'propagate': False,
+#         },
+#         'corsheaders': {
+#             'handlers': ['file', 'console'],
+#             'level': 'ERROR',
+#             'propagate': True,
+#         },
+#     },
+# }
+
+
 ALLOWED_HOSTS = [
     'sellangle.com',
     'backend.sellangle.com',
-    '172.31.39.187',
-    '34.202.53.39',
+    '172.31.28.236',
+    '54.234.211.71',
     'localhost',
     'localhost:8002',
     '127.0.0.1',
     '127.0.0.1:8002',
-    '192.168.43.4',
-    '192.168.43.4:8002',
+    '192.168.43.5',
+    '192.168.43.5:8002',
     # others
     '3.213.135.220',
     '34.228.34.153',
@@ -103,7 +149,7 @@ INSTALLED_APPS = [
     'sellers',
     'support',
     'feedback',
-    'marketplace',
+    'marketplace',  
 
     # Third-party apps
     'rest_framework',
@@ -136,8 +182,10 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1), # testing
+    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=2), # testing
+    # 'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    # 'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': False,
@@ -196,8 +244,12 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3002",
     "http://localhost:8002",
     "http://127.0.0.1:8002",
-    "http://192.168.43.4", 
-    "http://192.168.43.4:8002",
+    "http://192.168.43.5", 
+    "http://192.168.43.5:8002",
+
+    # "http://192.168.43.5", 
+    # "http://192.168.43.5:3002/", 
+
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -229,8 +281,7 @@ CORS_ALLOW_METHODS = [
 ]
   
 CORS_ALLOW_CREDENTIALS = True
-
-# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True 
 
 ROOT_URLCONF = 'backend_drf.urls' 
 
@@ -504,7 +555,7 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
-
+ 
 # Redirect URL after Google login
 LOGIN_REDIRECT_URL = '/'  # Replace with your desired URL
 # Logout URL
@@ -524,5 +575,5 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 CELERY_BROKER_RETRY_ON_STARTUP = False
 broker_connection_retry_on_startup = True
-# CELERY_BEAT_SHEDULER = 'django-celery-beat.shedulers.DatabaseSheduler'
+# CELERY_BEAT_SHEDULER = 'django-celery-beat.shedulers.DatabaseSheduler' 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

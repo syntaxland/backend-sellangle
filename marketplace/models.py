@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw
 import qrcode
 from django.contrib.auth import get_user_model
 
-User = get_user_model()
+User = get_user_model() 
 
 BUSINESS_TYPE_CHOICES = [
     ('Registered', 'Registered'),
@@ -1225,8 +1225,8 @@ class ReviewPaidAdSeller(models.Model):
     def __str__(self):
         return str(self.rating)
 
-
-class AdChargeTotal(models.Model):
+ 
+class AdChargeTotal(models.Model): 
     seller = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, related_name="ad_total_charge_seller")
     paid_ad = models.ForeignKey(PostPaidAd, on_delete=models.CASCADE,

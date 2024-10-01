@@ -39,12 +39,17 @@ def delete_unverified_users_after_one_hour():
 
     unverified_users_count = unverified_users.count()
     unverified_users.delete()
-    
+
     print(f"Deleted {unverified_users_count} unverified users.")
 
- 
+
 """
-redis-server
+sudo service redis-server start 
+sudo service redis-server status 
+redis-cli 
+redis-server 
+sudo service redis-server restart 
+venv\Scripts\activate.bat 
 celery -A backend_drf.celery worker --pool=solo -l info 
 (Windows)
 celery -A backend_drf.celery worker --loglevel=info (Unix) 
