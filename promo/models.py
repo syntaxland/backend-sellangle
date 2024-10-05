@@ -21,11 +21,11 @@ class PromoCode(models.Model):
         return self.promo_code
 
 
-class Referral(models.Model):
+class Referral(models.Model): 
     referrer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="referrer")
     referred_users = models.ManyToManyField(User, related_name="referred_users", default=0) 
     # user_count = models.PositiveIntegerField(default=0)
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(default=timezone.now) 
 
     def __str__(self):
         referred_users_list = ", ".join(str(user) for user in self.referred_users.all())

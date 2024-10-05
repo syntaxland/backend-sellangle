@@ -29,6 +29,36 @@ DEBUG = True
 
 APPEND_SLASH = True 
 
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "formatters": {
+#         "standard": {
+#             "format": "[%(asctime)s] %(levelname)s [%(module)s] [PID:%(process)d] [Thread:%(thread)d]: %(message)s",
+#         },
+#     },
+#     "handlers": {
+#         "file": {
+#             "level": "ERROR",
+#             "class": "logging.FileHandler",
+#             "filename": f"{BASE_DIR}/django_logs/error.log",
+#             "formatter": "standard",
+#         },
+#     },
+#     "loggers": {
+#         "django": {
+#             "handlers": ["file"],
+#             "level": "ERROR",
+#             "propagate": True,
+#         },
+#         'corsheaders': {
+#             'handlers': ['file'],
+#             'level': 'ERROR',
+#             'propagate': True,
+#         },
+#     },
+# } 
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -39,9 +69,15 @@ LOGGING = {
     },
     "handlers": {
         "file": {
-            "level": "ERROR",
+            "level": "ERROR",  
             "class": "logging.FileHandler",
             "filename": f"{BASE_DIR}/django_logs/error.log",
+            "formatter": "standard",
+        },
+        "task_file": {  
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": f"{BASE_DIR}/django_logs/task.log",
             "formatter": "standard",
         },
     },
@@ -56,53 +92,19 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'celery': {  
+            'handlers': ['task_file'],
+            'level': 'DEBUG',  
+            'propagate': False,
+        },
+        'marketplace': {  
+            'handlers': ['task_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
-} 
+}
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'standard': {
-#             'format': '[%(asctime)s] %(levelname)s [%(module)s] [PID:%(process)d] [Thread:%(thread)d]: %(message)s',
-#         },
-#     },
-#     'handlers': {
-#         'file': {
-#             'level': 'ERROR',  # Keep the logging level at DEBUG
-#             'class': 'logging.FileHandler',
-#             'filename': f'{BASE_DIR}/django_logs/error.log',
-#             'formatter': 'standard',
-#         },
-#         'console': {
-#             'level': 'ERROR',
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'standard',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file', 'console'],
-#             'level': 'ERROR',  # Log everything including errors, warnings, and debug info
-#             'propagate': True,
-#         },
-#         'django.request': {
-#             'handlers': ['file', 'console'],
-#             'level': 'ERROR',  # Capture request-level errors in detail
-#             'propagate': False,
-#         },
-#         'django.db.backends': {
-#             'handlers': ['file', 'console'],
-#             'level': 'ERROR',  # Log all database queries for debugging
-#             'propagate': False,
-#         },
-#         'corsheaders': {
-#             'handlers': ['file', 'console'],
-#             'level': 'ERROR',
-#             'propagate': True,
-#         },
-#     },
-# }
 
 
 ALLOWED_HOSTS = [
@@ -575,5 +577,14 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 CELERY_BROKER_RETRY_ON_STARTUP = False
 broker_connection_retry_on_startup = True
-# CELERY_BEAT_SHEDULER = 'django-celery-beat.shedulers.DatabaseSheduler' 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+# # Updated Celery settings to avoid deprecations
+# CELERY_BROKER_URL = 'redis://localhost:6379/0'
+# result_backend = 'django-db'
+# accept_content = ['json']  
+# task_serializer = 'json' 
+# result_serializer = 'json'
+# timezone = 'UTC'  
+# broker_connection_retry_on_startup = True  
+# CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

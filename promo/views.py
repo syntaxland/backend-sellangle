@@ -4,7 +4,7 @@ import string
 import base64
 from io import BytesIO
 from PIL import Image, ImageDraw
-import qrcode
+import qrcode 
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -49,7 +49,7 @@ def generate_referral_link(request):
     url = settings.SELLANGLE_URL 
     print("url:", url)
     try:
-        if not user.referral_code:
+        if not user.referral_code: 
             user.referral_code = generate_referral_code()
             user.save()
         if not user.referral_link:

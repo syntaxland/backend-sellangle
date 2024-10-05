@@ -43,14 +43,18 @@ def delete_unverified_users_after_one_hour():
     print(f"Deleted {unverified_users_count} unverified users.")
 
 
+# venv\Scripts\activate.bat 
+# python manage.py shell
+# from user_profile.tasks import deactivate_inactive_users_every_six_months
+# deactivate_inactive_users_every_six_months.delay()
+
 """
 sudo service redis-server start 
 sudo service redis-server status 
 redis-cli 
 redis-server 
 sudo service redis-server restart 
-venv\Scripts\activate.bat 
-celery -A backend_drf.celery worker --pool=solo -l info 
+celery -A backend_drf.celery worker --pool=solo -l info  
 (Windows)
 celery -A backend_drf.celery worker --loglevel=info (Unix) 
 celery -A backend_drf.celery beat --loglevel=info 

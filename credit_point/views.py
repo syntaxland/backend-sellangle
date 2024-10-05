@@ -11,7 +11,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response 
 from rest_framework import status, generics
 from rest_framework.views import APIView  
- 
+  
 from .models import (CreditPoint,  
                       BuyCreditPoint, BuyUsdCreditPoint, 
                       SellCreditPoint,
@@ -182,6 +182,9 @@ def buy_credit_point(request):
     amount = Decimal(request.data.get('amount'))
     currency = request.data.get('currency')
     created_at = request.data.get('created_at')
+
+    if not currency:
+        return Response({'error': 'Currency not found.'}, status=status.HTTP_404_NOT_FOUND)
     print('amount:', amount, currency)
 
     try:

@@ -5,7 +5,7 @@ import base64
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from io import BytesIO
-from xhtml2pdf import pisa 
+# from xhtml2pdf import pisa 
 
 from celery import shared_task
 from .models import (PostPaidAd, 
@@ -26,6 +26,9 @@ from django.conf import settings
 from django.db import transaction
 from django.db.models import Sum, F
 from django.contrib.auth import get_user_model
+
+# import logging
+# logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -127,9 +130,8 @@ def get_total_ad_charge():
 
 @shared_task
 def deduct_total_ad_charge_from_cps():
-    ad_charges_total = AdChargeTotal.objects.filter(
-        total_ad_charges__gt=0,
-    )
+    ad_charges_total = AdChargeTotal.objects.filter(total_ad_charges__gt=0)
+    print(ad_charges_total) 
 
     with transaction.atomic():
         for total_ad_charge in ad_charges_total:
@@ -147,7 +149,6 @@ def deduct_total_ad_charge_from_cps():
                     )
                     total_ad_charge.seller.ad_charge_is_owed=True
                     total_ad_charge.seller.save()
-
                     print(f'Insufficient balance for seller {total_ad_charge.seller.username}')
                     continue
 
@@ -185,16 +186,97 @@ def deduct_total_ad_charge_from_cps():
                 total_ad_charge.seller.save()
 
                 # After deducting ad charges, apply the referral and followers bonuses
-                implement_referral_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
-                implement_followers_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+                try:
+                    implement_referral_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+                    implement_followers_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+                except Exception as e:
+                    print(f'Error applying the referral and followers bonuses: {e}')
 
             except CreditPoint.DoesNotExist:
                 print(f'CreditPoint not found for seller {total_ad_charge.seller.username}')
 
     return 'Total ad charges deducted from seller credit points successfully.'
 
-       
 
+# @shared_task
+# def deduct_total_ad_charge_from_cps():
+#     ad_charges_total = AdChargeTotal.objects.filter(total_ad_charges__gt=0)
+#     logger.info(f"Found {ad_charges_total.count()} sellers with ad charges.")
+
+#     for total_ad_charge in ad_charges_total:
+#         try:
+#             # Start a transaction for each seller to ensure independent rollback
+#             with transaction.atomic():
+#                 try:
+#                     credit_point = CreditPoint.objects.get(user=total_ad_charge.seller)
+#                     credit_point_balance = credit_point.balance
+#                 except CreditPoint.DoesNotExist:
+#                     logger.error(f"CreditPoint not found for seller {total_ad_charge.seller.username}")
+#                     continue
+
+#                 # Check if seller has sufficient balance
+#                 if credit_point_balance < total_ad_charge.total_ad_charges:
+#                     logger.warning(f"Insufficient balance for seller {total_ad_charge.seller.username}")
+                    
+#                     # Update seller's account to reflect they owe charges
+#                     total_ad_charge.seller.ad_charge_is_owed = True
+#                     total_ad_charge.seller.save()
+
+#                     # Optionally: Send notification for insufficient balance
+#                     # send_seller_insufficient_cps_bal_email()
+#                     # send_seller_insufficient_cps_bal_msg()
+#                     continue
+
+#                 # Deduct the ad charges from the seller's credit points balance
+#                 CreditPoint.objects.filter(user=total_ad_charge.seller).update(
+#                     balance=F('balance') - total_ad_charge.total_ad_charges
+#                 )
+
+#                 # Re-fetch credit point after update to get the new balance
+#                 credit_point = CreditPoint.objects.get(user=total_ad_charge.seller)
+#                 cps_new_bal = credit_point.balance
+
+#                 # Record the ad charge deduction
+#                 AdChargeCreditPoint.objects.create(
+#                     user=total_ad_charge.seller,
+#                     cps_amount=total_ad_charge.total_ad_charges,
+#                     old_bal=credit_point_balance,
+#                     new_bal=cps_new_bal, 
+#                     ad_charge_cps_id=generate_ad_charge_id(),
+#                     is_success=True,
+#                 )
+
+#                 # Reset the seller's ad charges
+#                 AdChargeTotal.objects.filter(seller=total_ad_charge.seller).update(
+#                     total_ad_charges=0,
+#                     total_ad_charge_hours=0
+#                 )
+#                 PostPaidAd.objects.filter(
+#                     seller=total_ad_charge.seller, 
+#                     ad_charges__gt=0
+#                 ).update(
+#                     ad_charges=0,
+#                     ad_charge_hours=0,
+#                 )
+
+#                 # Update seller ad charge status
+#                 total_ad_charge.seller.ad_charge_is_owed = False
+#                 total_ad_charge.seller.save()
+
+#                 # Apply referral and followers bonuses, log any errors
+#                 try:
+#                     implement_referral_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+#                     implement_followers_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+#                 except Exception as e:
+#                     logger.error(f"Error applying bonuses for {total_ad_charge.seller.username}: {e}")
+
+#         except Exception as e:
+#             # Catch any unexpected exceptions to prevent the task from failing entirely
+#             logger.error(f"Unexpected error processing seller {total_ad_charge.seller.username}: {e}")
+
+#     return 'Total ad charges deducted from seller credit points successfully.'
+
+       
 @shared_task
 def charge_owed_ads():
     owed_users = User.objects.filter(ad_charge_is_owed=True)
@@ -601,14 +683,17 @@ def generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month_formatted):
 
 
 
+# venv\Scripts\activate.bat 
 """
 sudo service redis-server start 
-sudo service redis-server status 
-redis-cli 
-redis-server 
 sudo service redis-server restart 
 sudo service redis-server stop 
-venv\Scripts\activate.bat 
+sudo service redis-server status 
+sudo service redis-server restart 
+redis-server 
+redis-cli 
+ping
+redis-cli shutdown (shutdown on windows) 
 celery -A backend_drf.celery worker --pool=solo -l info 
 (Windows)
 celery -A backend_drf.celery worker --loglevel=info (Unix) 
