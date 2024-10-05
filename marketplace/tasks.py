@@ -344,7 +344,7 @@ def charge_owed_ads():
 def implement_referral_cps_bonus(user, total_ad_charges):
     try:
         referral = Referral.objects.get(referred_users=user)
-        referrer = referral.referrer
+        referrer = referral.referrer 
 
         if not referrer:
             print(f"No referrer found for user {user.username}")
