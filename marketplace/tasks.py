@@ -5,7 +5,8 @@ import base64
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from io import BytesIO
-# from xhtml2pdf import pisa 
+from xhtml2pdf import pisa 
+from django.core.cache import cache
 
 from celery import shared_task
 from .models import (PostPaidAd, 
@@ -27,8 +28,8 @@ from django.db import transaction
 from django.db.models import Sum, F
 from django.contrib.auth import get_user_model
 
-# import logging
-# logger = logging.getLogger(__name__)
+import logging
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -188,9 +189,13 @@ def deduct_total_ad_charge_from_cps():
                 # After deducting ad charges, apply the referral and followers bonuses
                 try:
                     implement_referral_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+                except Exception as e:
+                    print(f'Error applying the referral bonuses: {e}')
+
+                try:
                     implement_followers_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
                 except Exception as e:
-                    print(f'Error applying the referral and followers bonuses: {e}')
+                    print(f'Error applying the followers bonuses: {e}')
 
             except CreditPoint.DoesNotExist:
                 print(f'CreditPoint not found for seller {total_ad_charge.seller.username}')
@@ -332,8 +337,18 @@ def charge_owed_ads():
                 user.save()
 
                 # After deducting ad charges, apply the referral and followers bonuses
-                implement_referral_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
-                implement_followers_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+                # implement_referral_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+                # implement_followers_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+
+                try:
+                    implement_referral_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+                except Exception as e:
+                    print(f'Error applying the referral bonuses: {e}')
+
+                try:
+                    implement_followers_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
+                except Exception as e:
+                    print(f'Error applying the followers bonuses: {e}')
 
             except CreditPoint.DoesNotExist:
                 print(f'CreditPoint not found for seller {user.username}')
@@ -341,74 +356,168 @@ def charge_owed_ads():
     return 'Owed ad charges deducted from users successfully. Owed Users:', len(owed_users) 
 
 
+# def implement_referral_cps_bonus(user, total_ad_charges):
+#     try:
+#         referral = Referral.objects.get(referred_users=user)
+#         referrer = referral.referrer 
+
+#         if not referrer:
+#             print(f"No referrer found for user {user.username}")
+#             return
+
+#         cps_bonus_amount = total_ad_charges * 0.10  # 10% of ad charges
+
+#         referrer_credit_point = CreditPoint.objects.get(user=referrer)
+#         old_balance = referrer_credit_point.balance
+#         new_balance = old_balance + cps_bonus_amount
+
+#         CpsBonus.objects.create(
+#             user=referrer,
+#             cps_bonus_type='Referral Bonus',
+#             cps_amount=cps_bonus_amount,
+#             cps_bonus_id=generate_ad_charge_id(),
+#             old_bal=old_balance,
+#             new_bal=new_balance,
+#             is_success=True,
+#         )
+
+#         referrer_credit_point.balance = new_balance
+#         referrer_credit_point.save()
+
+#         print(f"Referral bonus of {cps_bonus_amount} credited to referrer {referrer.username}")
+
+#     except Referral.DoesNotExist:
+#         print(f"No referral record found for user {user.username}")
+#     except CreditPoint.DoesNotExist:
+#         print(f"No credit point record found for referrer {referrer.username}")
+
+
+# def implement_followers_cps_bonus(user, total_ad_charges):
+#     try:
+#         followed_sellers = user.followed_sellers.all()
+#         if not followed_sellers:
+#             print(f"No followed sellers for user {user.username}")
+#             return
+
+#         cps_bonus_amount = total_ad_charges * 0.40  # 40% of ad charges
+#         cps_bonus_per_seller = cps_bonus_amount / followed_sellers.count()
+
+#         for seller in followed_sellers:
+#             seller_credit_point = CreditPoint.objects.get(user=seller)
+#             old_balance = seller_credit_point.balance
+#             new_balance = old_balance + cps_bonus_per_seller
+
+#             CpsBonus.objects.create(
+#                 user=seller,
+#                 cps_bonus_type='Followers',
+#                 cps_amount=cps_bonus_per_seller,
+#                 cps_bonus_id=generate_ad_charge_id(),
+#                 old_bal=old_balance,
+#                 new_bal=new_balance,
+#                 is_success=True,
+#             )
+
+#             seller_credit_point.balance = new_balance
+#             seller_credit_point.save()
+
+#             print(f"Followers bonus of {cps_bonus_per_seller} credited to seller {seller.username}")
+
+#     except CreditPoint.DoesNotExist:
+#         print(f"No credit point record found for a followed seller")
+
+
 def implement_referral_cps_bonus(user, total_ad_charges):
     try:
-        referral = Referral.objects.get(referred_users=user)
-        referrer = referral.referrer 
+        referral = Referral.objects.filter(referred_users=user).first()
+        if not referral:
+            print(f"No referral record found for user {user.username}")
+            return
+        
+        referrer = referral.referrer
 
         if not referrer:
             print(f"No referrer found for user {user.username}")
             return
 
-        cps_bonus_amount = total_ad_charges * 0.10  # 10% of ad charges
+        cps_bonus_amount = total_ad_charges * 0.10  
 
-        referrer_credit_point = CreditPoint.objects.get(user=referrer)
-        old_balance = referrer_credit_point.balance
-        new_balance = old_balance + cps_bonus_amount
-
-        CpsBonus.objects.create(
-            user=referrer,
-            cps_bonus_type='Referral Bonus',
-            cps_amount=cps_bonus_amount,
-            cps_bonus_id=generate_ad_charge_id(),
-            old_bal=old_balance,
-            new_bal=new_balance,
-            is_success=True,
-        )
-
-        referrer_credit_point.balance = new_balance
-        referrer_credit_point.save()
-
-        print(f"Referral bonus of {cps_bonus_amount} credited to referrer {referrer.username}")
-
-    except Referral.DoesNotExist:
-        print(f"No referral record found for user {user.username}")
-    except CreditPoint.DoesNotExist:
-        print(f"No credit point record found for referrer {referrer.username}")
-
-
-def implement_followers_cps_bonus(user, total_ad_charges):
-    try:
-        followed_sellers = user.followed_sellers.all()
-        if not followed_sellers:
-            print(f"No followed sellers for user {user.username}")
-            return
-
-        cps_bonus_amount = total_ad_charges * 0.40  # 40% of ad charges
-        cps_bonus_per_seller = cps_bonus_amount / followed_sellers.count()
-
-        for seller in followed_sellers:
-            seller_credit_point = CreditPoint.objects.get(user=seller)
-            old_balance = seller_credit_point.balance
-            new_balance = old_balance + cps_bonus_per_seller
+        try:
+            referrer_credit_point = CreditPoint.objects.get(user=referrer)
+            old_balance = referrer_credit_point.balance
+            new_balance = old_balance + cps_bonus_amount
 
             CpsBonus.objects.create(
-                user=seller,
-                cps_bonus_type='Followers',
-                cps_amount=cps_bonus_per_seller,
+                user=referrer,
+                cps_bonus_type='Referral Bonus',
+                cps_amount=cps_bonus_amount,
                 cps_bonus_id=generate_ad_charge_id(),
                 old_bal=old_balance,
                 new_bal=new_balance,
                 is_success=True,
             )
 
-            seller_credit_point.balance = new_balance
-            seller_credit_point.save()
+            referrer_credit_point.balance = new_balance
+            referrer_credit_point.save()
 
-            print(f"Followers bonus of {cps_bonus_per_seller} credited to seller {seller.username}")
+            print(f"Referral bonus of {cps_bonus_amount} credited to referrer {referrer.username}")
 
-    except CreditPoint.DoesNotExist:
-        print(f"No credit point record found for a followed seller")
+        except CreditPoint.DoesNotExist:
+            print(f"No credit point record found for referrer {referrer.username}")
+        except Exception as e:
+            print(f"Error updating credit point for referrer {referrer.username}: {e}")
+
+    except Exception as e:
+        print(f"Error in implementing referral CPS bonus for user {user.username}: {e}")
+
+
+def implement_followers_cps_bonus(user, total_ad_charges):
+    try:
+        followed_sellers = user.followed_sellers.all()
+        if not followed_sellers.exists():  # Check if there are any followed sellers
+            print(f"No followed sellers for user {user.username}")
+            return
+
+        cps_bonus_amount = total_ad_charges * 0.40  # 40% of ad charges
+        seller_count = followed_sellers.count()
+
+        if seller_count == 0:  # Avoid division by zero
+            print(f"User {user.username} follows 0 sellers. No bonus to distribute.")
+            return
+
+        cps_bonus_per_seller = cps_bonus_amount / seller_count
+
+        for seller in followed_sellers:
+            try:
+                seller_credit_point = CreditPoint.objects.get(user=seller)
+                old_balance = seller_credit_point.balance
+                new_balance = old_balance + cps_bonus_per_seller
+
+                CpsBonus.objects.create(
+                    user=seller,
+                    cps_bonus_type='Followers',
+                    cps_amount=cps_bonus_per_seller,
+                    cps_bonus_id=generate_ad_charge_id(),
+                    old_bal=old_balance,
+                    new_bal=new_balance,
+                    is_success=True,
+                )
+
+                seller_credit_point.balance = new_balance
+                seller_credit_point.save()
+
+                print(f"Followers bonus of {cps_bonus_per_seller} credited to seller {seller.username}")
+
+            except CreditPoint.DoesNotExist:
+                # Log the error but continue processing for other sellers
+                print(f"CreditPoint record not found for seller {seller.username}. Skipping bonus for this seller.")
+            except Exception as e:
+                # Catch any other exceptions and log them
+                print(f"Error processing bonus for seller {seller.username}: {e}")
+
+    except Exception as e:
+        print(f"Error in implementing CPS bonus for user {user.username}: {e}")
+
+
 
 
 def send_seller_insufficient_cps_bal_msg(user, credit_point_balance, insufficient_cps_balance):
@@ -528,12 +637,24 @@ def delete_expired_ads():
     return 'Total deleted expired paid ads:', len(expired_paid_ads) 
 
 
+LOCK_EXPIRE = 60 * 60  # Lock expires in 1 hour
+def acquire_task_lock(lock_id, timeout=LOCK_EXPIRE):
+    return cache.add(lock_id, 'lock', timeout=timeout)
+
+def release_task_lock(lock_id):
+    cache.delete(lock_id)
+
 @shared_task
 def send_monthly_ad_billing_receipt_email():
+    lock_id = "send_monthly_ad_billing_receipt_email_lock"
 
-    sellers = User.objects.filter(is_marketplace_seller=True)
+    if not acquire_task_lock(lock_id, timeout=LOCK_EXPIRE):
+        print("Task is already running, skipping.")
+        return
 
     try:
+        sellers = User.objects.filter(is_marketplace_seller=True)
+
         for user in sellers:
             print('user:', user)
             current_datetime = timezone.now()
@@ -620,6 +741,8 @@ def send_monthly_ad_billing_receipt_email():
 
     except Exception as e:
         print(str(e))
+    finally:
+        release_task_lock(lock_id)
 
 
 def generate_ad_charges_receipt_pdf(user, ad_charges_receipt_month_formatted):

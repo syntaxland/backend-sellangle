@@ -51,7 +51,7 @@ def delete_unverified_users_after_one_hour():
 """
 sudo service redis-server start 
 sudo service redis-server status 
-redis-cli 
+redis-cli ping
 redis-server 
 sudo service redis-server restart 
 celery -A backend_drf.celery worker --pool=solo -l info  

@@ -6,7 +6,7 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 import qrcode
 from decimal import ROUND_DOWN, Decimal
-# from xhtml2pdf import pisa 
+from xhtml2pdf import pisa 
 # import xhtml2pdf.pisa as pisa
 # from xhtml2pdf.pisa import CreatePDF 
 from dateutil.relativedelta import relativedelta

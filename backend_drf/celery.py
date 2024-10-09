@@ -37,10 +37,10 @@ app.conf.beat_schedule = {
         # 'schedule': crontab(hour=0, minute=1),
         # 'schedule': crontab(minute=0, hour=1, day_of_month=1),
         # 'schedule': crontab(minute=0, hour=1, day_of_week=1),
-        # 'schedule': timedelta(hours=48),
         # 'schedule': timedelta(minutes=15),
+        # 'schedule': timedelta(days=7),
         # 'schedule': timedelta(seconds=100),
-        'schedule': timedelta(days=7),
+        'schedule': timedelta(hours=48),
     },
     'charge-owed-ads': {
         'task': 'marketplace.tasks.charge_owed_ads',
