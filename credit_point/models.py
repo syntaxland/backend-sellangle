@@ -33,6 +33,7 @@ USD_CPS_CHOICES = (
 
 CPS_BONUS_TYPE_CHOICES = (
     ('Referral Bonus', 'Referral Bonus'),
+    ('Followers Bonus', 'Followers Bonus'),
     ('Sign-up Bonus', 'Sign-up Bonus'),
     ('Birthday Bonus', 'Birthday Bonus'),
     ('Loyalty Bonus', 'Loyalty Bonus'),

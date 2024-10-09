@@ -337,9 +337,6 @@ def charge_owed_ads():
                 user.save()
 
                 # After deducting ad charges, apply the referral and followers bonuses
-                # implement_referral_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
-                # implement_followers_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
-
                 try:
                     implement_referral_cps_bonus(total_ad_charge.seller, total_ad_charge.total_ad_charges)
                 except Exception as e:
@@ -494,7 +491,7 @@ def implement_followers_cps_bonus(user, total_ad_charges):
 
                 CpsBonus.objects.create(
                     user=seller,
-                    cps_bonus_type='Followers',
+                    cps_bonus_type='Followers Bonus',
                     cps_amount=cps_bonus_per_seller,
                     cps_bonus_id=generate_ad_charge_id(),
                     old_bal=old_balance,
