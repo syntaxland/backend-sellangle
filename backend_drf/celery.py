@@ -40,7 +40,8 @@ app.conf.beat_schedule = {
         # 'schedule': timedelta(minutes=15),
         # 'schedule': timedelta(days=7),
         # 'schedule': timedelta(seconds=100),
-        'schedule': timedelta(hours=48),
+        'schedule': timedelta(hours=6),
+        # 'schedule': timedelta(hours=48),
     },
     'charge-owed-ads': {
         'task': 'marketplace.tasks.charge_owed_ads',
