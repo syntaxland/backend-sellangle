@@ -40,7 +40,7 @@ app.conf.beat_schedule = {
         # 'schedule': timedelta(minutes=15),
         # 'schedule': timedelta(days=7),
         # 'schedule': timedelta(seconds=100),
-        'schedule': timedelta(hours=6),
+        'schedule': timedelta(hours=3),
         # 'schedule': timedelta(hours=48),
     },
     'charge-owed-ads': {

@@ -161,7 +161,7 @@ def register_user_view(request):
                 print('credit_point_balance:', credit_point_balance)
 
                 cps_bonus_type = "Referral Bonus"
-                cps_bonus_amt = 1000
+                cps_bonus_amt = 100
                 credit_point.balance += cps_bonus_amt
                 credit_point.save()
 

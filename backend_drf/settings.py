@@ -84,7 +84,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["file"],
-            "level": "ERROR",
+            "level": "INFO",
             "propagate": True,
         },
         'corsheaders': {
@@ -94,18 +94,16 @@ LOGGING = {
         },
         'celery': {  
             'handlers': ['task_file'],
-            'level': 'DEBUG',  
+            'level': 'INFO',  
             'propagate': False,
         },
-        'marketplace': {  
+        'user_profile': {  
             'handlers': ['task_file'],
             'level': 'INFO',
             'propagate': False,
         },
     },
 }
-
-
 
 ALLOWED_HOSTS = [
     'sellangle.com',
